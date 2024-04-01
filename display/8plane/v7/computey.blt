@@ -1,0 +1,157 @@
+	.xlist
+;----------------------------Module-Header------------------------------;
+; Module Name: COMPUTEY.BLT
+;
+; Subroutine to compute Y-related parameters of BLT.
+;
+; Created: In Windows' distant past (c. 1983)
+;
+; Copyright (c) 1983 - 1987  Microsoft Corporation
+;
+; This file is part of a set that makes up the Windows BitBLT function
+; at driver-level.
+;-----------------------------------------------------------------------;
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+        .list
+
+subttl	compute y
+page
+;----------------------------Private-Routine----------------------------;
+; compute_y
+;
+; Compute y-related parameters.
+;
+; The parameters related to the Y coordinate and BLT direction
+; are computed.  The parameters include:
+;
+;	a) Index to next scan line
+;
+;	b) Starting Y address calculation
+;
+;	c) Huge bitmap update parameters
+;
+;		1) overflow conditional jump opcode
+;
+;		2) overflow address range
+;
+;		3) bmFillBytes correct value
+;
+;		4) bmSegmentIndex correct value
+;
+;	d) Index to next plane
+;
+; Entry:
+;	BP --> DEV structure to use (src or dest)
+;	AX  =  Y coordinate
+;	CX  =  BLT direction
+;	       0000 = Y+
+;	       FFFF = Y-
+;	BX  =  inclusive Y extent
+; Returns:
+;	CX  =  BLT direction
+;	BX  =  inclusive count
+; Registers Preserved:
+;	BP,DS,ES
+; Registers Destroyed:
+;	AX,DX,SI,DI,flags
+; Calls:
+;	None
+; History:
+;
+; ************************************************************************
+; modifications for bug fix:
+;
+; A bug was found when the blit area from a huge mono bitmap came from
+; the second or subsequent segments but was contained in a segment. The
+; original code special cased this out. However the special case code 
+; does not check for huge maps and would work only if the blt area is totaly
+; contained in the first segment.
+;
+; To resolve this bug I shall set the SPANS_SEG flag once the blt area
+; goes past the first segment even if the blt area is contained in one segment
+;
+; 	-by- Amit Chatterjee [amitc]    Thu Dec-01-1988	  18:37:10
+; ************************************************************************
+
+; Modifications:
+;     . Interleaved scan format adopted for small bitmaps as well
+;       -by- Amit Chatterjee [amitc]    Fri Oct-14-1988   09:04:10
+;
+;  Sun 22-Feb-1987 16:29:09 -by-  Walt Moore [waltm]
+; Created.
+;
+;
+;-----------------------------------------------------------------------;
+
+;------------------------------Pseudo-Code------------------------------;
+; {
+; }
+;-----------------------------------------------------------------------;
+
+compute_y	proc near
+
+	cmp	ch,INCREASING		;increasing BLT?
+	je	compute_y10		;..yes, use yOrg
+
+	add	ax,bx			;add yExt
+	dec	ax			;make it exclusive
+compute_y10:
+
+;  if this is the physical display,
+;  Y computation is a special beast
+
+	test	[bp].dev_flags,IS_DEVICE
+	jnz	compute_y80
+
+;  this is (just) a bitmap
+;  compute segment offset for huge maps
+
+	xor	dx,dx
+compute_y20:
+	add	dx,[bp].seg_index
+	sub	ax,[bp].scans_seg
+	jnc	compute_y20
+	sub	dx,[bp].seg_index
+	add	ax,[bp].scans_seg
+
+;  perversity - force SPANS_SEG for huge bitmap
+;  (until we properly check Y extent)
+
+	cmp	[bp].seg_index,0
+	jz	compute_y30
+	or	[bp].dev_flags,SPANS_SEG
+compute_y30:
+
+;  compute/save starting segment selector
+
+	add	dx,[bp].lp_bits.sel
+	mov	[bp].lp_init.sel,dx
+
+;  now compute the offset into the segment
+
+	mov	dx,[bp].width_b
+	mul	dx
+	add	ax,[bp].lp_bits.off
+	mov	[bp].lp_init.off,ax
+	mov	[bp].init_page,dl	;(0)
+	ret
+
+;  THIS IS THE PHYSICAL DISPLAY
+
+compute_y80:
+
+;  the segment selector is unvarying
+
+	mov	dx,[bp].lp_bits.sel
+	mov	[bp].lp_init.sel,dx
+
+;  compute/save the starting address and bank
+
+	mov	dx,[bp].width_b
+	mul	dx			;dl = bank selector, dh=0
+	add	dx,[bp].lp_bits.off
+	adc	dl,dh			;(PROBABLY UNNECESSARY)
+	mov	[bp].init_page,dl
+	ret				;All done
+
+compute_y	endp

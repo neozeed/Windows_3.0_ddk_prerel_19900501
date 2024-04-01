@@ -1,0 +1,50 @@
+dummy   :   all
+
+
+### VGA 850 Oem Only
+.\VGA850.fon:  VGA850.FNT VGA850.RC VGA850.DEF VGA850.LNK VGAINTL
+        link4 @VGA850.lnk
+        rc -k VGA850.rc VGA850.exe
+##        cmpctfon vga850.exe vga850.fon
+        copy vga850.exe vga850.fon
+        del VGA850.exe
+        del VGA850.res
+
+### VGA 860 Oem Only
+.\VGA860.fon:  VGA860.FNT VGA860.RC VGA860.DEF VGA860.LNK VGAINTL
+        link4 @VGA860.lnk
+        rc -k VGA860.rc VGA860.exe
+##        cmpctfon vga860.exe vga860.fon
+        copy vga860.exe vga860.fon
+        del VGA860.exe
+        del VGA860.res
+
+### VGA 863 Oem Only
+.\VGA863.fon:  VGA863.FNT VGA863.RC VGA863.DEF VGA863.LNK VGAINTL
+        link4 @VGA863.lnk
+        rc -k VGA863.rc VGA863.exe
+##        cmpctfon vga863.exe vga863.fon
+        copy vga863.exe vga863.fon
+        del VGA863.exe
+        del VGA863.res
+
+### VGA 865 Oem Only
+.\VGA865.fon:  VGA865.FNT VGA865.RC VGA865.DEF VGA865.LNK VGAINTL
+        link4 @VGA865.lnk
+        rc -k VGA865.rc VGA865.exe
+##        cmpctfon vga865.exe vga865.fon
+        copy vga865.exe vga865.fon
+        del VGA865.exe
+        del VGA865.res
+
+### VGA 861 Oem Only
+.\VGA861.fon:  VGA861.FNT VGA861.RC VGA861.DEF VGA861.LNK VGAINTL
+        link4 @VGA861.lnk
+        rc -k VGA861.rc VGA861.exe
+##        cmpctfon vga861.exe vga861.fon
+        copy vga861.exe vga861.fon
+        del VGA861.exe
+        del VGA861.res
+
+
+all  :  .\VGA850.fon .\VGA860.fon .\VGA863.fon .\VGA865.fon .\VGA861.fon

@@ -1,0 +1,7 @@
+dmcolor /PAGESIZE:16
+y
++drawmode +hidither +chkstk +robject +enum +colorinf +pixel &
++bitblt +rlstrblt +rlbldstr +realpro +output +scanlr +color.obj	&
++pmstrblt +pmbldstr +pmpro
+dmcolor.lst
+dmcolor

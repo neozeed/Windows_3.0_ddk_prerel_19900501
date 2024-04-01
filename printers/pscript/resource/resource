@@ -1,0 +1,341 @@
+#---------------------------------------------------------------------------
+# Makefile for PSCRIPT.DRV resources
+#
+# programs used:
+#
+#	SMASH.EXE	- compress postscript files (.ps -> .cps)
+#       AFM.EXE		- fontmetrics resource builder (outputs filename.PFM)
+#	PFMDIR.EXE	- create font directory for each printer from .lst
+#
+#	APD.EXe		- APD compiler.  generates some .h files and some
+#			  .rc files.  Also generates .dir .pss & .cap from 
+#			  .apd files.
+#
+#---------------------------------------------------------------------------
+INC    = ..
+UTILS  = ..\UTILS
+
+
+CPP    = cl $(OPTS) /P
+SMASH  = $(UTILS)\smash.exe
+AFM    = $(UTILS)\afm.exe
+APD    = $(UTILS)\apd.exe
+PFMDIR = $(UTILS)\pfmdir.exe
+
+dummy:
+        cd $(UTILS)
+        make utils
+        cd ..\resource
+
+#
+# default rule: compress .ps file to .cps file
+#
+.ps.cps:
+	$(SMASH) $*.ps $*.cps
+
+#
+# default rule, use afmtopfm.dat as default data base
+#
+.afm.pfm:
+	$(AFM) $*.afm afmtopfm.dat
+
+#
+# default rule, use afmtopfm.dat as default data base
+#
+.lst.dir:
+	$(PFMDIR) $*.lst
+
+#
+# printer capabilities and printer specific postscript code
+#
+# .pss and .cap are both outputs from APD.EXE
+#
+#.apd.pss:
+.apd.cap:
+	$(APD) $*.lst
+
+#
+# build the resource file
+#
+.res.rc:
+	rc -3 -r -e $*.rc
+
+#------------------------------- dependancies -------------------------
+
+#
+# compressed postscript
+#
+
+header.cps: header.ps
+	$(CPP) -D FULL_HEADER $*.ps
+	$(SMASH) $*.i $*.cps
+
+dlprefix.cps: dlprefix.ps
+
+rle.cps: rle.ps
+
+dlsuffix.cps: dlsuffix.ps
+
+headchk.cps: headchk.ps
+
+# build headeps from header without defining FULL_HEADER
+headeps.cps: header.ps
+	$(CPP) header.ps
+	$(SMASH) header.i headeps.cps
+
+software.cps: software.ps
+
+hardware.cps: hardware.ps
+
+olivchst.cps: olivchst.ps
+
+ehandler.cps: ehandler.ps
+
+#
+# resourcable fontmetrics
+# 
+
+agb.pfm: agb.afm
+
+agbo.pfm: agbo.afm
+
+agd.pfm: agd.afm
+
+agdo.pfm: agdo.afm
+
+bd.pfm: bd.afm
+
+bdi.pfm: bdi.afm
+
+bl.pfm: bl.afm
+
+bli.pfm: bli.afm
+
+cm.pfm: cm.afm
+
+cb.pfm: cb.afm
+
+cbo.pfm: cbo.afm
+
+co.pfm: co.afm
+
+gb.pfm: gb.afm
+
+gbi.pfm: gbi.afm
+
+gl.pfm: gl.afm
+
+gli.pfm: gli.afm
+
+hm.pfm: hm.afm
+
+hb.pfm: hb.afm
+
+hbo.pfm: hbo.afm
+
+ho.pfm: ho.afm
+
+hvn.pfm: hvn.afm
+
+hvnb.pfm: hvnb.afm
+
+hvnbo.pfm: hvnbo.afm
+
+hvno.pfm: hvno.afm
+
+hc.pfm: hc.afm
+
+hcb.pfm: hcb.afm
+
+hcbo.pfm: hcbo.afm
+
+hco.pfm: hco.afm
+
+ncb.pfm: ncb.afm
+
+ncbi.pfm: ncbi.afm
+
+nci.pfm: nci.afm
+
+ncr.pfm: ncr.afm
+
+or.pfm: or.afm
+
+oo.pfm: oo.afm
+
+ob.pfm: ob.afm
+
+obo.pfm: obo.afm
+
+pb.pfm: pb.afm
+
+pbi.pfm: pbi.afm
+
+pi.pfm: pi.afm
+
+pr.pfm: pr.afm
+
+sm.pfm: sm.afm
+
+tb.pfm: tb.afm
+
+tbi.pfm: tbi.afm
+
+ti.pfm: ti.afm
+
+tr.pfm: tr.afm
+
+vtb.pfm: vtb.afm
+
+vtbi.pfm: vtbi.afm
+
+vti.pfm: vti.afm
+
+vtr.pfm: vtr.afm
+
+zc.pfm: zc.afm
+
+zd.pfm: zd.afm
+
+ld.pfm: ld.afm
+
+ldo.pfm: ldo.afm
+
+lb.pfm: lb.afm
+
+lbo.pfm: lbo.afm
+
+sd.pfm: sd.afm
+
+sdi.pfm: sdi.afm
+
+sl.pfm: sl.afm
+
+sli.pfm: sli.afm
+
+#
+# printer capabilities and postscript code
+#
+
+applent.cap: applent.apd list.apd
+	$(UTILS)\apd list.apd
+
+#applent.cap: applent.apd
+
+#agfap400.cap: agfap400.apd
+
+#applelw.cap: applelw.apd
+
+#applelwp.cap: applelwp.apd
+
+#applent.cap: applent.apd
+
+#astr4081.cap: astr4081.apd
+
+#decln03r.cap: decln03r.apd
+
+#declps40.cap: declps40.apd
+
+#dp2665.cap: dp2665.apd
+
+#ibmppp.cap: ibmppp.apd
+
+#ibmpppsf.cap: ibmpppsf.apd
+
+#lino100.cap: lino100.apd
+
+#list.cap: list.apd
+
+#neclc890.cap: neclc890.apd
+
+#oliv5000.cap: oliv5000.apd
+
+#qms800.cap: qms800.apd
+
+#qms800p.cap: qms800p.apd
+
+#ti2108.cap: ti2108.apd
+
+#ti2115.cap: ti2115.apd
+
+#vt600w.cap: vt600w.apd
+
+#wang15.cap: wang15.apd
+
+#wang15fp.cap: wang15fp.apd
+
+#
+# printer font directories
+# 
+
+agfap400.dir: agfap400.lst
+
+applelw.dir: applelw.lst
+
+applelwp.dir: applelwp.lst
+
+applent.dir: applent.lst
+
+astr4081.dir: astr4081.lst
+
+declps40.dir: declps40.lst
+
+decln03r.dir: decln03r.lst
+
+dp2665.dir: dp2665.lst
+
+ibmppp.dir: ibmppp.lst
+
+ibmppp2.dir: ibmppp2.lst
+
+ibmpppsf.dir: ibmpppsf.lst
+
+lino100.dir: lino100.lst
+
+neclc890.dir: neclc890.lst
+
+oliv5000.dir: oliv5000.lst
+
+qms100.dir: qms100.lst
+
+qms800.dir: qms800.lst
+
+qms800p.dir: qms800p.lst
+
+qms800a.dir: qms800a.lst
+
+ti2108.dir: ti2108.lst
+
+ti2115.dir: ti2115.lst
+
+vt600w.dir: vt600w.lst
+
+wang15.dir: wang15.lst
+
+wang15fp.dir: wang15fp.lst
+
+
+# pscript.res is dependant on the following:
+#    *.pfm *.cps *.dta *.cap *.pss *.dir
+#
+# include one of each of these files in the dependancy list to make this go
+#
+
+pscript.res: pscript.rc ps.dlg $(INC)\win.h $(INC)\resource.h \
+ $(INC)\printers.h $(INC)\psoption.h idssourc.h idsprint.h \
+ idspaper.h $(INC)\dmrc.h $(INC)\pserrors.h \
+ $(INC)\version.h \
+ sli.pfm wang15fp.pss wang15fp.dir \
+ papersiz.dta nomargin.dta ngmargin.dta \
+ header.cps dlprefix.cps dlsuffix.cps headchk.cps software.cps hardware.cps \
+ ehandler.cps headeps.cps olivchst.cps rle.cps
+	rc -3 -r -e $*.rc
+
+
+# we build this resource file so we can edit the dialog boxes with
+# the dialog editor (it can't read pscript.res, it is too big)
+
+ps.res: ps.rc ps.dlg $(INC)\resource.h idssourc.h \
+ $(INC)\dmrc.h
+	rc -3 -r -e $*.rc
+

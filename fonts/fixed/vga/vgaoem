@@ -1,0 +1,8 @@
+### VGA US Oem Only
+.\VGAOEM.fon:  VGAOEM.FNT VGAOEM.RC VGAOEM.DEF VGAOEM.LNK VGAOEM
+        link4 @VGAOEM.lnk
+        rc -k VGAOEM.rc VGAOEM.exe
+##        cmpctfon vgaoem.exe vgaoem.fon
+        copy vgaoem.exe vgaoem.fon
+        del VGAOEM.exe
+        del VGAOEM.res

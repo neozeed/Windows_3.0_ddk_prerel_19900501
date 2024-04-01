@@ -1,0 +1,78 @@
+#-----------------------------------------------------------------------------#
+# WINDOWS PRINTER-TEST MAKE FILE                                              #
+#   This Make-file will build the PRNTTEST application.                       #
+#                                                                             #
+# LIBRARIES                                                                   #
+#   This application is built with SMALL MODEL LIBRARY                        #
+#                                                                             ##                                                                             #
+# BUILDING SYNTAX                                                             #
+#      MAKE [LinkExt={CVW | SMD}] [Options=$({SYMDEB | CODEVIEW | RETAIL})]   #
+#                                                                             #
+#      The default is for Compile options set for SYMDEB Linking.             #
+#-----------------------------------------------------------------------------#
+
+SYMDEB  = -c -Asnw -Gsw -Od -W2 -Zped
+
+LinkExt=SMD
+Options=$(SYMDEB)
+
+#-----------------------------------------------------------------------------#
+# COMPILER OBJECTS                                                            #
+#-----------------------------------------------------------------------------#
+PrntFram.obj : PrntFram.asm
+     masm /MX PrntFram ;
+
+Library.obj : Library.c
+     cl $(Options) -NT _TEXT    Library.c
+
+Misc.obj : Misc.c
+     cl $(Options) -NT _TEXT    Misc.c
+
+Title.obj : Title.c
+     cl $(Options) -NT _HEADER  Title.c
+
+DevCaps.obj : DevCaps.c
+     cl $(Options) -NT _HEADER  DevCaps.c
+
+Pens.obj : Pens.c
+     cl $(Options) -NT _HEADER  Pens.c
+
+Brushes.obj : Brushes.c
+     cl $(Options) -NT _HEADER  Brushes.c
+
+Fonts.obj : Fonts.c
+     cl $(Options) -NT _HEADER  Fonts.c
+
+Text.obj : Text.c
+     cl $(Options) -NT _TEXTX   Text.c
+
+Raster.obj : Raster.c
+     cl $(Options) -NT _RASTER  Raster.c
+
+Curve.obj : Curve.c
+     cl $(Options) -NT _CURVE   Curve.c
+
+Line.obj : Line.c
+     cl $(Options) -NT _LINE    Line.c
+
+Polygon.obj : Polygon.c
+     cl $(Options) -NT _POLYGON Polygon.c
+
+#-----------------------------------------------------------------------------#
+# LINK/RESOURCE OBJECTS                                                       #
+#-----------------------------------------------------------------------------#
+PrntFram.res : PrntFram.rc PrntFram.h
+     rc -r PrntFram.rc
+
+PrntFram.dll : PrntFram.def PrntFram.res
+     link @PrntFram.$(LinkExt)
+     rc PrntFram.res PrntFram.dll
+     mapsym PrntFram
+     erase PrntFram.map
+     implib PrntFram.lib PrntFram.def
+     copy *.dll ..\..\bin
+     copy *.sym ..\..\bin
+     erase *.dll
+     erase *.sym
+     erase *.map
+

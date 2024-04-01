@@ -1,0 +1,126 @@
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+
+        parmD   lpDestDev               ;--> to destination bitmap descriptor
+        parmW   DestxOrg                ;Destination origin - x coordinate
+        parmW   DestyOrg                ;Destination origin - y coordinate
+        parmD   lpSrcDev                ;--> to source bitmap descriptor
+        parmW   SrcxOrg                 ;Source origin - x coordinate
+        parmW   SrcyOrg                 ;Source origin - y coordinate
+        parmW   xExt                    ;x extent of the BLT
+        parmW   yExt                    ;y extent of the BLT
+        parmD   Rop                     ;Raster operation descriptor
+        parmD   lpPBrush                ;--> to a physical brush (pattern)
+        parmD   lpDrawMode              ;--> to a drawmode
+
+ifdef   THIS_IS_DOS_3_STUFF
+else
+        localW  ScreenSelector
+endif
+        localB  gl_phase_h              ;Horizontal phase (rotate count)
+        localB  gl_pat_row              ;Initial pattern row [0..7]
+	localB	gl_pat_col		;Initial pattern column [0..7]
+        localB  gl_direction            ;Increment/decrement flag
+INCREASING      equ     +1
+DECREASING      equ     -1
+
+        localB  local_enable_flag       ;Local copy of the enable flag
+
+        localB  gl_flag0
+F0_GAG_CHOKE            equ     10000000b       ;Going mono <==> color
+F0_COLOR_PAT            equ     01000000b       ;Use color pattern fetch code
+F0_PAT_PRESENT          equ     00100000b       ;Pattern is involved in blt
+F0_SRC_PRESENT          equ     00010000b       ;Source is involved in blt
+F0_SRC_IS_DEV           equ     00001000b       ;Source is the device
+F0_SRC_IS_COLOR         equ     00000100b       ;Source is color
+F0_DEST_IS_DEV          equ     00000010b       ;Destination is the device
+F0_DEST_IS_COLOR        equ     00000001b       ;Destination is color
+
+	localW	my_data_seg
+	localB	gl_extra_fetch		;Flag for extra first fetch
+        localW  gl_align_mask           ;Mask for fetch alignment
+	localB	gl_first_bit		;Offset to first bit in first byte
+	localB	gl_final_bit		;Offset to final bit in final byte
+        localW  gl_first_mask           ;Mask for first dest byte
+        localW  gl_final_mask           ;Mask for final dest byte
+        localW  gl_inner_count          ;# of bytes to BLT in innerloop
+        localW  gl_operands             ;Operand string
+
+	localW	gl_s_fixup		;Address of S page value
+	localW	gl_d_fixup		;Address of D page value
+;	localW	gl_p_fixup		;Address of P row/column offset
+	localW	gl_col_fixup
+	localW	gl_row_fixup
+        localW  gl_fetch                ;Start of fetch/logic operation
+        localW  gl_store                ;End   of fetch/logic operation
+        localW  gl_endop                ;End   of fetch/logic/store operation
+        localD  gl_blt_addr             ;BLT offset address
+        localD  gl_lp_pattern
+
+        localW  WorkSelector            ; selector to use
+
+        localV  gl_src,%(SIZE DEV)      ;Source device data
+        localV  gl_dest,%(SIZE DEV)     ;Destination device data
+
+        localW  cl_both_colors          ;Foreground and Background colors
+        localB  cl_brush_accel          ;Brush accelerator
+	localV	cl_a_brush,%(SIZE oem_brush_def)
+					;Munge color ==> mono or mono -> col
+
+        localW  cl_masks                ;mono=>color and/xor masks
+
+        localB  dl_addr_brush_index
+        localB  dl_moore_flags          ;More flags
+
+        localD  s_pointer               ;==> source bitmap
+        localD  d_pointer               ;==> destination bitmap
+        localD  w_pointer               ;==> work buffer
+        localB  x_page                  ;current selected page
+        localB  s_page                  ;current source page
+        localB  d_page                  ;current destination page
+
+;***************************************************************************
+;       local variables for cdsc_src and cdsc_pat_solid.   -- Irene Wu
+;***************************************************************************
+        localB  dl_banksave             ;save extension registers
+        localW  dl_srcbank              ;source bank
+        localW  dl_destbank             ;destination bank
+
+        localB  dl_ledgemask            ;left edge map mask
+        localB  dl_redgemask            ;right edge map mask
+        localW  dl_nibblecnt            ;count for full nibble copying
+
+        localW  parity_diff
+	localB	cdsc_enable_set_reset
+	localB	cdsc_data_rotate
+	localB	cdsc_mode
+	localB	cdsc_bitmask
+	localB	cdsc_map_mask
+	localB	cdsc_memory_mode
+	localB	cdsc_backlatch0
+	localB	cdsc_backlatch1
+	localB	cdsc_backlatch2
+	localB	cdsc_backlatch3
+	localB	cdsc_forelatch0
+	localB	cdsc_forelatch1
+	localB	cdsc_forelatch2
+	localB	cdsc_forelatch3
+	localB	cdsc_masked_write_enable
+	localB	cdsc_bank_select
+	localB	cdsc_extended_page
+	localB	cdsc_compatibility
+	localB	cdsc_foreback_control
+	localB	cdsc_misc
+
+        localW  vert_dir
+	localW	horz_dir
+	localB	src_page
+	localB	dst_page
+	localB	src_bank
+	localB	dst_bank
+        localB  invert_flag             ;pattern invert flag
+	localB	repeat_nibble
+
+        localW  dl_nibblecnt            ;count for full nibble copying
+;***************************************************************************
+
+

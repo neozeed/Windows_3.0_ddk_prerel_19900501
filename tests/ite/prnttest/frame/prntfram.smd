@@ -1,0 +1,5 @@
+PrntFram Library Misc            +
+Title DevCaps Pens Brushes Fonts +
+Curve Line Raster Polygon Text
+prntfram.dll /AL:16, /map/l, sdllcew libw/NOD ..\..\lib\isg_test, PrntFram.def
+

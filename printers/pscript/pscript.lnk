@@ -1,0 +1,9 @@
+getdata profile fonts kern enum text utils channel +
+enable disable heap scale dialog trig control realize +
+graph bitblt exttext stubs adobe pserrors psprompt +
+psoption charwdth strchblt control2 atstuff lmemcpy +
+dibtodev facetbl devmode devcap mgesc psinst
+pscript.drv /align:16
+pscript.map
+swinlibc slibw
+pscript.def

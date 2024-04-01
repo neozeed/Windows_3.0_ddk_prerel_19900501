@@ -1,0 +1,49 @@
+#include "NetTest.h"
+
+rcinclude nettest.dlg
+
+BUG icon bug.ico
+
+NetTest MENU
+BEGIN
+    POPUP	 "&File"
+    BEGIN
+	MENUITEM    "&Help",			      IDM_HELP
+	MENUITEM    SEPARATOR
+	MENUITEM    "E&xit",			      IDM_EXIT
+	MENUITEM    "A&bout this...",		      IDM_ABOUT
+    END
+
+    POPUP	 "&Run"
+    BEGIN
+	MENUITEM    "&Run Batch Mode...",	      IDM_BATCH
+    END
+
+    POPUP	 "&Misc"
+    BEGIN
+	MENUITEM    "&Browse Dialog Box...",	      IDM_BROWSE
+	MENUITEM    "&Driver-Specific Dialog Box...", IDM_DRIVEDLG
+	MENUITEM    "&Get Current User Name",	      IDM_USERNAME
+	MENUITEM    "&Network Capabilities",	      IDM_NETCAPS
+    END
+
+    POPUP	 "&Connections"
+    BEGIN
+	MENUITEM    "&Add Net Connection...",	      IDM_ADDNET
+	MENUITEM    "&List Network Connections",      IDM_LISTNET
+	MENUITEM    "&Remove Net Connection...",      IDM_REMOVENET
+    END
+
+    POPUP	 "&Errors"
+    BEGIN
+	MENUITEM    "&Get Most Recent Net Error",     IDM_GETERRCODE
+	MENUITEM    "&Get Net Error Text...",	      IDM_GETERRTEXT
+    END
+
+    POPUP	 "&Test"
+    BEGIN
+	MENUITEM    "&NetBios Test...", 	      IDM_NETBIOS
+	MENUITEM    "&Count File Handles",	      IDM_FILECOUNT
+    END
+
+END

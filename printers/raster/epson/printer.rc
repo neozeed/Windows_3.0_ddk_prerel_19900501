@@ -1,0 +1,92 @@
+IDD_PORTRAIT	 ICON port.ico
+IDD_LANDSCAPE	 ICON land.ico
+
+#ifndef DEVMODE_WIDEPAPER
+#define DEVMODE_WIDEPAPER 0
+#endif
+
+#ifndef DEVMODE_NO_PRINT_QUALITY
+#define DEVMODE_NO_PRINT_QUALITY 0
+#endif
+
+#ifndef COLOR
+#define COLOR 0
+#endif
+
+STRINGTABLE BEGIN
+
+    IDS_ORIENT	    "Orientation"
+    IDS_PAPER	    "Paper"
+
+#if DEVMODE_WIDEPAPER
+    IDS_WIDE	    "WideCarriage"
+#endif
+
+#if COLOR
+    IDS_COLOR	    "ColorMode"
+#endif
+
+#if DEVMODE_NO_PRINT_QUALITY
+#else
+    IDS_DRAFTMODE   "DraftMode"
+#endif
+
+    PS_LETTER	    "Letter (8\275 x 11 in)"
+    PS_A4	    "DIN A4 (210 x 297 mm)"
+    PS_FANFOLD	    "Euro Fanfold (250 x 340 mm)"
+
+#if (COLOR && defined(IBMCOLOR))
+    RS_BK	    "Black Only (Monochrome)"
+    RS_CMYK	    "Eight Color Process (CMY)"
+    RS_RGBK	    "Four Color Primary (RGB)"
+#endif
+
+END
+
+IDD_ABOUT DIALOG LOADONCALL MOVEABLE DISCARDABLE 65, 34, 175, 74
+CAPTION "About"
+STYLE WS_BORDER | DS_MODALFRAME | WS_CAPTION | WS_DLGFRAME | WS_POPUP | WS_SYSMENU
+FONT 8,"Helv"
+BEGIN
+    CONTROL "OK", IDOK, "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD, 70, 54, 35, 14
+    CONTROL "Printer Driver", IDD_ABOUT, "static", SS_CENTER | WS_CHILD, 0, 10, 175, 8
+    CONTROL "Copyright \251 Microsoft Corp. 1985-1990.", 102, "static", SS_CENTER | WS_CHILD, 0, 34, 175, 8
+    CONTROL "Version 3.00", 103, "static", SS_CENTER | WS_CHILD, 0, 22, 175, 8
+END
+
+IDD_DEVMODE DIALOG LOADONCALL MOVEABLE DISCARDABLE 18, 24, 243, 111
+CAPTION "Printer"
+STYLE WS_BORDER | DS_MODALFRAME | WS_CAPTION | WS_DLGFRAME | WS_POPUP | WS_SYSMENU
+FONT 8,"Helv"
+BEGIN
+    CONTROL "Paper Si&ze:", -1, "static", SS_RIGHT | WS_CHILD, 2, 8, 58, 10
+    CONTROL "", IDD_PAPER, "combobox", CBS_DROPDOWNLIST | WS_VSCROLL | WS_CHILD | WS_TABSTOP, 63, 7, 119, 50
+
+#if (defined(IBMCOLOR) && COLOR)
+    CONTROL "Ribbon &Type:", -1, "static", SS_RIGHT | WS_CHILD, 3, 24, 57, 10
+    CONTROL "", IDD_RIBBON, "combobox", CBS_DROPDOWNLIST | WS_VSCROLL | WS_CHILD | WS_TABSTOP, 63, 23, 119, 50
+#endif
+
+    CONTROL "Po&rtrait", IDD_PORTRAIT, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 57, 54, 55, 12
+    CONTROL "&Landscape", IDD_LANDSCAPE, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 57, 67, 55, 12
+    ICON    IDD_PORTRAIT, IDD_ORIENTICON, 25, 58, 0, 0
+    CONTROL "Orientation", -1, "button", BS_GROUPBOX | WS_CHILD, 10, 40, 106, 48
+
+#if DEVMODE_WIDEPAPER
+    CONTROL "&Wide Carriage", IDD_WIDE, "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD, 10, 92, 108, 12
+#endif
+
+#if DEVMODE_NO_PRINT_QUALITY
+#else
+    CONTROL "Print Quality", 114, "button", BS_GROUPBOX | WS_CHILD, 124, 40, 58, 48
+    CONTROL "L&ow", IDD_LOW, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 133, 54, 37, 12
+    CONTROL "Hi&gh", IDD_HIGH, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 133, 67, 35, 12
+#endif
+
+    CONTROL "OK", IDOK, "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD, 200, 7, 35, 14
+    CONTROL "Cancel", IDCANCEL, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 200, 25, 35, 14
+#if 0
+    CONTROL "&Help...", IDD_HELP, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 200, 43, 35, 14
+#endif
+    CONTROL "&About...", IDD_ABOUT, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 200, 61, 35, 14
+END

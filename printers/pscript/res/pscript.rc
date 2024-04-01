@@ -1,0 +1,157 @@
+/**[f******************************************************************
+ * pre.rc -
+ *
+ * Copyright (C) 1988 Aldus Corporation.  All rights reserved.
+ * Company confidential.
+ *
+ * mod history:
+ *	chrisg, 88-dec-03, getting rid of stupidity
+ *
+ **f]*****************************************************************/
+
+#include "..\win.h"
+#include "..\resource.h"
+#include "..\printers.h"
+#include "..\psoption.h"
+#include "..\psprompt.h"
+#include "..\dmrc.h"
+#include "..\pserrors.h"
+#include "..\version.h"
+
+/* this comes from the dummy res file ps.res (it can be loaded into the
+ * dialog editor) */
+
+L	ICON	LANDSCAP.ICO
+P	ICON	portrait.ico
+
+#include "ps.dlg"
+#include "printcap.rc"
+#include "fonts.rc"
+
+/* compressed postscript */
+
+PS_HEADER   	PS_DATA	LOADONCALL DISCARDABLE header.cps
+PS_DL_PREFIX	PS_DATA	LOADONCALL DISCARDABLE dlprefix.cps
+PS_DL_SUFFIX	PS_DATA	LOADONCALL DISCARDABLE dlsuffix.cps
+PS_1	    	PS_DATA	LOADONCALL DISCARDABLE headchk.cps
+PS_2           	PS_DATA LOADONCALL DISCARDABLE headeps.cps
+PS_SOFTWARE 	PS_DATA	LOADONCALL DISCARDABLE software.cps
+PS_HARDWARE 	PS_DATA	LOADONCALL DISCARDABLE hardware.cps
+PS_EHANDLER 	PS_DATA	LOADONCALL DISCARDABLE ehandler.cps
+PS_OLIVCHSET	PS_DATA LOADONCALL DISCARDABLE olivchst.cps
+PS_UNPACK	PS_DATA LOADONCALL DISCARDABLE rle.cps
+PS_CIMAGE	PS_DATA LOADONCALL DISCARDABLE cimage.cps
+
+
+/* PAPER structs margin data */
+
+#include "papersiz.rc"		/* paper sizes data */
+
+STRINGTABLE
+BEGIN
+	DMBIN_BASE + DMBIN_UPPER		"Upper Tray"
+	DMBIN_BASE + DMBIN_ONLYONE		"Main Tray"
+	DMBIN_BASE + DMBIN_LOWER		"Lower Tray"
+	DMBIN_BASE + DMBIN_MIDDLE		"Middle Tray"
+	DMBIN_BASE + DMBIN_LARGEFMT		"Large Format"
+	DMBIN_BASE + DMBIN_LARGECAPACITY	"Large Capacity"
+	DMBIN_BASE + DMBIN_ANYSMALLFMT		"Any Small Format"
+	DMBIN_BASE + DMBIN_ANYLARGEFMT		"Any Large Format"
+	DMBIN_BASE + DMBIN_AUTO			"Auto Select"
+	DMBIN_BASE + DMBIN_ENVMANUAL		"Envelope Manual"
+	DMBIN_BASE + DMBIN_ENVELOPE		"Envelope Tray"
+	DMBIN_BASE + DMBIN_MANUAL		"Manual Feed"
+
+	// ANSI Fractions: 1/4 = \274,  1/2 = \275,  3/4 = \276 (octal):
+
+	DMPAPER_BASE + DMPAPER_LETTER		"Letter 8 \275 x 11 in"
+	DMPAPER_BASE + DMPAPER_LETTERSMALL	"Letter Small 8 \275 x 11 in"
+	DMPAPER_BASE + DMPAPER_TABLOID		"Tabloid 11 x 17 in"
+	DMPAPER_BASE + DMPAPER_LEDGER		"Ledger 17 x 11 in"
+	DMPAPER_BASE + DMPAPER_LEGAL		"Legal 8 \275 x 14 in"
+	DMPAPER_BASE + DMPAPER_STATEMENT	"Statement 5 \275 x 8 \275 in"
+	DMPAPER_BASE + DMPAPER_EXECUTIVE	"Executive 7 \275 x 10 in"
+	DMPAPER_BASE + DMPAPER_A3		"A3 297 x 420 mm"
+	DMPAPER_BASE + DMPAPER_A4		"A4 210 x 297 mm"
+	DMPAPER_BASE + DMPAPER_A4SMALL		"A4 Small 210 x 297 mm"
+	DMPAPER_BASE + DMPAPER_A5		"A5 148 x 210 mm"
+	DMPAPER_BASE + DMPAPER_B4		"B4 250 x 354"
+	DMPAPER_BASE + DMPAPER_B5		"B5 182 x 257 mm"
+	DMPAPER_BASE + DMPAPER_FOLIO		"Folio 8 \275 x 13 in"
+	DMPAPER_BASE + DMPAPER_QUARTO		"Quarto 215 x 275 mm"
+	DMPAPER_BASE + DMPAPER_10X14		"10x14 in"
+	DMPAPER_BASE + DMPAPER_11X17		"11x17 in"
+	DMPAPER_BASE + DMPAPER_NOTE		"Note 8 \275 x 11 in"
+
+	DMPAPER_BASE + DMPAPER_ENV_9		"Envelope #9 3 7/8 x 8 7/8"
+	DMPAPER_BASE + DMPAPER_ENV_10		"Envelope #10 4 1/8 x 9 \275"
+	DMPAPER_BASE + DMPAPER_ENV_11		"Envelope #11 4 \275 x 10 3/8"
+	DMPAPER_BASE + DMPAPER_ENV_12		"Envelope #12 4 \276 x 11"
+	DMPAPER_BASE + DMPAPER_ENV_14		"Envelope #14 5 x 11 \275"
+
+	DMPAPER_BASE + DMPAPER_LETTER_EXTRA	"Letter Extra 9 \275 x 12 in"
+	DMPAPER_BASE + DMPAPER_LEGAL_EXTRA 	"Legal Extra 9 \275 x 15 in"
+	DMPAPER_BASE + DMPAPER_TABLOID_EXTRA	"Tabloid Extra 11.69 x 18 in"
+	DMPAPER_BASE + DMPAPER_A4_EXTRA     	"A4 Extra 9.27 x 12.69 in"
+
+	IDS_WINDOWS		"windows"
+	IDS_DEVICE		"device"
+	IDS_PAPERX		"feed%d"
+	IDS_PAPERSOURCE		"source"
+	IDS_ORIENTATION		"orient"
+	IDS_COLOR		"color"
+	IDS_JOBTIMEOUT		"timeout"
+	IDS_MARGINS  		"margins"
+	IDS_HEADER		"header"
+
+	IDS_DEFAULT_USER	"Windows"
+	IDS_APPLETALK		"AppleTalk"
+	IDS_NULL		" "
+	IDS_PREPARE		"status: preparing data."
+	IDS_ATMODULEFILE	"AppleTalkFile"
+	IDS_DEFAULT_ATFILE	":"
+	IDS_DEFAULT_ATMODNAME	"appletlk.dll"
+	IDS_EPT		  	"EPT"
+        IDS_BINARYIMAGE		"binary port"
+	IDS_EXTPRINTERS		"External Printers"
+	IDS_PRINTER		"printer%d"
+	IDS_FILE		"FILE:"
+
+	IDS_ERROR_CAPTION_GENERAL	"Error"
+	IDS_ERROR_CAPTION_DATA		"Data error"
+	IDS_ERROR_MESSAGE_GENERAL	"PostScript driver error"
+	IDS_ERROR_MESSAGE_CORRUPT	"Corrupt PostScript driver"
+	IDS_ERROR_MESSAGE_COPIES	"Value for \042Uncollated copies\042 out of range"
+	IDS_ERROR_MESSAGE_JOBTIMEOUT	"Value for \042Job timeout\042 out of range"
+	IDS_ERROR_MESSAGE_DOWNLOAD	"Unable to download now."
+	IDS_ERROR_MESSAGE_PORT		"Port not available or file not accessible"
+	IDS_ERROR_MESSAGE_AT		"AppleTalk interface module is not available or the version is incorrect."
+
+	IDS_PROMPT_CAPTION		"PostScript Printer"
+	IDS_PROMPT_MESSAGE_GENERAL	"Error"
+	IDS_PROMPT_MESSAGE_HEADER	"Download the PostScript header now?"
+	IDS_PROMPT_MESSAGE_HANDSHAKE	"Permanently alter the printer's handshaking?"
+	IDS_PROMPT_MESSAGE_EHANDLER	"Download the PostScript error handler now?"
+
+	IDS_EPSHEAD "%%!PS-Adobe-2.0 EPSF-2.0\012"
+	IDS_EPSBBOX "%%%%BoundingBox: %d %d %d %d\012"
+
+	IDS_PSHEAD "%%!PS-Adobe-2.0\012"
+
+	IDS_PSTITLE "%%%%Creator: Windows PSCRIPT\012%%%%Title: %s\012"
+
+	IDS_PSJOB  "statusdict begin statusdict /jobname (%s) put end\012"
+	IDS_PSTIMEOUT "statusdict begin %d setjobtimeout end\012"
+	IDS_ALREADYINSTALLED "This printer has already been installed, replace with new?"
+	IDS_ADDPRINTER	"Add Printer"
+	IDS_INSTSUCCESS	"Installation successful."
+	IDS_INSTFAIL	"Copy failed."
+	IDS_SETSCREENANGLE "currentscreen 3 1 roll pop %d 10 div 3 -1 roll setscreen\n"
+
+	IDS_OLIV "Olivetti LP 5000"
+	IDS_LZLIB	"lzexpand.dll"
+	IDS_LZCOPY	"LZCopy"
+END
+
+
+

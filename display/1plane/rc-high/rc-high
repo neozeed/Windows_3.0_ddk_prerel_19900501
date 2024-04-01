@@ -1,0 +1,72 @@
+#   Window's Sample Display Drivers.
+#
+#   High resolution monochrome resources
+
+
+cconfig.obj:    cconfig.asm
+    masm -T cconfig;
+
+bconfig.obj:    bconfig.asm
+    masm -T bconfig;
+
+cconfig.bin:    cconfig.obj
+    link cconfig ,cconfig;
+    exe2bin cconfig
+    erase cconfig.exe
+
+bconfig.bin:   bconfig.obj
+    link bconfig ,bconfig;
+    exe2bin bconfig
+    erase bconfig.exe
+
+c-ctab.obj:  c-ctab.asm
+    masm -T c-ctab;
+
+c-ctab.bin:  c-ctab.obj
+    link c-ctab ,c-ctab;
+    exe2bin c-ctab
+    erase c-ctab.exe
+
+bw-ctab.obj:  bw-ctab.asm
+    masm -T bw-ctab;
+
+bw-ctab.bin:  bw-ctab.obj
+    link bw-ctab ,bw-ctab;
+    exe2bin bw-ctab
+    erase bw-ctab.exe
+
+fonts.obj:	fonts.asm
+    masm -T fonts;
+
+fonts.bin:	fonts.obj
+    link fonts;
+    exe2bin fonts
+    erase fonts.exe
+
+color.res:      rc-high.rc   cconfig.bin  c-ctab.bin            \
+		normal.cur   ibeam.cur	  wait.cur    cross.cur   \
+		up.cur	     size.cur	  icon.cur    sample.ico  \
+		hand.ico     ques.ico	  bang.ico    note.ico	  \
+                fonts.bin    sizenwse.cur sizenesw.cur sizewe.cur \
+                sizens.cur
+    copy cconfig.bin config.bin
+    copy c-ctab.bin  colortab.bin
+    rc -r rc-high.rc
+    copy rc-high.res color.res
+    erase config.bin
+    erase colortab.bin
+    erase rc-high.res
+
+blkwhite.res:   rc-high.rc   bconfig.bin  bw-ctab.bin            \
+		normal.cur   ibeam.cur	  wait.cur    cross.cur   \
+		up.cur	     size.cur	  icon.cur    sample.ico  \
+		hand.ico     ques.ico	  bang.ico    note.ico	  \
+                fonts.bin    sizenwse.cur sizenesw.cur sizewe.cur \
+                sizens.cur
+    copy bconfig.bin config.bin
+    copy bw-ctab.bin  colortab.bin
+    rc -r rc-high.rc
+    copy rc-high.res blkwhite.res
+    erase config.bin
+    erase colortab.bin
+    erase rc-high.res

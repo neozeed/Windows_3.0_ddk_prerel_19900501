@@ -1,0 +1,98 @@
+	title	Face Name Table
+	page	,132
+;/**[f******************************************************************
+; * facetbl.a -
+; *
+; * Copyright (C) 1989-1990 Microsoft Corporation.  All rights reserved.
+; * Company confidential.
+; *
+; **f]*****************************************************************/
+;
+;    2-24-89	jimmat	Converted from a resource to a table in the
+;			_REALIZE code segement to speed up the
+;			aliasFace() routine.  Also, this cuts out a lot
+;			of code that used to load/lock/unlock the table.
+
+		.xlist
+		include cmacros.inc
+
+incLogical	equ	1
+		include gdidefs.inc
+		.list
+
+
+		public	FT_NUMFACES, FT_DEFAULTFACE,  FT_FACETABLE
+
+_REALIZE	segment word public 'code'
+
+FT_NUMFACES	db	56			;9 entries in the table
+
+FT_DEFAULTFACE	db	"Courier",0		;Default Face name
+
+FT_FACETABLE	db	FF_ROMAN,1,"Tms Rmn",0
+		db	FF_ROMAN,1,"Times Roman",0
+		db	FF_ROMAN,1,"Times",0
+		db	FF_ROMAN,1,"TmsRmn",0
+		db	FF_ROMAN,1,"Varitimes",0
+		db	FF_ROMAN,1,"Dutch",0
+		db	FF_ROMAN,1,"CG Times (WN)",0
+		db	FF_ROMAN,1,"CG Times (US)",0
+		db	FF_ROMAN,1,"CG Times (R8)",0
+		db	FF_ROMAN,1,"CG Times (E1)",0
+
+		db	FF_ROMAN,2,"Century Schoolbook",0
+		db	FF_ROMAN,2,"CG Cent Schl (WN)",0
+		db	FF_ROMAN,2,"CG Cent Schl (US)",0
+		db	FF_ROMAN,2,"CG Cent Schl (R8)",0
+		db	FF_ROMAN,2,"CG Cent Schl (E1)",0
+
+		db	FF_ROMAN,3,"ITC Garamond",0
+		db	FF_ROMAN,3,"Garamond (WN)",0
+		db	FF_ROMAN,3,"Garamond (US)",0
+		db	FF_ROMAN,3,"Garamond (R8)",0
+		db	FF_ROMAN,3,"Garamond (E1)",0
+
+		db	FF_ROMAN,4,"Palatino",0
+		db	FF_ROMAN,4,"CG Palacio (WN)",0
+		db	FF_ROMAN,4,"CG Palacio (US)",0
+		db	FF_ROMAN,4,"CG Palacio (R8)",0
+		db	FF_ROMAN,4,"CG Palacio (E1)",0
+
+		db	FF_ROMAN,5,"Bodini",0
+		db	FF_ROMAN,5,"Bauer Bodini",0
+		db	FF_ROMAN,5,"CG Bodini (WN)",0
+		db	FF_ROMAN,5,"CG Bodini (US)",0
+		db	FF_ROMAN,5,"CG Bodini (R8)",0
+		db	FF_ROMAN,5,"CG Bodini (E1)",0
+		db	FF_ROMAN,5,"Bodini Compressed",0
+
+		db	FF_ROMAN,6,"Goudy Old Style",0
+		db	FF_ROMAN,6,"Goudy",0
+		db	FF_ROMAN,6,"CG Goudy (WN)",0
+		db	FF_ROMAN,6,"CG Goudy (US)",0
+		db	FF_ROMAN,6,"CG Goudy (R8)",0
+		db	FF_ROMAN,6,"CG Goudy (E1)",0
+
+		db	FF_ROMAN,7,"Melior",0
+		db	FF_ROMAN,7,"CG Melizza (WN)",0
+		db	FF_ROMAN,7,"CG Melizza (US)",0
+		db	FF_ROMAN,7,"CG Melizza (R8)",0
+		db	FF_ROMAN,7,"CG Melizza (E1)",0
+
+		db	FF_SWISS,8,"Helv",0
+		db	FF_SWISS,8,"Helvetica",0
+		db	FF_SWISS,8,"Swiss",0
+		db	FF_SWISS,8,"CG Triumv (WN)",0
+		db	FF_SWISS,8,"CG Triumv (US)",0
+		db	FF_SWISS,8,"CG Triumv (R8)",0
+		db	FF_SWISS,8,"CG Triumv (E1)",0
+
+		db	FF_SWISS,8,"Optima",0
+		db	FF_SWISS,8,"CG Omega (WN)",0
+		db	FF_SWISS,8,"CG Omega (US)",0
+		db	FF_SWISS,8,"CG Omega (R8)",0
+		db	FF_SWISS,8,"CG Omega (E1)",0
+
+_REALIZE	ends
+
+		end

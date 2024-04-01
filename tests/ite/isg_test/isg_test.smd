@@ -1,0 +1,4 @@
+isg_test library screen bitmap object file test datetime printer     +
+devinfo logfile misc verify proc
+isg_test.dll /AL:16, /map/l,/NOD sdllcew libw, isg_test.def
+

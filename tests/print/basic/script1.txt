@@ -1,0 +1,47 @@
+BASIC NOTES
+
+
+Note, the basic tests will be done with BASIC.CAL, BASIC.CRD, BASIC.TXT BASIC.PCX BASIC.TRM and BASIC.WRI. For each box below, a Y or N will be entered indicating if the application performed the function properly.  If the program doesn't have a given feature, put N/A in the box.
+
+
+TEST CASES
+
+
+               	CARDFILE	NOTEPAD	PAINTBRUSH	TERMINAL	WRITE	CALENDEAR
+
+               	BASIC1.CRD	BASIC.TXT		BASIC.TXT	BASIC.WRI	BASIC.CAL
+	BASIC2.CRD				MAINTEST.WRI
+
+
+Footer
+Header
+Landscape
+Portrait
+Num copies
+Spooler on
+Spooler paus/resm
+Spooler off
+Cancl prn via app
+Network port prn
+Legal Portrait
+Legal Landscape
+
+
+
+               	CARDFILE	NOTEPAD	PAINTBRUSH	TERMINAL	WRITE	CALENDEAR
+
+               	BASIC1.CRD	BASIC.TXT		BASIC.TXT	BASIC.WRI	BASIC.CAL
+	BASIC2.CRD				MAINTEST.WRI
+
+Out of paper
+Printer is offline or off
+via spooler and terminate
+Tray not in
+Unplugd @ computer/prn
+
+
+
+SUMMARY
+
+SUMMARY NOTES:
+

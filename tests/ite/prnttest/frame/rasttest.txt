@@ -1,0 +1,28 @@
+RASTER TEST (StretchBlt Test)
+
+TEST
+     This tests the outputing of bitmaps to the printer driver.  It should only
+     be run if the device is capable of supportinng raster output.  The bitamp
+     is stored as an application resource.  It is loaded by GDI, then output
+     to the printer in the form of a STRETCHBLT() call.  The resource bitmap is
+     stored as a 72x72 pixel image.  This is very small in printer device
+     coordinates, so it is stretched to show a more reasonable depiction.
+
+     If the driver has the capability to stretch the image, then it will do
+     all the work.  Otherwise, GDI performs the strecthing in memory before it
+     is output to the printer.  Check the Device Capabilities Header to
+     determine if the StretchBlt() function is supported.
+
+     The test will perform the following on the bitmap:
+          a) Stretch image in device discrete increments.
+          b) Stretch image vertically.
+          c) Stretch image horizontally.
+          d) Stretch image in non discrete increments.
+
+ASSUMPTIONS
+     No assumptions.
+
+EXPECTED RESULTS
+     You should expect to see 4 bitmaps, each one showing a different stretch
+     facter.
+

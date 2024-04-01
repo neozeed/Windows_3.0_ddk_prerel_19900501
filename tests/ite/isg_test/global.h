@@ -1,0 +1,2 @@
+HANDLE   hLibInst;
+

@@ -1,0 +1,56 @@
+
+#
+# Define alias macros for code generators
+#
+AS		= masm
+CC		= cc
+EXE2BIN 	= exe2bin
+LINK		= link
+MAPSYM		= mapsym
+
+
+#
+# Define flag macros
+#
+AFLAGS		= -i.\ -i..\ -i..\..\ -v
+AFLAGS2 	=
+CFLAGS		=
+LFLAGS		=
+MFLAGS		=
+
+
+#
+# Define environment dependent and miscellaneous macros
+#
+LIBS		=
+OBJECTS 	=
+
+
+#
+# Define default inference rules
+#
+.asm.obj:
+		$(AS) $(AFLAGS) $(AFLAGS2) $*;
+
+
+#
+# Define dependencies
+#
+makeparent:
+			cd ..
+			make AFLAGS2=$(AFLAGS2) grabbers
+			cd cgaherc
+
+bepaint.obj:		bepaint.asm
+
+blockdev.obj:		blockdev.asm
+
+edsave.obj:		edsave.asm
+
+gsmode.obj:		gsmode.asm
+
+setswap.obj:		setswap.asm
+
+srscr.obj:		srscr.asm
+
+

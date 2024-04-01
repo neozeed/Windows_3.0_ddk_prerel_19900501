@@ -1,0 +1,664 @@
+/**[f******************************************************************
+ * sphppcl.rc - 
+ *
+ * Copyright (C) 1988 Aldus Corporation.  All rights reserved.
+ * Company confidential.
+ *
+ **f]*****************************************************************/
+
+#include "nocrap.h"
+#undef NOCTLMGR
+#undef NOWINSTYLES
+#include "windows.h"
+#include "resource.h"
+#include "strings.h"
+#include "version.h"
+
+/* A-Cartridge
+ */
+1      MYFONT LOADONCALL MOVEABLE DISCARDABLE co120um0.fnt
+2      MYFONT LOADONCALL MOVEABLE DISCARDABLE co120ub0.fnt
+3      MYFONT LOADONCALL MOVEABLE DISCARDABLE co120il0.fnt
+4      MYFONT LOADONCALL MOVEABLE DISCARDABLE lp085ull.fnt
+
+/* B-Cartridge
+ */
+5      MYFONT LOADONCALL MOVEABLE DISCARDABLE t108rpu.fnt
+6      MYFONT LOADONCALL MOVEABLE DISCARDABLE t110rpu.fnt
+7      MYFONT LOADONCALL MOVEABLE DISCARDABLE t110bpu.fnt
+8      MYFONT LOADONCALL MOVEABLE DISCARDABLE t110ipu.fnt
+9      MYFONT LOADONCALL MOVEABLE DISCARDABLE h014bpu.fnt
+
+/* F-Cartridge
+ */
+10     MYFONT LOADONCALL MOVEABLE DISCARDABLE t208rpr.fnt
+11     MYFONT LOADONCALL MOVEABLE DISCARDABLE t210rpr.fnt
+12     MYFONT LOADONCALL MOVEABLE DISCARDABLE t210bpr.fnt
+13     MYFONT LOADONCALL MOVEABLE DISCARDABLE t210ipr.fnt
+14     MYFONT LOADONCALL MOVEABLE DISCARDABLE h114bpr.fnt
+
+/* Z-Cartridge
+ */
+15     MYFONT LOADONCALL MOVEABLE DISCARDABLE t408rr8.fnt
+16     MYFONT LOADONCALL MOVEABLE DISCARDABLE t410rr8.fnt
+17     MYFONT LOADONCALL MOVEABLE DISCARDABLE t410br8.fnt
+18     MYFONT LOADONCALL MOVEABLE DISCARDABLE t410ir8.fnt
+19     MYFONT LOADONCALL MOVEABLE DISCARDABLE t412rr8.fnt
+20     MYFONT LOADONCALL MOVEABLE DISCARDABLE t412br8.fnt
+21     MYFONT LOADONCALL MOVEABLE DISCARDABLE t412ir8.fnt
+22     MYFONT LOADONCALL MOVEABLE DISCARDABLE t414br8.fnt
+23     MYFONT LOADONCALL MOVEABLE DISCARDABLE h408rr8.fnt
+24     MYFONT LOADONCALL MOVEABLE DISCARDABLE h410rr8.fnt
+25     MYFONT LOADONCALL MOVEABLE DISCARDABLE h410br8.fnt
+26     MYFONT LOADONCALL MOVEABLE DISCARDABLE h410ir8.fnt
+27     MYFONT LOADONCALL MOVEABLE DISCARDABLE h412rr8.fnt
+28     MYFONT LOADONCALL MOVEABLE DISCARDABLE h412br8.fnt
+29     MYFONT LOADONCALL MOVEABLE DISCARDABLE h412ir8.fnt
+30     MYFONT LOADONCALL MOVEABLE DISCARDABLE h414br8.fnt
+
+/* D/M Cartridges
+ */
+31     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100um0.fnt
+32     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100ub0.fnt
+33     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100im0.fnt
+
+/* Resident LinePrinter
+ */
+34     MYFONT LOADONCALL MOVEABLE DISCARDABLE lp085um0.fnt
+
+/* Z-Cartridge LinePrinter
+ */
+35     MYFONT LOADONCALL MOVEABLE DISCARDABLE lp085ume.fnt
+
+/* E/N Cartridges
+ */
+36     MYFONT LOADONCALL MOVEABLE DISCARDABLE lg120um0.fnt
+37     MYFONT LOADONCALL MOVEABLE DISCARDABLE lg120ub0.fnt
+38     MYFONT LOADONCALL MOVEABLE DISCARDABLE lg120im0.fnt
+
+/* G-Cartridge
+ */
+39     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100umu.fnt
+40     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100ubu.fnt
+41     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100imu.fnt
+42     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe070umu.fnt
+43     MYFONT LOADONCALL MOVEABLE DISCARDABLE ld120umu.fnt
+
+/* C-Cartridge
+ */
+44      MYFONT LOADONCALL MOVEABLE DISCARDABLE co120im0.fnt
+
+/* H-Cartridge
+ */
+45     MYFONT LOADONCALL MOVEABLE DISCARDABLE co120umu.fnt
+46     MYFONT LOADONCALL MOVEABLE DISCARDABLE co120ubu.fnt
+47     MYFONT LOADONCALL MOVEABLE DISCARDABLE co120imu.fnt
+48     MYFONT LOADONCALL MOVEABLE DISCARDABLE ld121umu.fnt
+
+/* R-Cartridge
+ */
+49     MYFONT LOADONCALL MOVEABLE DISCARDABLE pr180ubu.fnt
+50     MYFONT LOADONCALL MOVEABLE DISCARDABLE pr160ubu.fnt
+51     MYFONT LOADONCALL MOVEABLE DISCARDABLE pr140ubu.fnt
+52     MYFONT LOADONCALL MOVEABLE DISCARDABLE lg140umu.fnt
+53     MYFONT LOADONCALL MOVEABLE DISCARDABLE pc140ubu.fnt
+54     MYFONT LOADONCALL MOVEABLE DISCARDABLE ld140umu.fnt
+
+/* T-Cartridge (fixed pitch font)
+ */
+55     MYFONT LOADONCALL MOVEABLE DISCARDABLE tl120ubu.fnt
+
+/* U-Cartridge (fixed pitch font)
+ */
+56     MYFONT LOADONCALL MOVEABLE DISCARDABLE lg095umu.fnt
+
+/* V-Cartridge (fixed pitch font)
+ */
+57     MYFONT LOADONCALL MOVEABLE DISCARDABLE lg096umu.fnt
+
+/* Y-Cartridge
+ */
+58     MYFONT LOADONCALL MOVEABLE DISCARDABLE co120ump.fnt
+59     MYFONT LOADONCALL MOVEABLE DISCARDABLE co120ubp.fnt
+60     MYFONT LOADONCALL MOVEABLE DISCARDABLE co120imp.fnt
+61     MYFONT LOADONCALL MOVEABLE DISCARDABLE lp085ump.fnt
+
+/* T-Cartridge
+ */
+62     MYFONT LOADONCALL MOVEABLE DISCARDABLE hlvr6.fnt
+63     MYFONT LOADONCALL MOVEABLE DISCARDABLE hlvr8.fnt
+64     MYFONT LOADONCALL MOVEABLE DISCARDABLE hlvb8.fnt
+65     MYFONT LOADONCALL MOVEABLE DISCARDABLE hlvb10.fnt
+66     MYFONT LOADONCALL MOVEABLE DISCARDABLE hlvb12.fnt
+67     MYFONT LOADONCALL MOVEABLE DISCARDABLE hlvb14.fnt
+
+/* U/V-Cartridge
+ */
+68     MYFONT LOADONCALL MOVEABLE DISCARDABLE h260rs.fnt
+69     MYFONT LOADONCALL MOVEABLE DISCARDABLE h280rs.fnt
+70     MYFONT LOADONCALL MOVEABLE DISCARDABLE h210bs.fnt
+71     MYFONT LOADONCALL MOVEABLE DISCARDABLE h212bs.fnt
+72     MYFONT LOADONCALL MOVEABLE DISCARDABLE h214bs.fnt
+
+
+/* Kyocera Resident Fonts 
+*/
+73     MYFONT LOADONCALL MOVEABLE DISCARDABLE khv06pl.fnt
+74     MYFONT LOADONCALL MOVEABLE DISCARDABLE khv08pl.fnt
+75     MYFONT LOADONCALL MOVEABLE DISCARDABLE khv10bpl.fnt
+76     MYFONT LOADONCALL MOVEABLE DISCARDABLE khv12bpl.fnt
+77     MYFONT LOADONCALL MOVEABLE DISCARDABLE khv14bpl.fnt
+78     MYFONT LOADONCALL MOVEABLE DISCARDABLE ktr08pl.fnt
+79     MYFONT LOADONCALL MOVEABLE DISCARDABLE ktr10pl.fnt
+80     MYFONT LOADONCALL MOVEABLE DISCARDABLE ktr10ipl.fnt
+81     MYFONT LOADONCALL MOVEABLE DISCARDABLE ktr10bpl.fnt
+82     MYFONT LOADONCALL MOVEABLE DISCARDABLE kel07pl.fnt
+83     MYFONT LOADONCALL MOVEABLE DISCARDABLE kel10pl.fnt
+84     MYFONT LOADONCALL MOVEABLE DISCARDABLE klp07pl.fnt
+85     MYFONT LOADONCALL MOVEABLE DISCARDABLE klp09pl.fnt
+86     MYFONT LOADONCALL MOVEABLE DISCARDABLE kgo12pl.fnt
+87     MYFONT LOADONCALL MOVEABLE DISCARDABLE kgo12bpl.fnt
+88     MYFONT LOADONCALL MOVEABLE DISCARDABLE kco12pl.fnt
+89     MYFONT LOADONCALL MOVEABLE DISCARDABLE kco12il.fnt
+90     MYFONT LOADONCALL MOVEABLE DISCARDABLE kel10il.fnt
+91     MYFONT LOADONCALL MOVEABLE DISCARDABLE kgo12il.fnt
+92     MYFONT LOADONCALL MOVEABLE DISCARDABLE klp09il.fnt
+
+/* J-Cartridge
+ */
+93     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100um1.fnt
+94     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100um2.fnt
+95     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100um3.fnt
+96     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100ub1.fnt
+97     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe100im1.fnt
+98     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe070um1.fnt
+99     MYFONT LOADONCALL MOVEABLE DISCARDABLE pe070um2.fnt
+
+/* K-Cartridge
+ */
+100    MYFONT LOADONCALL MOVEABLE DISCARDABLE t18u0s.fnt
+101    MYFONT LOADONCALL MOVEABLE DISCARDABLE t18ubs.fnt
+102    MYFONT LOADONCALL MOVEABLE DISCARDABLE t18uis.fnt
+103    MYFONT LOADONCALL MOVEABLE DISCARDABLE t18u8s.fnt
+104    MYFONT LOADONCALL MOVEABLE DISCARDABLE t18m0s.fnt
+105    MYFONT LOADONCALL MOVEABLE DISCARDABLE t18m8s.fnt
+106    MYFONT LOADONCALL MOVEABLE DISCARDABLE t15u0s.fnt
+
+
+STRINGTABLE BEGIN
+	NULL_PORT	"Ninguno"
+
+	/*error messages*/
+	ERROR_BASE	"Error de impresión PCL"
+	ERROR_BASE+1 	"LIMITE DE MEMORIA: Demasiados tipos cargados permanentemente"
+
+	WARNING_BASE	"Advertencia de impresión PCL"
+	/*use the following when max fonts per page exceeded or otherwise
+	unable to download font for current page*/
+	WARNING_BASE+1	"LIMITE DE TIPOS CARGABLES EN UNA PAGINA: se sustituirán tipos"
+
+	/* Stuff that we read from the win.ini file
+	 */
+	WININI_PAPER		"paper"
+	WININI_COPIES		"copies"
+	WININI_ORIENT		"orient"
+	WININI_PRTRESFAC	"prtresfac"
+	WININI_TRAY		"tray"
+	WININI_PRTINDEX		"prtindex"
+	WININI_NUMCART		"numcart"
+	WININI_CARTINDEX	"cartindex"
+	WININI_CARTINDEX1	"cartindex1"
+	WININI_CARTINDEX2	"cartindex2"
+	WININI_CARTINDEX3	"cartindex3"
+	WININI_CARTINDEX4	"cartindex4"
+	WININI_CARTINDEX5	"cartindex5"
+	WININI_CARTINDEX6	"cartindex6"
+	WININI_CARTINDEX7	"cartindex7"
+
+	FSUM_NAME		"FontSummary"
+	FSUM_MEMLIMIT		"MaxFontSummary"
+	FSUM_FILEPREFIX		"FS"
+	FSUM_FILEEXTENSION	"PCL"
+
+	/* This message can be up to 8 lines in length.
+	 */
+	FSUM_MESSAGE+0		"This file was created by the "
+	FSUM_MESSAGE+1		"Windows' PCL/LaserJet printer "
+	FSUM_MESSAGE+2		"driver, DO NOT ALTER ITS CONTENTS.  "
+	FSUM_MESSAGE+3		"Borre este archivo quando desee "
+	FSUM_MESSAGE+4		"que el controlador reconstruya "
+	FSUM_MESSAGE+5		"su información sobre tipos de letra."
+
+	/* % sign will be replaced by number of cartridges
+	 * the user may select
+	 */
+	IDS_NUMCARTS		"Cartuchos (% max):"
+	IDS_NOCARTS		"Ningun cartucho"
+
+#ifdef DIALOG_MESSAGES
+
+	/* PMNAME should be the caption at the top of PageMaker
+	 * Window when PageMaker is started.
+	 */
+	IDS_PMNAME		"PageMaker"
+	IDS_POINT		"point"
+	IDS_BOLD		"bold"
+	IDS_ITALIC		"italic"
+#endif
+
+	/*in the strings that follow, the % represents the character that is 
+	used to separate fields; it can be any character that does not appear
+	in the fields*/
+	
+/*	PRINTER NAMES
+ *	format of printer string is:
+ *	"%devname%availmem%realmem%caps%romind%romcount%numcart"
+ *	where:
+ *	   devname  is the printer name string
+ *	   availmem is a number representing the available memory in KB
+ *	   realmem  is a string representing the memory that the printer
+ *	   	"offically" has (and which the user is familiar with); it
+ *		is printed next to the default button in the printer dialog
+ *	   caps	 is a bit field of printer capabilities
+ *	   romind	is an integer representing the index of the first
+ *	   	rom font in the escape string list
+ *	   romcount  is an integer representing the number of rom fonts
+ *	   	in the escape string list
+ *	   maxpgsoft  is an integer representing the maximum number of soft
+ *		fonts that can be used per page
+ *	   maxsoft    is an integer representing the maximum number of soft
+ *		fonts that can be downloaded
+ *         numcart    is the number of cartridges that may be selected
+ * 		at one time for this printer (maximum allowable number is 8)
+ *
+ * printer capabilities:
+ *	0x0001	printer has capabilities of a laserjet
+ *	0x0002	printer has capabilities of a laserjet plus
+ *	0x0004	printer has capabilities of a laserjet 500
+ *	0x0008	lower tray is handled
+ *	0x0010	printer does *not* support downloadable fonts
+ *	0x0020	manual feed is *not* supported
+ *	0x0040	printer cannot support internal bit stripping
+ *	0X0080	printer can handle B5 paper
+ *	0x0100	printer emulates an hplaserjet
+ *	0X0200	printer can handle Exec paper
+ *
+ * note: the first item in the list is the default when the driver cannot
+ * find defaults in win.ini
+ */
+	
+	DEVNAME_BASE	"%HP LaserJet%65%128 KB%209%0%1%0%0%1"
+	DEVNAME_BASE+1	"%HP LaserJet Plus%395%512 KB%130%0%2%16%32%1"
+	DEVNAME_BASE+2	"%HP LaserJet 500+%395%512 KB%140%0%2%16%32%1"
+	DEVNAME_BASE+3	"%HP LaserJet Series II%395%512 KB%514%22%3%16%32%2"
+	DEVNAME_BASE+4	"%HP LaserJet Plus con 2 MB%1895%2 MB%130%0%2%16%32%1"
+	DEVNAME_BASE+5	"%HP LaserJet 500+ con 2 MB%1895%2 MB%140%0%2%16%32%1"
+	DEVNAME_BASE+6	"%HP LaserJet Series II con 1 MB%950%1 MB%514%22%3%16%32%2"
+	DEVNAME_BASE+7	"%HP LaserJet Series II con 2 MB%1895%2 MB%514%22%3%16%32%2"
+	DEVNAME_BASE+8	"%HP LaserJet Series II con 4 MB%3790%4 MB%514%22%3%16%32%2"
+	DEVNAME_BASE+9	"%Kyocera F-1010 Laser%1895%2MB%386%2%20%16%32%0"
+	DEVNAME_BASE+10	"%Apricot Laser%1895%2 MB%386%2%20%16%32%0"
+	DEVNAME_BASE+11	"%QuadLaser I%1895%2 MB%386%0%1%16%32%0"
+	DEVNAME_BASE+12	"%"
+
+/*	CARTRIDGES
+ * format of cartridge string is:
+ *	"%desc%cartind%cartcount"
+ * where:
+ *	desc	is the description of the cartridge (this appears in
+ *		the list box in the dialog)
+ *	cartind	is the ind of the first font in the list of escapes that
+ *		corresponds to this cartridge
+ *	cartcount  is the number of fonts in the cartridge
+ * note: the first item in the list MUST be NONE
+ */
+ 	CART_BASE  	"%Ninguna%0%0"
+	CART_BASE+1	"%A: Courier 1%0%3"
+	CART_BASE+2	"%B: Tms Proportional 1%3%6"
+	CART_BASE+3	"%C: International 1%49%4"
+	CART_BASE+4	"%D: Prestige Elite%32%3"
+	CART_BASE+5	"%E: Letter Gothic%38%3"
+	CART_BASE+6	"%F: Tms Proportional 2%9%6"
+	CART_BASE+7	"%G: Legal Elite%44%5"
+	CART_BASE+8	"%H: Legal Courier%53%5"
+	CART_BASE+9	"%J: Math Elite%99%7"
+	CART_BASE+10	"%K: Math Tms%106%7"
+	CART_BASE+11	"%L: Courier P&L%58%3"
+	CART_BASE+12	"%M: Prestige Elite P&L%35%3"
+	CART_BASE+13	"%N: Letter Gothic P&L%41%3"
+	CART_BASE+14	"%P: Tms Rmn P&L%96%3"
+	CART_BASE+15	"%Q: Memo 1%61%4"
+	CART_BASE+16	"%R: Presentations 1%65%6"
+	CART_BASE+17	"%T: Tax 1%71%7"
+	CART_BASE+18	"%U: Forms Portrait%78%7"
+	CART_BASE+19	"%V: Forms Landscape%85%7"
+	CART_BASE+20	"%Y: PC Courier 1%92%4"
+	CART_BASE+21	"%Z: Microsoft 1%15%17"
+	CART_BASE+22	"%"
+
+/*	ESCAPES
+ * format of escape string is:
+ *	"%resnum%type%escape"
+ * where:
+ *	resnum	is the number corresponding to the resource file that
+ *		matches this font (resource files are listed at the
+ *		top of hppcl.rc -- resnum is the number on the left)
+ *	type	char indicates portrait(P) or landscape(L) or both (PL)
+ *	escape	is the actual escape sequence that will be output to
+ *		invoke the font
+ * note: the character set is read from the escape string (it defaults
+ * to Roman 8), the driver scans for 'ESC(' and interprets the character
+ * set to one documented in the HP LaserJet technical documentation
+ */
+
+ 	/* ROM fonts -- indices for these fonts are stored with
+	 * the printer name
+	 */
+	ROM_ESC_BASE	"%1%PL%\033(8U\033(s3t0b0s12.00v10.00h0P" /* Cour 12pt*/
+	ROM_ESC_BASE+1	"%34%P%\033(8U\033(s0t0b0s08.50v16.66h0P"/* LinePrinter*/
+
+	/* Kyocera Resident Fonts
+	 */
+	ROM_ESC_BASE+2  "%73%PL%\033(8U\033(s4t6vsb1P"       /* Helv 6 pt */
+	ROM_ESC_BASE+3  "%74%PL%\033(8U\033(s4t8vsb1P"       /* Helv 8pt*/
+	ROM_ESC_BASE+4  "%75%PL%\033(8U\033(s4t10vs3b1P"     /* Helv 10pt b*/
+	ROM_ESC_BASE+5  "%76%PL%\033(8U\033(s4t12vs3b1P"     /* Helv 12pt b*/
+	ROM_ESC_BASE+6  "%77%PL%\033(8U\033(s4t14vs3b1P"     /* Helv 14.4pt b*/
+	ROM_ESC_BASE+7  "%78%PL%\033(8U\033(s5t8vs1P"	     /* Tms Rmn 8pt*/
+	ROM_ESC_BASE+8  "%79%PL%\033(8U\033(s5t10vsb1P"	     /* Tms Rmn 10pt*/
+	ROM_ESC_BASE+9  "%80%PL%\033(8U\033(s5t10v1s1P"	     /* Tms Rmn 10pt i*/
+	ROM_ESC_BASE+10 "%81%PL%\033(8U\033(s5t10vs2b1P"     /* Tms Rmn 10pt b*/
+	ROM_ESC_BASE+11 "%82%PL%\033(8U\033(s2t7.2v16.6hbP"  /* Elite 7.2pt */
+	ROM_ESC_BASE+12 "%83%PL%\033(8U\033(s2t10v12hbP"     /* Elite 10pt */
+	ROM_ESC_BASE+13 "%84%PL%\033(8U\033(st7v21.4hP"      /* Line Printer 7 pt */
+	ROM_ESC_BASE+14 "%85%PL%\033(8U\033(st9v16.6hP"	     /* Line printer 9 pt */
+	ROM_ESC_BASE+15 "%86%PL%\033(8U\033(s6t12v12hbP"     /* Gothic 12pt */
+	ROM_ESC_BASE+16 "%87%PL%\033(8U\033(s6t12v12h3bP"    /*  Gothic 12pt b*/
+	ROM_ESC_BASE+17 "%88%PL%\033(8U\033(s3ts10hbP"	     /* Cour 12pt*/
+	ROM_ESC_BASE+18 "%89%L%\033(8U\033(s3t1s10hbP"	     /* Cour 12pt i */
+	ROM_ESC_BASE+19 "%90%L%\033(8U\033(s2t1s12hbP"	     /* Elite   10pt i*/
+	ROM_ESC_BASE+20 "%91%L%\033(8U\033(s6t1s12hbP"	     /* Gothic 12pt i*/
+	ROM_ESC_BASE+21 "%92%L%\033(8U\033(st1s16.6hP"	     /* Linepr 9pt*/
+
+	ROM_ESC_BASE+22	"%1%PL%\033(8U\033(s3t0b0s12.00v10.00h0P" /* Cour 12pt*/
+	ROM_ESC_BASE+23	"%2%PL%\033(8U\033(s3t1b0s12.00v10.00h0P" /* Cour 12pt b*/
+	ROM_ESC_BASE+24	"%34%PL%\033(8U\033(s0t0b0s08.50v16.66h0P"/* LinePrinter*/
+
+	ROM_ESC_BASE+25 "%"
+
+	/* A Cartridge
+	 */
+	CART_ESC_BASE	"%2%P%\033(8U\033(s3t1b0s12.00v10.00h0P" /* Cour 12pt b*/
+	CART_ESC_BASE+1	"%3%P%\033(8U\033(s3t-1b1s12.00v10.00h0P"/* Cour 12pt i*/
+	CART_ESC_BASE+2	"%4%L%\033(8U\033(s0t-1b0s08.50v16.66h0P"/* LinePrinter*/
+
+
+	/* B Cartridge
+	 */
+	CART_ESC_BASE+3	"%4%L%\033(8U\033(s0t-1b0s08.50v16.66h0P"/* LinePrinter*/
+	CART_ESC_BASE+4	"%5%P%\033(0U\033(s5t-1b0s08.00v1P"	/* Tms Rmn 8pt*/
+	CART_ESC_BASE+5	"%6%P%\033(0U\033(s5t0b0s10.00v1P"	/* Tms Rmn 10pt*/
+	CART_ESC_BASE+6	"%7%P%\033(0U\033(s5t1b0s10.00v1P"	/* Tms Rmn 10pt b*/
+	CART_ESC_BASE+7	"%8%P%\033(0U\033(s5t0b1s10.00v1P"	/* Tms Rmn 10pt i*/
+	CART_ESC_BASE+8	"%9%P%\033(0U\033(s4t1b0s14.40v1P"	/* Helv 14.4pt b*/
+
+	/* F Cartridge
+	 */
+	CART_ESC_BASE+9 "%34%P%\033(8U\033(s0t0b0s08.50v16.66h0P"/* LinePrinter*/
+	CART_ESC_BASE+10 "%10%P%\033(8U\033(s5t0b0s08.00v1P"	/* Tms Rmn 8pt*/
+	CART_ESC_BASE+11 "%11%P%\033(8U\033(s5t0b0s10.00v1P"	/* Tms Rmn 10pt*/
+	CART_ESC_BASE+12 "%12%P%\033(8U\033(s5t3b0s10.00v1P"	/* Tms Rmn 10pt b*/
+	CART_ESC_BASE+13 "%13%P%\033(8U\033(s5t0b1s10.00v1P"	/* Tms Rmn 10pt i*/
+	CART_ESC_BASE+14 "%14%P%\033(8U\033(s4t3b0s14.40v1P"	/* Helv 14.4pt b*/
+
+	/* Z Cartridge
+	 */
+	CART_ESC_BASE+15 "%15%P%\033(0U\033(s5t0b0s08.00v1P"	/* Tms Rmn 8pt*/
+	CART_ESC_BASE+16 "%16%P%\033(0U\033(s5t0b0s10.00v1P"	/* Tms Rmn 10pt*/
+	CART_ESC_BASE+17 "%17%P%\033(0U\033(s5t3b0s10.00v1P"	/* Tms Rmn 10pt b*/
+	CART_ESC_BASE+18 "%18%P%\033(0U\033(s5t0b1s10.00v1P"	/* Tms Rmn 10pt i*/
+	CART_ESC_BASE+19 "%19%P%\033(0U\033(s5t0b0s12.00v1P"	/* Tms Rmn 12pt*/
+	CART_ESC_BASE+20 "%20%P%\033(0U\033(s5t3b0s12.00v1P"	/* Tms Rmn 12pt b*/
+	CART_ESC_BASE+21 "%21%P%\033(0U\033(s5t0b1s12.00v1P"	/* Tms Rmn 12pt i*/
+	CART_ESC_BASE+22 "%22%P%\033(0U\033(s5t3b0s14.00v1P"	/* Tms Rmn 14pt b*/
+
+	CART_ESC_BASE+23 "%23%P%\033(0U\033(s4t0b0s08.00v1P"	/* Helv 8pt*/
+	CART_ESC_BASE+24 "%24%P%\033(0U\033(s4t0b0s10.00v1P"	/* Helv 10pt*/
+	CART_ESC_BASE+25 "%25%P%\033(0U\033(s4t3b0s10.00v1P"	/* Helv 10pt b*/
+	CART_ESC_BASE+26 "%26%P%\033(0U\033(s4t0b1s10.00v1P"	/* Helv 10pt i*/
+	CART_ESC_BASE+27 "%27%P%\033(0U\033(s4t0b0s12.00v1P"	/* Helv 12pt*/
+	CART_ESC_BASE+28 "%28%P%\033(0U\033(s4t3b0s12.00v1P"	/* Helv 12pt b*/
+	CART_ESC_BASE+29 "%29%P%\033(0U\033(s4t0b1s12.00v1P"	/* Helv 12pt i*/
+	CART_ESC_BASE+30 "%30%P%\033(0U\033(s4t3b0s14.00v1P"	/* Helv 14pt b*/
+	CART_ESC_BASE+31 "%35%L%\033(0U\033(s0t0b0s08.50v16.66h0P"/* LinePrinter*/
+
+	/* D Cartridge
+	 */
+	CART_ESC_BASE+32 "%31%P%\033(8U\033(s8t0b0s10.00v12.00h0P"/* PresElite 10pt*/
+	CART_ESC_BASE+33 "%32%P%\033(8U\033(s8t3b0s10.00v12.00h0P"/* Pres 10pt b*/
+	CART_ESC_BASE+34 "%33%P%\033(8U\033(s8t0b1s10.00v12.00h0P"/* Pres 10pt i*/
+
+	/* M Cartridge: same as D except both orientations
+	 */
+	CART_ESC_BASE+35 "%31%PL%\033(8U\033(s8t0b0s10.00v12.00h0P"/* PresElite 10pt*/
+	CART_ESC_BASE+36 "%32%PL%\033(8U\033(s8t3b0s10.00v12.00h0P"/* Pres 10pt b*/
+	CART_ESC_BASE+37 "%33%PL%\033(8U\033(s8t0b1s10.00v12.00h0P"/* Pres 10pt i*/
+
+	/* E Cartridge
+	 */
+	CART_ESC_BASE+38 "%36%P%\033(8U\033(s6t0b0s12.00v12.00h0P"/* LtrGoth 12pt*/
+	CART_ESC_BASE+39 "%37%P%\033(8U\033(s6t3b0s12.00v12.00h0P"/* LtrGoth 12pt b*/
+	CART_ESC_BASE+40 "%38%P%\033(8U\033(s6t0b1s12.00v12.00h0P"/* LtrGoth 12pt i*/
+
+	/* N Cartridge: same as E except both orientations
+	 */
+	CART_ESC_BASE+41 "%36%PL%\033(8U\033(s6t0b0s12.00v12.00h0P"/* LtrGoth 12pt*/
+	CART_ESC_BASE+42 "%37%PL%\033(8U\033(s6t3b0s12.00v12.00h0P"/* LtrGoth 12pt b*/
+	CART_ESC_BASE+43 "%38%PL%\033(8U\033(s6t0b1s12.00v12.00h0P"/* LtrGoth 12pt i*/
+
+	/* G Cartridge
+	 */
+	CART_ESC_BASE+44 "%39%P%\033(0U\033(s8t0b0s10.00v12.00h0P"/* PresElite 10pt*/
+	CART_ESC_BASE+45 "%40%P%\033(0U\033(s8t3b0s10.00v12.00h0P"/* PresElite 10pt b*/
+	CART_ESC_BASE+46 "%41%P%\033(0U\033(s8t0b1s10.00v12.00h0P"/* PresElite 10pt i*/
+	CART_ESC_BASE+47 "%42%PL%\033(0U\033(s8t0b0s07.00v16.66h0P"/* PresElite 7pt*/
+	CART_ESC_BASE+48 "%43%P%\033(0B\033(s6t0b0s12.00v12.00h0P"/* LnDrw 12pt b*/
+
+	/* C Cartridge
+	 */
+	CART_ESC_BASE+49 "%1%P%\033(8U\033(s3t0b0s12.00v10.00h0P"/* Cour 12pt*/
+	CART_ESC_BASE+50 "%2%P%\033(8U\033(s3t3b0s12.00v10.00h0P"/* Cour 12pt b*/
+	CART_ESC_BASE+51 "%44%P%\033(8U\033(s3t0b1s12.00v10.00h0P"/* Cour 12pt I*/
+	CART_ESC_BASE+52 "%34%PL%\033(8U\033(s0t0b0s08.50v16.66h0P"/* LinePrinter*/
+
+	/* H Cartridge
+	 */
+	CART_ESC_BASE+53 "%45%P%\033(0U\033(s3t0b0s12.00v10.00h0P"/* Courier 12pt*/
+	CART_ESC_BASE+54 "%46%P%\033(0U\033(s3t3b0s12.00v10.00h0P"/* Courier 12pt b*/
+	CART_ESC_BASE+55 "%47%P%\033(0U\033(s3t0b1s12.00v10.00h0P"/* Courier 12pt i*/
+	CART_ESC_BASE+56 "%42%PL%\033(0U\033(s8t0b0s07.00v16.66h0P"/* PresElite 7pt*/
+	CART_ESC_BASE+57 "%48%P%\033(0B\033(s3t0b0s12.00v10.00h0P"/* LnDrw 12pt b*/
+
+	/* L Cartridge
+	 */
+	CART_ESC_BASE+58 "%2%PL%\033(8U\033(s3t3b0s12.00v10.00h0P"/* Cour 12pt b*/
+	CART_ESC_BASE+59 "%44%PL%\033(8U\033(s3t0b1s12.00v10.00h0P"/* Cour 12pt I*/
+	CART_ESC_BASE+60 "%34%PL%\033(8U\033(s0t0b0s08.50v16.66h0P"/* LinePrinter*/
+
+	/* Q Cartridge
+	 */
+	CART_ESC_BASE+61 "%2%PL%\033(8U\033(s3t3b0s12.00v10.00h0P"/* Cour 12pt b*/
+	CART_ESC_BASE+62 "%44%PL%\033(8U\033(s3t0b1s12.00v10.00h0P"/* Cour 12pt I*/
+	CART_ESC_BASE+63 "%36%P%\033(8U\033(s6t0b0s12.00v12.00h0P"/* LtrGoth 12pt*/
+	CART_ESC_BASE+64 "%37%P%\033(8U\033(s6t3b0s12.00v12.00h0P"/* LtrGoth 12pt b*/
+
+	/* R Cartridge
+	 */
+	CART_ESC_BASE+65 "%49%PL%\033(0U\033(s11t3b0s18.00v06.52h0P"/* Pres 18pt b*/
+	CART_ESC_BASE+66 "%50%PL%\033(0U\033(s11t3b0s16.08v08.10h0P"/* Pres 16pt b*/
+	CART_ESC_BASE+67 "%51%PL%\033(0U\033(s11t3b0s13.92v10.00h0P"/* Pres 14pt b*/
+	CART_ESC_BASE+68 "%52%PL%\033(0U\033(s6t0b0s13.92v10.00h0P"/* LtrGoth 14pt*/
+	CART_ESC_BASE+69 "%53%PL%\033(4Q\033(s0t3b0s13.92v10.00h0P"/* PCLine 14pt b*/
+	CART_ESC_BASE+70 "%54%PL%\033(0B\033(s0t0b0s13.92v10.00h0P"/* LnDrw 14pt*/
+
+	/* T Cartridge
+	 */
+	CART_ESC_BASE+71 "%62%P%\033(0U\033(s4t0b0s06.00v1P"	/* Helv 6pt*/
+	CART_ESC_BASE+72 "%63%P%\033(0U\033(s4t0b0s08.00v1P"	/* Helv 8pt*/
+	CART_ESC_BASE+73 "%64%P%\033(0U\033(s4t1b0s08.00v1P"	/* Helv 8pt b*/
+	CART_ESC_BASE+74 "%65%P%\033(0U\033(s4t1b0s10.00v1P"	/* Helv 10pt b*/
+	CART_ESC_BASE+75 "%66%P%\033(0U\033(s4t1b0s12.00v1P"	/* Helv 12pt b*/
+	CART_ESC_BASE+76 "%67%P%\033(0U\033(s4t1b0s14.00v1P"	/* Helv 14pt b*/
+	CART_ESC_BASE+77 "%55%P%\033(0B\033(s0t1b0s12.00v10.00h0P"/* TxLnDrw 12pt*/
+
+	/* U Cartridge
+	 */
+	CART_ESC_BASE+78 "%68%P%\033(8U\033(s4t0b0s06.00v1P"	/* Helv 6pt*/
+	CART_ESC_BASE+79 "%69%P%\033(8U\033(s4t0b0s07.92v1P"	/* Helv 8pt*/
+	CART_ESC_BASE+80 "%70%P%\033(8U\033(s4t3b0s10.08v1P"	/* Helv 10pt b*/
+	CART_ESC_BASE+81 "%71%P%\033(8U\033(s4t3b0s12.00v1P"	/* Helv 12pt b*/
+	CART_ESC_BASE+82 "%72%P%\033(8U\033(s4t3b0s13.92v1P"	/* Helv 14pt b*/
+	CART_ESC_BASE+83 "%56%P%\033(8U\033(s6t0b0s09.60v16.66h0P"/* LtrGoth 9.5pt*/
+	CART_ESC_BASE+84 "%48%P%\033(0B\033(s0t0b0s12.00v10.00h0P"/* LnDrw 12pt b*/
+
+	/* V Cartridge
+	 */
+	CART_ESC_BASE+85 "%68%L%\033(8U\033(s4t0b0s06.00v1P"	/* Helv 6pt*/
+	CART_ESC_BASE+86 "%69%L%\033(8U\033(s4t0b0s07.92v1P"	/* Helv 8pt*/
+	CART_ESC_BASE+87 "%70%L%\033(8U\033(s4t3b0s10.08v1P"	/* Helv 10pt b*/
+	CART_ESC_BASE+88 "%71%L%\033(8U\033(s4t3b0s12.00v1P"	/* Helv 12pt b*/
+	CART_ESC_BASE+89 "%72%L%\033(8U\033(s4t3b0s13.92v1P"	/* Helv 14pt b*/
+	CART_ESC_BASE+90 "%57%L%\033(8U\033(s6t0b0s09.60v16.66h0P"/* LtrGoth 9.5pt*/
+	CART_ESC_BASE+91 "%48%L%\033(0B\033(s0t0b0s12.00v10.00h0P"/* LnDrw 12pt b*/
+
+	/* Y Cartridge
+	 */
+	CART_ESC_BASE+92 "%58%P%\033(8Q\033(s3t0b0s12.00v10.00h0P"/* Courier 12pt*/
+	CART_ESC_BASE+93 "%59%P%\033(8Q\033(s3t3b0s12.00v10.00h0P"/* Courier 12pt b*/
+	CART_ESC_BASE+94 "%60%P%\033(8Q\033(s3t0b1s12.00v10.00h0P"/* Courier 12pt i*/
+	CART_ESC_BASE+95 "%61%PL%\033(8Q\033(s3t0b0s08.40v16.66h0P"/* lnPrinter 8.5pt*/
+
+	/* P Cartridge: same fonts as F Cartridge
+	 */
+	CART_ESC_BASE+96 "%11%PL%\033(8U\033(s5t0b0s10.00v1P"	/* Tms Rmn 10pt*/
+	CART_ESC_BASE+97 "%12%PL%\033(8U\033(s5t3b0s10.00v1P"	/* Tms Rmn 10pt b*/
+	CART_ESC_BASE+98 "%13%PL%\033(8U\033(s5t0b1s10.00v1P"	/* Tms Rmn 10pt i*/
+
+	/* J Cartridge
+	 */
+	CART_ESC_BASE+99 "%93%P%\033(8U\033(s8t0b0s10.00v12.00h0P"/* Pres 10pt */
+	CART_ESC_BASE+100 "%94%P%\033(8M\033(s8t0b0s10.00v12.00h0P"/* Pres 10pt Math8*/
+	CART_ESC_BASE+101 "%95%P%\033(15U\033(s8t0b0s10.00v12.00h0P"/* Pres 10pt PiFont*/
+	CART_ESC_BASE+102 "%96%P%\033(8U\033(s8t3b0s10.00v12.00h0P"/* Pres 10pt b*/
+	CART_ESC_BASE+103 "%97%P%\033(8U\033(s8t0b1s10.00v12.00h0P"/* Pres 10pt i*/
+	CART_ESC_BASE+104 "%98%P%\033(8U\033(s8t0b0s7.00v16.66h0P"/* Pres 7pt */
+	CART_ESC_BASE+105 "%99%P%\033(8M\033(s8t0b0s7.00v16.66h0P"/* Pres 7pt Math8*/
+
+	/* K Cartridge
+	 */
+	CART_ESC_BASE+106 "%100%P%\033(8U\033(s5t0b0s12.00v1P"	/* Tms Rmn 12pt*/
+	CART_ESC_BASE+107 "%101%P%\033(8U\033(s5t3b0s12.00v1P"	/* Tms Rmn 12pt b*/
+	CART_ESC_BASE+108 "%102%P%\033(8U\033(s5t0b1s12.00v1P"	/* Tms Rmn 12pt i*/
+	CART_ESC_BASE+109 "%103%P%\033(8U\033(s5t0b0s7.00v1P"	/* Tms Rmn 7pt*/
+	CART_ESC_BASE+110 "%104%P%\033(8M\033(s5t0b0s12.00v1P"	/* Tms Rmn 12pt Math8*/
+	CART_ESC_BASE+111 "%105%P%\033(8M\033(s5t0b0s7.00v1P"	/* Tms Rmn 7pt Math8*/
+	CART_ESC_BASE+112 "%106%P%\033(15U\033(s5t0b0s12.00v1P"	/* Tms Rmn 12pt PiFont*/
+
+	/* Must end with null
+	 */
+	CART_ESC_BASE+113 "%"
+
+END /* stringtable */
+
+
+DTMODE DIALOG LOADONCALL MOVEABLE DISCARDABLE 8, 8, 274, 156
+CAPTION "Opciones de impresión de PCL"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_POPUP
+BEGIN
+	   CONTROL "OK" IDOK, "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_GROUP | WS_CHILD, 230, 5, 36, 14
+	   CONTROL "Cancelar" IDCANCEL, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_GROUP | WS_CHILD, 230, 22, 36, 14
+#ifdef SOFTFONTS_ENABLED
+	CONTROL "Tipos" IDSOFTFONT, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 224, 39, 32, 14
+#endif
+	   CONTROL "Copias no colacionadas:" -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 8, 98, 8
+	   CONTROL "" COPYBOX, "edit", ES_LEFT | WS_BORDER | WS_GROUP | WS_TABSTOP | WS_CHILD, 106, 6, 25, 12
+	   CONTROL "Papel:" -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 24, 48, 8
+	   CONTROL "A4" DINA4, "button", BS_RADIOBUTTON | WS_CHILD, 40, 22, 20, 12
+	   CONTROL "B5" B5, "button", BS_RADIOBUTTON | WS_CHILD, 63, 22, 20, 12
+	   CONTROL "Carta US" LETTER, "button", BS_RADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 86, 22, 48, 12
+	   CONTROL "Oficio US" LEGAL, "button", BS_RADIOBUTTON | WS_CHILD, 133, 22, 50, 12
+	   CONTROL "Exec" EXEC, "button", BS_RADIOBUTTON | WS_CHILD, 184, 22, 28, 12
+	   CONTROL "Orientación:" -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 40, 56, 8
+	   CONTROL "Retrato" PORTRAIT, "button", BS_RADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 64, 38, 44, 12
+	   CONTROL "Paisaje" LANDSCAPE, "button", BS_RADIOBUTTON | WS_CHILD, 112, 38, 58, 12
+	   CONTROL "Resolución gráfica:" -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 56, 80, 8
+	   CONTROL "75" DPI75, "button", BS_RADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 91, 54, 20, 12
+	   CONTROL "150" DPI150, "button", BS_RADIOBUTTON | WS_CHILD, 119, 54, 24, 12
+	   CONTROL "300" DPI300, "button", BS_RADIOBUTTON | WS_CHILD, 151, 54, 24, 12
+	   CONTROL "Fuente de papel:" -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 72, 68, 8
+	   CONTROL "Bandeja sup." DEFTRAY, "button", BS_RADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 78, 70, 56, 12
+	   CONTROL "Bandeja inf." LOWTRAY, "button", BS_RADIOBUTTON | WS_CHILD, 138, 70, 56, 12
+	   CONTROL "Manual" MANFEED, "button", BS_RADIOBUTTON | WS_CHILD, 198, 70, 56, 12
+	   CONTROL "Impresora:" -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 88, 42, 8
+	   CONTROL "" PRTBOX, "listbox", LBS_NOTIFY | WS_BORDER | WS_VSCROLL | WS_GROUP | WS_TABSTOP | WS_CHILD, 8, 98, 141, 41
+
+	   CONTROL "" NUMCARTS, "static", SS_LEFT | WS_GROUP | WS_CHILD, 157, 88, 100, 8
+	   CONTROL "" CARTBOX, "listbox", LBS_MULTIPLESEL | LBS_NOTIFY | WS_BORDER | WS_VSCROLL | WS_GROUP | WS_TABSTOP | WS_CHILD, 157, 98, 99, 41
+	   CONTROL "\251 Aldus Corporation, 1987." -1, "static", SS_LEFT | WS_GROUP | WS_CHILD, 8, 144, 220, 8
+	   CONTROL VNUM -1, "static", SS_RIGHT | WS_GROUP | WS_CHILD, 220, 144, 36, 8
+END
+
+
+#ifdef DIALOG_MESSAGES
+
+LOTSOF_FONTS DIALOG 25, 66, 281, 56
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+    CONTROL "PCL/LaserJet:  Loading lots of soft fonts.  Please wait." -1, "static", SS_CENTER | WS_CHILD, 8, 8, 260, 8
+    CONTROL "" LOTSFONT_PCNT, "static", SS_RIGHT | WS_CHILD, 108, 24, 24, 8
+    CONTROL "% done" -1, "static", SS_LEFT | WS_CHILD, 132, 24, 68, 8
+    CONTROL "" LOTSFONT_FONT, "static", SS_CENTER | WS_CHILD, 8, 40, 260, 8
+END
+
+#endif
+
+#ifdef SOFTFONTS_ENABLED
+
+SOFTFONT DIALOG LOADONCALL MOVEABLE DISCARDABLE 13, 9, 250, 124
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+	CONTROL "Texto" SF_FILELIST, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD, 7, 15, 75, 73
+	CONTROL "Texto" SF_FONTLIST, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD, 139, 15, 102, 73
+	CONTROL "Agregar" SF_ADDBUTTON, "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD, 91, 16, 40, 14
+	CONTROL "Borrar" SF_DELETEBUTTON, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 91, 35, 40, 14
+	CONTROL "OK" SF_OKBUTTON, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 92, 55, 39, 14
+	CONTROL "Cancelar" SF_CANCELBUTTON, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 91, 75, 39, 14
+	CONTROL "Permanente" SF_PERMRADIO, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 139, 93, 49, 12
+	CONTROL "Temporal" SF_TEMPRADIO, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 194, 93, 48, 12
+	CONTROL "Disponible:" -1, "static", SS_LEFT | WS_CHILD, 7, 3, 71, 8
+	CONTROL "Instalado:" -1, "static", SS_LEFT | WS_CHILD, 139, 3, 77, 8
+	CONTROL "C:\\WINDOWS" SF_FILETOKEN, "static", SS_LEFT | WS_CHILD, 7, 94, 63, 8
+	CONTROL "cn11orpn.usp" SF_FILENMEDIT, "edit", ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD, 6, 106, 124, 12
+END
+
+ADDFONT DIALOG 17, 19, 204, 130
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+    CONTROL "" 0, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD, 8, 8, 70, 56
+    CONTROL "directorio?" 1, "edit", ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD, 82, 42, 112, 12
+    CONTROL "C:\PM2" 2, "static", SS_LEFT | WS_CHILD, 82, 28, 60, 8
+    CONTROL "Nombre del tipo de letra:" 3, "static", SS_LEFT | WS_CHILD, 8, 74, 84, 8
+    CONTROL "Century Schoolbook" 4, "edit", ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD, 90, 72, 146, 12
+    CONTROL "Familia:" 5, "static", SS_LEFT | WS_CHILD, 9, 90, 41, 8
+    CONTROL "No importa" 7, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 138, 110, 51, 12
+    CONTROL "Roman" 8, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 40, 93, 40, 12
+    CONTROL "Swiss" 9, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 40, 107, 37, 12
+    CONTROL "Modern" 10, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 87, 94, 45, 12
+    CONTROL "Script" 11, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 88, 110, 44, 12
+    CONTROL "Decorative" 12, "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD, 138, 96, 48, 12
+    CONTROL "Texto" 13, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 173, 5, 24, 14
+    CONTROL "Texto" 14, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 173, 21, 24, 14
+    CONTROL "Seleccionar directorio" 14, "static", SS_LEFT | WS_CHILD, 82, 9, 87, 10
+END
+
+#endif

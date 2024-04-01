@@ -1,0 +1,24 @@
+SETPEN DIALOG LOADONCALL MOVEABLE DISCARDABLE 71, 27, 167, 89
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+     CONTROL "Create Pen", -1	       , "static"   , SS_CENTER | WS_CHILD							,   0,	0, 167,  8
+     CONTROL "Style"	 , -1	       , "static"   , SS_LEFT | WS_CHILD							,   5, 12,  24,  8
+     CONTROL "" 	 , IDD_PEN_STYL, "combobox" , CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | WS_VSCROLL | WS_CHILD | WS_TABSTOP,   6, 21,  75, 15
+     CONTROL "Width"	 , -1	       , "static"   , SS_LEFT | WS_CHILD							,   5, 40,  24,  8
+     CONTROL "" 	 , IDD_PEN_WTHS, "scrollbar", SBS_HORZ | WS_CHILD | WS_TABSTOP						,   5, 49,  57, 12
+     CONTROL "99"	 , IDD_PEN_WTHV, "edit"     , ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD				,  66, 49,  14, 12
+     CONTROL "Color"	 , -1	       , "button"   , BS_GROUPBOX | WS_CHILD							,  85, 10,  77, 72
+     CONTROL "red"	 , -1	       , "static"   , SS_CENTER | WS_CHILD							,  90, 20,  20, 10
+     CONTROL "green"	 , -1	       , "static"   , SS_CENTER | WS_CHILD							, 111, 20,  25, 10
+     CONTROL "blue"	 , -1	       , "static"   , SS_CENTER | WS_CHILD							, 137, 20,  20, 10
+     CONTROL "" 	 , IDD_PEN_GRNS, "scrollbar", SBS_VERT | WS_CHILD | WS_TABSTOP						, 139, 32,  15, 32
+     CONTROL "" 	 , IDD_PEN_GRNS, "scrollbar", SBS_VERT | WS_CHILD | WS_TABSTOP						,  93, 32,  15, 32
+     CONTROL "" 	 , IDD_PEN_GRNS, "scrollbar", SBS_VERT | WS_CHILD | WS_TABSTOP						, 115, 32,  15, 32
+     CONTROL "" 	 , IDD_PEN_COLR, "static"   , SS_BLACKRECT | WS_CHILD							,  87, 65,  73, 15
+     CONTROL "RRR"	 , IDD_PEN_REDV, "static"   , SS_CENTER | WS_CHILD							,  90, 68,  20,  8
+     CONTROL "GGG"	 , IDD_PEN_GRNV, "static"   , SS_CENTER | WS_CHILD							, 113, 68,  20,  8
+     CONTROL "BBB"	 , IDD_PEN_BLUV, "static"   , SS_CENTER | WS_CHILD							, 137, 68,  20,  8
+     CONTROL "Create"	 , IDOK        , "button"   , BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD					,   5, 68,  35, 14
+     CONTROL "Cancel"	 , IDCANCEL    , "button"   , BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD					,  46, 68,  35, 14
+END
+

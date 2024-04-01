@@ -1,0 +1,533 @@
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+        page
+
+	?_pub	cblt81
+cblt81	proc	near
+ 
+	mov	ax,es
+	mov	ds,ax
+	assumes	ds,nothing
+
+
+	subttl	Compile - Outer Loop
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	Create the outerloop code.  The first part of this code will save
+;	the scan line count register, destination pointer, and the source
+;	pointer (if there is a source).
+;
+;
+;	The generated code should look like:
+;
+;		push	cx		;Save scan line count
+;		push	di		;Save destination pointer
+;		push	si		;Save source pointer
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+	mov	al,I_PUSH_CX		;Save scan line count
+	mov	ah,I_PUSH_DI		;Save destination ptr
+	stosw
+
+
+	mov	al,I_PUSH_SI		;  Yes, save source pointer
+	stosb
+
+
+
+	subttl	Compile - Monochrome Pattern Fetch
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	Set up any pattern fetch code that might be needed.
+;	The pattern code has many fixups, so it isn't taken from a
+;	template.  It is just stuffed as it is created.
+;
+;
+;	Entry:	None
+;
+;	Exit:	DH = pattern
+;
+;	Uses:	AX,BX,CX,DH,flags
+;
+;
+;	For monochrome brushes:
+;
+;	    mov     cx,ds		;Save DS
+;	    lds     bx,gl_lp_pattern	;DS:BX --> brush
+;	    mov     dh,7[bx]		;Get next brush byte
+;	    mov     al,ss:[1234h]	;Get brush index
+;	    add     al,gl_direction	;Add displacement to next byte (+1/-1)
+;	    and     al,00000111b	;Keep it in range
+;	    mov     ss:[1234h],al	;Store displacement to next byte
+;	    mov     ds,cx		;Restore DS
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+	?_pub	cblt81_pattern_fetch
+cblt81_pattern_fetch:
+
+	mov	bl,gl_flag0
+	test	bl,F0_PAT_PRESENT	;Is a pattern needed?
+	jz	cblt81_initial_byte_fetch ;  No, skip pattern code
+
+	mov	ax,I_MOV_CX_DS		;mov cx,ds
+	stosw
+
+	mov	al,I_SS_OVERRIDE
+	stosb
+	mov	ax,I_LDS_BX_MEM
+	stosw
+	lea	ax,gl_lp_pattern
+	stosw
+
+	mov	ax,I_MOV_DH_BX_DISP8	;mov dh,gl_pat_row[bx]
+	stosw
+
+	mov	dx,di			;Save address of the brush index
+	mov	al,gl_pat_row		;Set initial pattern row
+	mov	bh,00000111b		;Set brush index mask
+	and	al,bh			;Make sure it's legal at start
+	stosb
+
+	mov	al,I_SS_OVERRIDE
+	mov	ah,I_MOV_AL_MEM
+	stosw				;mov al,ss:[xxxx]
+	mov	ax,dx
+	stosw
+
+PATTERN_STEP1	equ	SIZE_PATTERN/8
+
+	mov	al,I_ADD_AL_BYTE_I
+	mov	ah,PATTERN_STEP1
+	stosw				;add al,BrushIndexStep
+
+PATTERN_MASK1	equ	SIZE_PATTERN*SIZE_PATTERN/8-1
+
+	mov	al,I_AND_AL_BYTE_I
+	mov	ah,PATTERN_MASK1	;and al,BrushIndexMask
+	stosw
+
+	mov	al,I_SS_OVERRIDE
+	mov	ah,I_MOV_MEM_AL
+	stosw				;mov ss:[xxxx],al
+	mov	ax,dx
+	stosw
+
+	mov	ax,I_MOV_DS_CX		;mov ds,cx
+	stosw
+
+	subttl	Compile - Initial Byte Fetch
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	Create the initial byte code.
+;	The code should look something like:
+;
+;	BLTouterloop:
+;		fetch
+;		logic
+;		masked store
+;
+;	Note that this code will only be generated if there are at least
+;	TWO destination bytes involved in this BLT.
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+
+	?_pub	cblt81_initial_byte_fetch
+cblt81_initial_byte_fetch:
+
+	mov	bl,gl_flag0
+	test	bl,F0_SRC_IS_DEV
+	jz	@f
+
+	call	cblt_set_s_page
+@@:
+	mov	ax,gl_inner_count
+	or	ax,ax
+	jnz	cblt81_first_byte	;if one or more full bytes
+
+	mov	ax,gl_final_mask
+	or	al,al
+	jnz	cblt81_first_byte	;if partial final byte
+
+	mov	ax,gl_first_mask
+;	or	al	,al		;JAK
+	or	ah,ah
+	jz	cblt81_first_byte	;if entire first byte
+
+; only one parital destination byte involved in the operation
+
+	mov	cl,gl_final_bit
+	sub	cl,gl_first_bit
+	mov	ah,1
+	ror	ah,cl		; position fetch bit
+	call	cblt81_lod	; generate LOD code
+
+	mov	al,7
+	sub	al,gl_final_bit
+	call	cblt81_rol	; generate ROL code
+
+	call	cblt81_rop	; generate ROP code
+
+	mov	ax,gl_first_mask
+	call	cblt81_sto	; generate STO code
+	jmp	cblt81_outer
+
+
+cblt81_first_byte:
+
+	inc	gl_inner_count
+	mov	ax,gl_first_mask
+	or	ah,ah			;all bits changed?
+	jz	cblt81_inner_bytes	;..yes
+	dec	gl_inner_count		;..nice try
+
+	mov	cl,gl_first_bit
+	mov	ah,1
+	rol	ah,cl		;(0:01, 1:02, ..., 6:40, 7:80)
+	call	cblt81_lod
+
+	call	cblt81_rop
+
+	mov	ax,gl_first_mask
+	call	cblt81_sto
+
+
+	subttl	Compile - Inner Loop Generation
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	Now for the hard stuff; The inner loop (said with a "gasp!").
+;
+;	If there is no innerloop, then no code will be generated
+;	(now that's fast!).
+;
+;	The innerloop code will look something like:
+;
+;
+;	<	mov	cx,loopcount  > ;load count if >1 innerloop bytes
+;
+;	BLTloop:
+;		fetch
+;		logic
+;		stosb
+;
+;	<	loop	BLTloop >	;Loop until all bytes processed
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+
+cblt81_inner_bytes:
+	mov	dx,gl_inner_count 	;Get the loop count
+	cmp	dx,1			;Are there any inner bytes?
+	jb	cblt81_final_byte	;..no, don't generate any code.
+	jna	@f			;..yes, just one, though
+
+	mov	al,I_MOV_CX_WORD_I
+	stosb				;mov cx,loopcount
+	mov	ax,dx
+	stosw
+
+@@:	mov	gl_fetch,di
+
+	mov	ah,1
+	call	cblt81_lod
+
+	call	cblt81_rop
+
+	mov	al,I_STOSB
+	stosb
+
+
+;	The innermost BLT code has been created and needs the looping
+;	logic added to it.  If there is any looping to be done, then
+;	generate the loop code.
+
+	mov	dx,gl_inner_count
+	cmp	dx,1			;Need a loop?
+	jna	@f			;  No, don't generate one
+
+	mov	bx,gl_fetch		;Compute offset of loop
+	call	gen_loop
+
+@@:
+
+	subttl	Compile - Last Byte Processing
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	All the innerloop stuff has been processed.  Now generate the code for
+;	the final byte.
+;
+;	The code generated will look something like:
+;
+;		fetch			;Get source byte
+;	<	align		>	;Align source if needed
+;		logic			;Perform desired action
+;		masked store
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+public cblt81_final_byte
+cblt81_final_byte:
+
+	mov	ax,gl_final_mask
+	or	al,al			;any bits modified?
+	jz	cblt81_outer		;..no
+
+	mov	cl,gl_final_bit
+	mov	ah,80h
+	ror	ah,cl			;(0:80, 1:40, ..., 6:02, 7:01)
+	call	cblt81_lod		;generate LOD code
+
+	mov	al,7
+	sub	al,gl_final_bit		;(0:7, 1:6, ..., 6:1, 7:0)
+	call	cblt81_rol		;generate ROL AL,#
+
+	call	cblt81_rop		;generate ROP code
+
+	mov	ax,gl_final_mask	;Get last byte mask
+;JAK	    xchg    ah,al		    ;Switch final mask
+	call	cblt81_sto		;generate STO code
+
+
+
+	subttl	Compile - Looping Logic
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	Looping logic.
+;
+;	The looping logic must handle (huge or small) monochrome bitmaps,
+;	and the presence or absence of a source or pattern.
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+
+
+	subttl	Looping Logic - Plane Selection
+	page
+
+;	Get saved parameters off of the stack.
+;
+;		pop	si	      	;Get source pointer
+;		pop	di		;Get destination pointer
+;		pop	cx		;Get loop count
+
+
+cblt81_outer:
+
+	mov	al,I_POP_SI		;  Yes, get source pointer
+	stosb
+
+	mov	al,I_POP_DI		;Get destination pointer
+	mov	ah,I_POP_CX		;and loop count
+	stosw
+
+	subttl	Looping Logic - Scan Line Update
+	page
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+;	Generate the next scanline code.  The next scan line code must
+;	handle monochrome bitmaps, the device, huge bitmaps, the presence
+;	or absence of a source.
+;
+;	<	add si,gl_src.next_scan> ;Normal source scan line update
+;	<	Huge Bitmap Update    > ;>64K source update code
+;		add di,gl_dest.next_scan ;Normal destination scan line update
+;	<	Huge Bitmap Update    > ;>64K destination update code
+;
+;
+;	All updates will at least consist of the add IndexReg,plane_w.
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+
+	call	s_update 		;Generate the Y scan line update code
+
+	call	d_update 		;Generate the Y scan line update code
+
+
+;	Compile the scan line loop.  The code simply jumps to the start
+;	of the outer loop if more scans exist to be processed.
+
+
+	mov	bx,off_gl_blt_addr
+	call	gen_loop
+
+	mov	al,I_RET_FAR		;Stuff the far return instruction
+	stosb
+
+	ret
+cblt81	endp
+
+
+
+
+	subttl	Compile - LOD/ROL/ROP/STO Generation
+	page
+
+;///////////////////////////////////////////////////////////////////////
+;
+;	Create the code to convert a string of 8-bit pixels
+;	into a (partial) byte of 1-bit pixels
+;
+;///////////////////////////////////////////////////////////////////////
+
+
+; entry... AH = 1 shl (8 - bits to convert)
+
+cblt81_lod	proc	near
+	mov	al,I_MOV_AH_BYTE_I
+	stosw
+
+	push	di
+
+	mov	al,I_LODSB
+	stosb
+
+	mov	ax,cl_both_colors	;ah=BG, al=FG
+	or	ah,ah			;would we generate SUB AL,0?
+	jz	@f			;..yes, so don't do it
+
+	mov	al,I_SUB_AL_BYTE_I
+	stosw
+
+@@:	mov	al,I_CMP_AL_BYTE_I
+	mov	ah,1
+	stosw
+
+	mov	ax,I_RCL_AH_1
+	stosw
+
+	pop	ax			;the loop-to address
+	sub	ax,di			;less address of JNC
+	sub	al,2			;less length of JNC
+	xchg	ah,al
+	mov	al,I_JNC
+	stosw
+
+	mov	ax,I_MOV_AL_AH
+	stosw
+
+	ret
+cblt81_lod	endp
+
+
+;///////////////////////////////////////////////////////////////////////
+;
+;	Generate code to rotate the byte loaded in AL.
+;
+;///////////////////////////////////////////////////////////////////////
+
+; entry... AL = rotate count
+
+cblt81_rol	proc	near
+
+	and	ax,7			;Zero ROL?
+	jne	cblt81_roln		;..no
+	ret				;..yes, exit
+
+cblt81_roln:
+	push	sp
+	pop	cx
+	cmp	cx,sp			;ROL AL,# on this CPU?
+	jne	cblt81_rol1		;..no
+
+	push	ax
+	mov	ax,I_ROL_AL_N
+	stosw
+	pop	ax
+	stosb
+	ret
+
+cblt81_rol1:
+	mov	cx,ax
+	mov	ax,I_ROL_AL_1		;assume ROL
+	cmp	cl,5			;ROL or ROR?
+	jb	cblt81_roll		;..ROL
+	neg	cx
+	add	cx,8			;5->3, 6->2, 7->1
+	mov	ax,I_ROR_AL_1
+cblt81_roll:
+	rep	stosw
+	ret
+
+cblt81_rol	endp
+
+
+
+;///////////////////////////////////////////////////////////////////////
+;
+;	Create the logic action code
+;
+;	The given ROP will be converted into the actual code that
+;	performs the ROP.
+;
+;///////////////////////////////////////////////////////////////////////
+
+
+cblt81_rop	proc
+
+	mov	ax,gl_operands		;Get back rop data
+	mov	bl,ah			;Get count of number of bits to move
+	and	bx,HIGH ROPLength
+	shr	bx,1
+	shr	bx,1
+	mov	cl,bptr roptable+256[bx];Get length into cx
+	xor	ch,ch			;
+	errnz	ROPLength-0001110000000000b
+
+	mov	bx,ax			;Get offset of the template
+	and	bx,ROPOffset
+	jz	cblt81_rop_neg		;Source copy
+
+	lea	si,roptable[bx] 	;--> the template
+	rep	movs bptr es:[di],cs:[si]
+
+cblt81_rop_neg:
+	mov	bx,ax			;Keep rop around
+	or	ah,ah			;Generate a negate?
+	jns	cblt81_rop_exit		; No
+
+	mov	ax,I_NOT_AL
+	stosw
+
+cblt81_rop_exit:
+	ret
+
+cblt81_rop	endp
+
+
+;///////////////////////////////////////////////////////////////////////
+;
+;	Generate code to mask and save the result.
+;
+;///////////////////////////////////////////////////////////////////////
+
+
+; entry... AX = mask (AH = unchanged bits, AL = changed bits)
+
+cblt81_sto	proc	near
+
+	or	ah,ah
+	jz	cblt81_store
+	push	ax
+
+	mov	al,I_ES_OVERRIDE 	;Load destination in AH
+	stosb
+	mov	ax,I_MOV_AH_DEST
+	stosw
+
+	mov	al,I_AND_AX_WORD_I
+	stosb
+	pop	ax
+	stosw
+
+	mov	ax,I_OR_AL_AH
+	stosw
+
+cblt81_store:
+	mov	al,I_STOSB
+	stosb
+
+	ret
+
+cblt81_sto	endp
+

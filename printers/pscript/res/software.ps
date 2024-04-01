@@ -1,0 +1,57 @@
+%-------------------------------------------------------------------------
+% software.ps
+%
+% this file turns on SOFTWARE (XON/XOFF) handshaking
+%
+%
+% this file contains printer dependant code.  it checks the revision #
+% (assuming it is an old Apple LaserWriter) and does things based on that.
+% newer printers have a different revision numbering scheme!!!
+%
+% not anymore.
+%-------------------------------------------------------------------------
+
+serverdict begin 0 exitserver
+/Helvetica findfont 20 scalefont setfont 
+
+100 200 moveto
+statusdict begin
+% revision 2 ge
+% {
+	25 sccbatch exch pop 0 ne
+	{
+		25		% for setsccbatch
+		25 sccbatch	% get baud parity
+		pop
+		0 		% software handshake value
+		setsccbatch 
+		(Software handshaking enabled.)
+	} {
+		(Software handshaking already enabled.)
+	} ifelse
+% } {
+%	(Can't set hardware handshake...PostScript revision less than 2.)
+% } ifelse
+show
+
+100 100 moveto
+%If the default WAITTIMEOUT is less than 60 seconds...
+%	set it to 60 seconds if the PostScript revision is before 2
+%	otherwise, set it to 5 minutes
+%
+defaulttimeouts 60 lt
+{
+%	revision 2 ge {
+		300
+%	} {
+%		60
+%	} ifelse
+	setdefaulttimeouts
+	(Wait timeout changed.)
+} {
+	pop pop
+	(Wait timeout already properly set.)
+} ifelse
+show
+showpage
+quit

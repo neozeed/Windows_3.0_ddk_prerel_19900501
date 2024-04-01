@@ -1,0 +1,808 @@
+              Printer Driver Test Application
+                   MicroSoft Corporation
+                     Version 3.0/r1.43
+                      October 18, 1989
+
+OVERVIEW
+This document outlines the functionality and coverage for
+the Printer Driver Test Application.  The application is
+designed and intended to be an automated tool for generating
+output which best describes the capabilities of the printer.
+Since GDI, the Display and Printer drivers interact closely
+with each other, there could be some ambiguity concerning
+the responsibility of the generated output.  It is this
+interaction which could pose some question as to "who" is
+actually doing the work.  This application will try to focus
+more towards the Printer Driver in the generation of the
+output.
+
+CURRENT METHOD
+The current method used for testing printer drivers is more
+or less at the "Application" level.  Using applications to
+create files and output them to the printer has been the
+main criteria for verifying the proper functionality of the
+printer driver.  This practice poses several problems for
+verifying the drivers reliability.  First, using
+application-generated output cannot gaurantee that most
+areas are being tested.  While applications do provide real-
+world output to the printer, it doesn't always verify that
+most areas are being tested.  For example, an application
+which outputs text to the printer, won't usually implement
+all features of a function to output the text.  With the
+complicated parameters of Windows text functions, it is
+necessary to provide tests which touch on the obscure as
+well as normal conditions.  Other problems with application
+generated tests, are that they tend to produce a tremendous
+amount of paper output.  Ideally, there should be a minimal
+amount of paper resource used while still providing ample
+coverage of the driver.  These are but a few of the areas
+the Printer Test Application helps to overcome.
+
+GOALS
+The goals of the application are to provide a means for
+eliminating the time-consuming task of testing printer
+drivers.  It is intended to provide broader coverage of
+tests as well as verify the reliability of IHV's drivers.
+
+SPECIFICATIONS
+The specifications for this application are as follows:
+
+  1) Output header information containing details of the
+     driver capabilities.
+  2) Output tests for each of the driver capabilities.
+  3) DialogBoxes for header and test selection to allow
+     control over what is to be printed.
+  4) Tests should be automatic.  They will run "stand-alone"
+     once header/tests selection is entered.
+  5) Multiple printer profile interface.  Allows multiple
+     printer profiles to be executed in each suite.
+  6) The application will run through tests for all selected
+     printer drivers.
+  7) The application will allow 2.x drivers to run (with the
+     limitation of one driver per test-suite).
+  8) User selectable objects.  This will reduce the amount
+     of test-cases per suite.
+  9) Use of DLL's for storing common tests.
+
+LIMITATIONS
+Currently, this application is under development.  Version
+3.00/1.43 is a preliminary, but functional application.  It
+will undergo additional changes in the user interface as
+well as improvements to the tests.  The application is
+intended to provide a means for testing multiple printer
+configurations with one test suite (3.x drivers).  A future
+implementation will provide banding support, which should
+greatly improve the execution speed.  Currently, the
+application performance is hindered by banding an entire
+page to the Spooler or Printer.
+
+Eventhough this application is intended to test 3.x printer
+drivers, it is also capable of testing 2.x drivers.  There
+are some restrictions for adding a 2.x driver to the test.
+Since, 2.x drivers do not support (ExtDeviceMode or
+DeviceCapabilities) an alternate method is provided to allow
+these these to run.  The restrictions for testing a 2.x
+driver is as follows:
+
+  1) The Profile Name must be specified as "WIN.INI".  This
+     is necessary since the DeviceMode function requires
+     printer setups to be in the Windows profile.
+  
+  2) There can be ONLY ONE printer test profile for each
+     particular printer driver.  This is due to the fact
+     that the application expects to have UNIQUE profile
+     names for each test configuration.
+
+
+PROGRESS
+     
+     1. Fundemental Tests.
+          Currently, a basic set of tests are implemented.
+          These tests will be expanded upon in later
+          versions.
+
+     2. Use of DynaLink libraries for test.
+          By using the DynaLink libraries, the tests can be
+          share with other test applications (such as
+          DispTest.exe).
+
+     3. Multiple Printer Interface.
+          This interface has been completed, and will allow
+          multiple printer profiles to be executed in any
+          given test suite (3.0).  There are some minor
+          features of the interface which have not been
+          implemented.  However, if the documentation is
+          followed closely, then there should be no
+          inconveniences.
+     
+     4. Fixed bugs from previous versions (1.5/1.6)
+          The application has undergone fixes for mis-
+          information in the LogFont/TextMetric structure,
+          as well as changes in the reporting brushes and
+          text/font output.
+
+
+FUTURE IMPLEMENTATIONS
+  1) RASTER
+     StretchBlt modifications
+     FloodFill Test
+
+  2) LINE
+     More Line Tests.
+  
+  3) CURVE
+     Arc, Chord, Pie Tests.
+  
+  4) POLYGON
+     More polygon tests.
+  
+  5) TEXT
+     More Text tests.
+  
+  6) ESCAPES TEST
+     Provide Escape support.
+  
+  7) DLL Test Separation.
+     Creat Banding libraries for tests.
+     
+
+DESIGN
+The overall methodology of the test application is to
+determine "what the driver is capable of performing", and to
+focus the testing on the driver capabilities.
+
+The application is divided into several "logical" units.
+  1) Get Device Information
+     a) Device Capabilities
+     b) Device Fonts
+     c) Device Pens
+     d) Device Brushes
+     e) Device Colors
+  2) Select Test Objects (pens, brushes, fonts)
+  3) Print Header
+  4) Print Tests
+
+All test criteria is setup prior to running the tests.
+First, all device information is retrieved from the device
+concerning it's capabilities.  This includes Fonts, Brushes,
+Pens, Colors and capabilities.  Once this information is
+retrieved, it is stored in global (moveable) memory for use
+throughout the application.  The tests depend on this
+information for generating output.
+
+The header contains the device information obtained from
+retrieving the device characteristics.  This can be printed
+out in CONDENSED or EXPANDED form.  EXPANDED contains full
+details of the device information.  CONDENSED provides
+minimal detail of the information, so it uses less paper
+resources.
+
+The test areas are outlined as follows:
+  1) Raster Tests (bitmaps)
+  2) Line Tests
+  3) Polygon Tests
+  4) Curve Tests
+  5) Text Tests
+
+All output is dependant on the information gathered from the
+device.  For example, the Text test prints using all fonts
+the device supports.  This provides a level of device
+independent tests which does not depend on any particular
+device.  Likewise, graphic objects will be printed using
+various combinations of pens, brushes and backgrounds.
+
+INFORMATION FUNCTIONS
+There are driver functions which are not apparently visible
+to the person running the test application.  However, they
+are being used in gathering information, and therefore,
+tested internally.
+
+  EnumDFonts()
+     This is tested in the Get Information section of the
+     test.  It enumerates all font faces, then uses those
+     faces to enumerated all device fonts.  EnumFonts()
+     function supplied by GDI in enumerating the fonts.
+
+  
+  
+  EnumObj()
+     This is used to enumerate all brushes and pens for the
+     device.  If the printer driver does not perform it's
+     own enumeration, it is passed to GDI to implement it.
+     GDI uses the Display driver to enumerate objects on
+     behalf of the printer driver.  Therefore, it is more
+     than likely the application receives more pens/brushes
+     than the printer device supports.  This application
+     takes this into account in storing the objects.  Only
+     those pens and brushes are used which the driver
+     supports.  This is supplied by GDI in the EnumObject()
+     function.
+
+  RealizeObjects()
+     This is tested in the selection of objects to print.
+     This can be obtained using the SelectObject() function
+     supplied by GDI.
+
+  ColorInfo()
+     Tested indirectly in the application in converting
+     colors to physical colors.  GetNearestColor() is the
+     corresponding GDI function.
+
+  GetCharWidth()
+     (not yet implemented)
+
+OUTPUT FUNCTIONS
+  Output()
+  BitBlt()
+  StrBlt()
+  StretchBlt()
+  ExtTextOut()
+
+ESCAPES
+The escapes will be implemented in the test application in
+future releases.  Currently, the application uses NEWFRAME
+in the generation of new pages.  A future version will use
+NEXTBAND to bypass GDI and speed up the printing.
+
+ENVIRONMENT
+  DeviceCapabilities()
+  ExtDeviceMode()
+  GetDevCaps()
+
+
+TEST PROCEDURES
+  1. Select Printer to test.
+     This will be selected from a file of printers.  The
+     test will allow the selection of multiple printers.
+  
+  2. Get the driver capabilities
+     a. Rectangle Capabilities
+     b. Raster Capabilities
+     c. Curve Capabilities
+     d. Line Capabilities
+     e. Polygon Capabilities
+     f. Text Capabilities
+  
+  3. Enumerate the Driver Objects
+     a. Fonts
+     b. Pens
+     c. Brushes
+     d. Colors
+  
+  4. Select particular objects for the output tests.
+     a. Fonts
+     b. Pens
+     c. Brushes
+  
+  4. Print Header
+  
+  5. Print Output Tests.
+
+                           USERS GUIDE
+
+INTRODUCTION
+The Printer Driver Test Application is an automated tool for
+testing the functionality and reliability of a Windows Printer
+Driver.  It is intended to provide the test coverage necessary in
+verifying the functionality of a driver.  This document describes
+the features of the application which allow you to test multiple
+printer configurations, and select specific tests for each suite.
+
+USER INTERFACE
+The user interface is setup to display printer profiles which can
+be selected for each test suite.  It allows the user to configure
+a list of printer profiles which can be setup with various
+settings, and selected into a TEST list for execution.  This
+allows multiple printers to be tested in one test-run.
+
+  Printer List Profiles
+     The listbox on the left displays the listing of various
+     printer profiles.  The format of each line is as follows:
+     
+       <Profile Name> : <Description>,<Driver>,<Port>
+
+     The profile name is the file name of the profile for that
+     particular printer setting.  There cannot be duplicate
+     profile names in the listbox.  This can be any name which
+     follows the MS-DOS filename conventions.
+     
+  Printer Test Profiles
+     The listbox on the right represents the printer profile
+     strings which are to be tested.  These profiles are selected
+     from the listbox on the left (Printer List Profiles).  It is
+     in the same format at the Printer List Profiles string.
+
+  Profile Edit box
+     This box displays the printer profile string associated with
+     a particular printer profile.  This Filname is usually
+     denoted with a ".ini" file extension.
+     
+  Profile Printer Description box
+     This box displays the description of the printer being
+     tested.  It is usually represents the name of the printer
+     and some description which distinguishes it from other
+     configurations.
+     
+  Profile Printer Driver
+     This displays the printer driver filename.  It excludes the
+     extension from the name.  For example, if the HPPCL.DRV is
+     the driver to be tested, then HPPCL would be
+     entered/displayed in the box.  If an extension entered with
+     the driver name, then the application will strip it from the
+     name.
+     
+  Profile Printer Port
+     This represents the port which the output is to be
+     generated.  This can LPT ports or FILENAMES.
+
+
+ADDING A NEW PRINTER PROFILE TO LIST
+The addition of a printer profile to the list is necessary before
+that profile can be tested.  This can be performed by entering
+the information in the edit boxes provided below the listboxes.
+When selecting any edit box, a message will appear in the status-
+box indicating which information is desired.  The first step is
+to enter a new profile string (NOTE: there cannot be duplicate
+profile strings).  Follow the MS-DOS naming conventions.
+
+  example: adding TEST01.INI as a new profile to the LIST
+          listbox.  Assume the printer driver to be tested is the
+          HPPCL.DRV using the Z-Cartridge.  Also assume that the
+          output is to be generated to a file (\OUT1.PRN).
+
+     Step(1): Enter the name of the Profile.
+       
+        Test.ini
+       
+       
+     Step(2): Enter the description of the printer.
+       
+        HP Laser Jet IID (z-cart)
+       
+     
+     Step(3): Enter the printer driver file name (no ext).
+       
+        HPPCL
+       
+     
+     Step(4): Enter the printer port.
+       
+        \OUT1.PRN
+       
+     
+     Step(5): Push the ADD Pushbutton
+       When this button is pushed, a new profile should be added
+       to the LIST listbox.
+       
+        Test01.ini:HP Laser Jet IID (z-Cart),HPPCL,\OUT1.PRN     
+                                                                 
+       
+       
+     NOTE: if you are including a 2.x driver (one which doesn't
+     support ExtDeviceMode or DeviceCapabilities), then the
+     Profile Name must be specified as "WIN.INI".  You are also
+     limited to ONE entry for the driver.  That is, you cannot
+     specify 2 identical printers to the same port.
+       
+       
+ADDING PROFILE TO TEST
+In order to test the printer profile it must be added from the
+LIST listbox to the TEST listbox.  This is done by selecting the
+profile string in the LIST listbox and hitting the ADD
+pushbutton.  This will copy the string to the TEST listbox and
+included it in the test suite.  When moving the selection you
+will notice the Edit boxes changing to reflect the changing
+selected profiles.  You can manually enter the names to select to
+the test.  However, that is more work than needed.
+
+REMOVING PROFILE FROM LIST/TEST box.
+The REMOVE pushbutton performs two functions.  By moving the
+cursor in the LIST listbox, you can select the profile to remove.
+If the profile is also listed in the TEST listbox, then it will
+be removed from the test suite.  If the profile doesn't exist in
+th TEST listbox, then you will be prompted if you want to remove
+it from the LIST.  By doing so, you dis-associate the profile
+from the application and the profile is deleted from the disk.
+
+
+MODIFYING PROFILE STRING
+The strings in the listboxes can be modified or changed to a new
+string my using the MODIFY pushbutton.  Again, select the string
+to modify and enter the changes in the editboxes.  This is useful
+if you want the printer description to reflect different
+settings, or if a new port is desired.  If you attempt to change
+the profile name, make sure it is a name which doesn't exist in
+the TEST listbox.
+
+SETUP PROFILE
+This should be performed everytime a new profile is added, or
+needs to be changed.  This calls the printer driver's ExtDevMode
+routine to change the profile settings.  Once this is done, the
+profile will reflect the desired options such as landscape,
+portrait, cartridge selection, ect.
+
+MENU COMMANDS
+The menu commands allow the user to select the information to be
+included in each test suite.  This selection is global for all
+printers in the printer TEST listbox to be tested.  The
+application allows the user to define the information in the
+HEADER and the TESTS.
+
+
+  Settings
+     The settings menu contains two menu-items for setting up the
+     output information for the test suite.  There are two
+     selections for HEADER and TEST.
+
+     Header Command
+       This command displays a dialogbox depicting the
+       information which can be output in the header.  The header
+       can be disabled from being printed at all.  This is useful
+       if the user wants to initiate a small test suite, and
+       wishes to save paper.
+       
+     Tests Command
+       This command displays a dialogbox depicting the tests to
+       be executed.  By disabling the checkboxes, the user can
+       specify specific tests to be run.  Tests include (Bitmaps,
+       Text, Lines, Curves, Polygons).
+
+  EXECUTE
+     This menu command starts the test-suite.  It will start the
+     tests starting with the first profile in the TEST listbox,
+     and proceed through all the HEADER and TESTS information
+     until the last profile is executed.  Prior to executing the
+     tests, a DialogBox is displayed allowing the user to select
+     individual Pens, Brushes and Fonts.  The tests will use only
+     those selected objects in the generation of the tests.  This
+     will help reduce the amount of testcases for the output.
+     Usually a sample of the objects is sufficient for judging
+     the stability of the driver.
+
+  Help
+     This menu option displays information regarding the
+     application.
+     
+     About
+       This displays the dialogbox which contains information
+       regarding the version and build of the application.
+       
+     Help Index
+       Not Yet Implemented.
+       
+     Test Specifications
+       Not Yet Implemented.
+
+
+INITIALIZATION FILE
+The initialization file is a private profile for the Printer
+Driver Test Application.  It's function is to store information
+regarding the Test and List profiles which the application uses
+to run each test-suite.
+
+When loading the PrntTest executable, the application reads the
+profile strings and loads each appropriate listbox with that
+profile.  This allows the user to ADD/MODIFY/REMOVE test profiles
+and save that information when the application is closed.  The
+following are a list of the keys the application uses in starting
+up and closing.
+
+  PrinterList
+     This contains a list of profile strings to be loaded into
+     the LIST listbox.  The key value is the profile string.
+     This following example shows a sample of how the list
+     profiles could appear in the initialization file.
+     
+       [PrinterList]
+       Test01.ini=HP / LaserJet IID (z-cart),HPPCL,\OUT1.PRN
+       Test02.ini=Postscript LaserWriter,PSCRIPT,LPT2:
+  
+  PrinterTest
+     This contains a list of profile strings to be loaded into
+     the TEST listbox.  This follows the same convention as the
+     PrinterList entry.  The following shows an example of the
+     Test01.ini profile to be entered into the TEST listbox.
+     
+       [PrinterTest]
+       Test01.ini=HP / LaserJet IID (z-cart),HPPCL,\OUT1.PRN
+  
+  Startup
+     The startup section contains the flag settings for the
+     Header and Tests to be output for the suite.  The following
+     keys are in the startup section.
+     
+     HeaderTest
+       This stores the settings which were set in the Header
+       dialogbox.
+     
+     TestsTest
+       This stores the settings which were entered in the Tests
+       dialogbox.
+     
+     AutoRun
+       This key is a special (BOOLEAN) flag which will
+       automatically execute the test suite when the PrntTest
+       executable is run.  Once the test suite is finished, then
+       the application automatically closes itself, then it shuts
+       down Windows.  This flag is useful for the Windows Test
+       Groups: Automated Configuration Test.  The following are
+       the values which this flag can hold:
+     
+       1 = (TRUE) Run in automatic mode.  Load the profiles and
+          header/test settings then execute.  When done, exit
+          Windows back to the DOS prompt.
+       
+       0 = (FALSE) Run in manual mode.  This disables AutoRun.
+          The application just boots up with the settings.
+                                
+                 TEST SPECIFICATIONS (Overview)
+
+The following section describes the outlined areas which are
+covered in the tests.  The areas are isolated by the drivers
+capabilities.  Within each capability section the tests are
+defined.  For example, the BitBlt test is a test, or a collection
+of tests, which test the RASTER capabilities of the driver.
+
+  RASTER
+     BitBlt Test - ROP Combinations
+     StretchBlt Test - Expand (not fully implemented)
+  
+  TEXT/FONTS
+     ExtTextOut - clipping rectangles
+  
+  LINE
+     Polylines - Pen/Background combinations
+  
+  CURVE
+     Ellipses - Pen/BrushBackground combinations
+  
+  POLYGON
+     Polygons - Pen/Brush/Winding/Alternate fill combinations.
+
+               TEST SPECIFICATIONS (PrntTest)
+
+RASTER (BitBlt)
+
+1. Bitmap ROP Combinations.
+
+  Description
+  This tests the Raster OPerations (ROP) on source,
+  destination bitmaps with a patterned brush.  Each
+  combination of source/destination bitmap color will be
+  BitBlt using the 15 Windows defined Raster Operations.
+  
+  The design of the test is to output each example of the
+  source, destination and pattern as bitmaps.  Then to
+  combine those bitmaps into a resultant bitmap.
+  
+     Output Specifications
+     a) Source Bitmap                (.25" X .50")
+     b) Destination Bitmap           (.25" X .50")
+     c) Pattern Bitmap               (.25" X .50")
+     d) Result Bitmap                (.75" X .25")
+     e) Each testcase is spaced 1.25" apart.
+     f) Each page will contain multiple testcases.
+  
+          ROP CODE MNEMONIC
+          |-----|-----|-----|
+          |  s  |  d  |  p  |
+          |  r  |  e  |  a  |
+          |  c  |  s  |  t  |
+          |     |  t  |     |
+          |     |     |     |
+          |-----|-----|-----|
+          |                 |
+          |     Result.     |
+          |                 |
+          |-----------------|
+          
+  
+  Constraints
+  a) Fifteen ROP codes are used (defined ROPS).
+  b) Limited to the colors the device supports.
+  c) Pattern will remain constant (Forward Diagonal Brush).
+  
+  TestCases
+  Each testcase is a combination of different source,
+  destination and pattern bitmaps.  The number of testcases
+  vary with each driver, depending upon the capabilities of
+  the driver.
+  
+  Estimated Execute Time
+  3 Minutes
+
+RASTER (StretchBlt) - Not Complete
+
+1. Stretch ROP Combinations
+  
+  Description
+  This tests the StretchBlt function using various ROP
+  Codes.
+
+
+
+2. Stretch (Expand Bitmap).
+
+  Description
+  This tests the stretching of bitmaps to the printer device
+  using different StrethBlt modes.
+
+
+
+3. Stretch (Compress Bitmap).
+
+  Description
+  This tests the compressing of bitmaps to the printer
+  device using different StretchBlt modes.
+
+
+
+RASTER (FloodFill) - Not implemented
+
+1. Fill Objects.
+
+  Description
+  This tests the floodfilling of the Graphics objects for
+  the printer device.
+
+
+CURVES (Ellipse)
+
+1. Ellipse Pen/Brush/Background Combinations.
+
+  Description
+  This tests the output of ellipses while varying the pen,
+  brush and background attributes.
+  
+  The design of the test is to output the ellipses using all
+  pens for a given brush.  Likewise, the brushes will be
+  incremented so that all combinations are tested.  The
+  background mode can be either OPAQUE or TRANSPARENT.  The
+  ellipse is printed over a gray rectangle to verify the
+  correct background mode behavior.
+  
+     Output Specifications
+     a) Background Gray-rectangle    (.50" X 1.0")
+     b) Ellipse                      (1.0" X 1.0")
+     c) Each testcase is spaced 1.25" apart.
+     d) Each page will contain multiple testcases.
+  
+          BACKGROUND MODE - Brush (x)
+               |-----|
+             |||||   |
+           ||||||||| |
+          ||||||||||||
+           ||||||||| |
+             |||||   |
+               |-----|
+          
+  
+  Constraints
+  a) Background mode is either OPAQUE or TRANSPARENT.
+  b) Limited to the brushes/Pens the device supports.
+  
+  TestCases
+  Each testcase is a particular combination of pen, brush
+  and background.
+  
+  Estimated Execute Time
+  3 Minutes
+
+TEXT (ExtTextOut)
+
+1. Output on various clipping rectangles.
+
+  Description
+  This tests the output of a string on various points of the
+  output rectangle.
+  
+  The design of this test is to output a selected string
+  using all fonts the device supports.  A rectangle is
+  drawn, showing the output rectangle for the text.  The
+  rectangle can be defined as either CLIPPED or OPAQUE.
+  This has a different effect on the text.  If CLIPPED, then
+  the string will be clipped to the rectangle according to
+  its clipping capabilities.  If it overwrites the
+  boundaries.  Other tests for ExtTextOut includes the
+  generation of Synthesized (underlined,strikeout, and
+  italic).  This is only performed if the device is capable
+  of doing so.  The character spacing array is also used in
+  outputting the text to the rectangle.
+  
+     Output Specifications
+     a) Rectangle horz-centered      (Width = 1/2 of page)
+                                     (Height = font height)
+     b) String
+     c) Output at 9 point on rectangle
+     d) Each page will contain multiple testcases.
+          
+          
+          0              1              2
+           |---------------------------|
+          3|             4             |5
+           |---------------------------|
+          6              7              8
+          
+  
+  Constraints
+  a) Rectangle mode is either CLIPPED or OPAQUE (centered).
+  b) Limited to the number device fonts.
+  c) String remains constant.
+  d) Only nine points of rectangle are tested.
+  
+  TestCases
+  Each testcase represents the output of the test string at
+  any one of the 9 points illustrated above.  This will show
+  the effect of clipping the text at different points.
+     - Standard Font 0 character spacing
+     - Standard Font 2 character spacing
+     - Synth-italic font 0 character spacing
+     - Synth-underl font 2 character spacing
+     - Synth-strike font 4 character spacing.
+  
+  Estimated Execute Time
+  3 Minutes
+
+
+LINE (Polylines)
+
+1. Output with various pen width combinations.
+
+  Description
+  This tests the output of a series of polylines using the
+  various pens, brushes, and background modes of the device.
+  
+  The design of this test is to output a trapezoid shaped
+  object with various pen widths.  It will increment from 1
+  to 10 for pen widths.
+  
+     Output Specifications
+     a) Trapezoid                    (1" X 1")
+     b) Gray Rectangle               (.5" X 1")
+     c) Each page will contain multiple testcases.
+          
+          
+          
+  
+  Constraints
+  a) Brush remains constant (default).
+  b) Limited to the number device pens.
+  d) Pen widths range 1 - 10.
+  
+  TestCases
+  Each testcase represents the output of one trapezoid
+  object.
+  
+  Estimated Execute Time
+  3 Minutes
+
+
+TEXT (Polygon)
+
+1. Output using various pen/brush/background modes.
+
+  Description
+  This tests the output of a star-shape polygon using the
+  various combinations of pens, brushes, and background
+  modes.  It performs this with both WINDING and ALTERNATE
+  filling modes for a polygon.
+  
+     Output Specifications
+     a) Gray Rectangle               (.5" X 1")
+     b) Star Object                  (1" X 1")
+          
+          
+          
+  
+  Constraints
+  a) Star overlaps rectangle.
+  b) Limited to the number of pens/brushes.
+  c) Star remains constant shape.
+  
+  TestCases
+  Each testcase represents the output of a star on with the
+  given pen.
+  
+  Estimated Execute Time
+  3 Minutes
+

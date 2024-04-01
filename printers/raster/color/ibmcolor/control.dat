@@ -1,0 +1,88 @@
+short pcsbtab[] = {
+0x571b, 0x1b01, 0x0057
+};
+
+/* array of constants for different paper formats */
+/* in the order letter, fanfold, dina4, letter(landscape), fanfold(land), dina4(land) */
+PAPERFORMAT PaperFormat[] = {
+/* code, X size,         Y size,         X offset,      Y offset,       Form Length,    Physical Y offset*/
+{LETTER, HPAGESIZE,      VPAGESIZE,      HOFFSET,       VOFFSET,        VPAGESIZE,      VOFFSET - RIBBON_OFFSET,        },
+{DINA4,  DINA4_HPAGESIZE,DINA4_VPAGESIZE,DINA4_HOFFSET, DINA4_VOFFSET,  DINA4_VPAGESIZE,DINA4_VOFFSET - RIBBON_OFFSET,  },
+{FANFOLD,FANF_HPAGESIZE, FANF_VPAGESIZE, FANF_HOFFSET,  FANF_VOFFSET,   FANF_VPAGESIZE, FANF_VOFFSET - RIBBON_OFFSET,   },
+{LETTER, VPAGESIZE,      HPAGESIZE,      VOFFSET,       HOFFSET,        VPAGESIZE,      VOFFSET - RIBBON_OFFSET,        },
+{DINA4,  DINA4_VPAGESIZE,DINA4_HPAGESIZE,DINA4_VOFFSET, DINA4_HOFFSET,  DINA4_VPAGESIZE,DINA4_VOFFSET - RIBBON_OFFSET,  },
+{FANFOLD,FANF_VPAGESIZE, FANF_HPAGESIZE, FANF_VOFFSET,  FANF_HOFFSET,   FANF_VPAGESIZE, FANF_VOFFSET - RIBBON_OFFSET,   },
+};
+
+GRAPHRESET    reset = { '\033', 'L', 0};
+
+/* escape sequence to move by cnt pixels vertically */
+#define LINESP_CHAR     'J' /* line space control character -- (ESC) J n cause
+                               line spacing to be set to n/144 inches */
+#define DELY_LENGTH     3
+
+DELY dely = { '\033', LINESP_CHAR, '\0', '\012', DELY_LENGTH, 3};
+
+DELX delx = { '\033', 'd', 0, 4 };
+
+ESCAPECODE escapecode =
+        {
+            {   "",         0   },  /* italic_on;   */
+            {   "",         0   },  /* italic_off;  */
+            {   "\033G",    2   },  /* bold_on      */
+            {   "\033H",    2   },  /* bold_off     */
+            {   "\033-\001",3   },  /* underl_on;   */
+            {   "\033-\0",  3   },  /* underl_off;  */
+            {   "\015",     1   },  /* cr;          */
+            {   "\017",     1   },  /* compress_on; */
+            {   "\022",     1   },  /* pica_on;     */
+            {   "",         0   },  /* elite_on;    */
+        };
+
+ESCAPEPAIR CMYTable[MAXCOLOR] =
+        {
+            {   "",		0   },  		/* WHITE   = 0x00 */
+            {   "\033c",	2   },  		/* CYAN    = 0x01 */
+            {   "\033m",	2   },  		/* MAGENTA = 0x02 */
+            {   "",		0   },
+            {   "\033y",	2   },  		/* YELLOW  = 0x04 */
+            {   "",		0   },
+            {   "",		0   },
+            {   "\033b",	2   },  		/* BLACK   = 0x07 */
+        };
+
+DEVICEHDR land_device =
+        {
+                DEV_LAND,
+                {
+                0,
+                PG_DOWN/MAXBAND,
+                PG_ACROSS,
+                PG_DOWN/MAXBAND/8,
+                3,
+                1,
+                0,
+                PG_DOWN/MAXBAND/8*PG_ACROSS,
+                0,0,0,0,0,0
+                },
+                &PaperFormat[MAXPAPERFORMAT],
+                0,0,0,0,0,0,0,0,0,0
+        };
+
+DEVICEHDR port_device =
+        {
+                DEV_PORT,
+                {
+                0,
+                PG_ACROSS,
+                PG_DOWN/MAXBAND,
+                PG_ACROSS/8,
+                3,
+                1,
+                0,
+                PG_DOWN/MAXBAND/8*PG_ACROSS,
+                0,0,0,0,0,0
+                },
+                PaperFormat,
+                0,0,0,0,0,0,0,0,0,0
+        };

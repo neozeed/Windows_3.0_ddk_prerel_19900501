@@ -1,0 +1,1233 @@
+%-------------------------------------------------------------------------
+% header.ps
+%
+% windows postscript header
+% this code sets up the Win32Dict dictionary that contains all of the
+% windows postscript functions and variables
+%-------------------------------------------------------------------------
+
+/Win32Dict 
+#ifdef FULL_HEADER
+282 
+#else
+60
+#endif
+dict def Win32Dict begin
+
+/bd {bind def} bind def
+/in {72 mul} bd		% inches (user -> inches)
+/ed {exch def} bd
+
+#ifdef FULL_HEADER
+
+/ld {load def} bd
+
+% shorthand notation for compactness
+
+/mt  {transform round exch round exch itransform moveto} bd
+/rmt {transform round exch round exch itransform rmoveto} bd
+/rlt {transform round exch round exch itransform rlineto} bd
+/lto {transform round exch round exch itransform lineto} bd
+
+/gs /gsave ld
+/gr /grestore ld
+/sc /setrgbcolor ld
+/lj /setlinejoin ld
+/lc /setlinecap ld
+/ml /setmiterlimit ld
+/sl /setlinewidth ld
+
+% variable init
+
+/PenW 1 def
+/iPen 5 def 		% default pen type	NULL
+/mxF matrix def		% current font matrix
+/mxE matrix def		% current excapement matrix
+/fBE false def		% use break extra (initially turned off)
+/iDevRes 72 0 matrix defaultmatrix dtransform dup mul exch dup mul add sqrt def
+
+#endif 	% FULL_HEADER
+
+
+% SS and RS frame every page to make each page independant of the
+% other and to conserve that precious VM space that (supposedly) dwindels
+% away as you do everyday standard things (see the ps red book)
+%
+% debugging code can be enabled to print stuff on SS and EJ so we
+% see what is going on at the start and end of every page
+
+%
+% save state
+%
+/SS {
+	/SV save def
+
+#ifdef DEBUG
+%---------------------------------------------------------------------------
+% timer and VM debuggin code
+% tap in here and set the timer and get the vmstatus
+
+	/debug_str 40 string def		% use this for printing
+
+	32 0 0 42 42 0 0 40 0 0 0 /Helvetica font
+	50 50 moveto
+	vmstatus			% get the VM status
+	(Total Mem: ) show
+	debug_str cvs show
+	(  Mem Used: ) show
+	dup /StartMem ed
+	debug_str cvs show
+	pop				% get rid of level
+
+	/StartTime usertime def		% get the current time
+%---------------------------------------------------------------------------
+#endif
+
+} bd
+
+%
+% restore state
+%
+/RS {
+	SV restore
+} bd
+
+%
+% Eject (print the current page)
+%
+% -- EJ --
+%
+/EJ {
+
+#ifdef DEBUG
+%---------------------------------------------------------------------------
+% timer and VM debuggin code
+% report the elapsed time and VM status
+
+	usertime StartTime sub	% leave time on the stack
+				% (don't include time to do stuff below)
+
+	32 0 0 42 42 0 0 40 0 0 0 /Helvetica font
+	50 3000 moveto
+	(Time: ) show
+	debug_str cvs show		% convert time to string
+	( msec  ) show
+	vmstatus			% get the VM status
+	(Total Mem: ) show
+	debug_str cvs show
+	(  Mem Used: ) show
+	dup StartMem sub exch
+	debug_str cvs show
+	(  Page Mem Used: ) show
+	debug_str cvs show
+	pop				% get rid of level
+%---------------------------------------------------------------------------
+#endif
+	gs showpage gr
+} bd	% showpage does initgraphics
+
+%
+% set the number of copies
+%
+%	int #C --
+%
+/#C {userdict begin /#copies ed end } bd
+
+%
+% set the job timeout
+%
+% 	int SJT --
+%
+% /SJT {statusdict begin setjobtimeout end} bd
+%
+
+
+% SetMetrics(cxM, cyM, cxP, cyP, res, landscape);
+%
+% all x and y values are passed in pixel units (GDI knows about us in
+% terms of our max vertical and horz resolution as defined by the
+% PAPER struct).
+%
+% we set global vars in USER UNITS (72/inch) based on the parameters
+% passed.
+%
+% note: iRes allows the user to change the dots/inch to something
+%	other than the default.
+
+/SM
+{
+ 	/fLS exch 0 ne def		 % set fLS flag
+ 	/iRes ed			 % res in dots/inch
+	fLS
+	% fLS 
+	{
+	    	/cxP exch iRes div in def % page height
+		/cyP exch iRes div in def % page width
+		/cxM exch iRes div in def % image y offset from origin
+		/cyM exch iRes div in def % image x offset from origin
+	} {	% !fLS 
+    		/cyP exch iRes div in def % page height
+		/cxP exch iRes div in def % page width
+		/cyM exch iRes div in def % image y offset from origin
+		/cxM exch iRes div in def % image x offset from origin
+	} ifelse
+
+	% put us in the default user space with lowerleft as origin, 72dpi
+	matrix defaultmatrix setmatrix
+	fLS { 0 cyP translate -90 rotate } if
+
+	%
+	% set current transform matrix (CTM) to map
+	% from GDI space to USER space
+	%
+	%	GDI space	  	   USER space
+	%
+	%	+------>	  	   ^
+	%	|		  	   |
+	%	|		  	   |
+	%	|	    -- CTM ->  	   |
+	%	|		  	   |
+	%	V		  	   +------->
+	%
+
+	% offset x by the margin width
+	% offset y by page heigth - margin
+	fLS
+ 	{
+		cyM cxP cxM sub
+	} {
+		cxM cyP cyM sub
+	} ifelse
+ 	translate
+
+	% scale to get GDI extent -> USER extent
+	% and negate y scale to flip coordinate system
+
+ 	72 iRes div dup neg
+ 	scale
+} bd
+
+#ifdef FULL_HEADER
+
+/ratGdiDev { iDevRes iRes div } bd
+% Align a user space coordinate to a pixel boundary.
+/Align { ratGdiDev mul round ratGdiDev div } bd
+/AlignXY { iRes iDevRes ne {Align exch Align exch } if } bd
+
+%
+% SetJustify(TBreakExtra, BreakCount)
+%
+% sets global justify parameters for the next StrBlt. dxBreak fBE
+%
+/SJ
+{
+	1 index 0 eq	% get TBreakExtra
+	{
+		pop pop		% clear the stack
+		/fBE false def	% turn off if 0 BreakCount
+	} {
+		1 index		% get the Break value (# pixels to adjust)
+		/Break ed	% save it for use in SB
+		div		% dxBreak = TBreakExtra / BreakCount
+		/dxBreak ed	% insert this much for each
+		/fBE true def	% tell StrBlt to use these
+	} ifelse
+} bd
+
+
+% This vector remaps the character set from Adobe Standard to ANSI
+% The first few values are referenced by composite characters
+/ANSIVec[
+16#0 /grave
+16#1 /acute
+16#2 /circumflex
+16#3 /tilde
+16#4 /macron
+16#5 /breve
+16#6 /dotaccent
+16#7 /dieresis
+16#8 /ring
+16#9 /cedilla
+16#A /hungarumlaut
+16#B /ogonek
+16#C /caron
+16#D /dotlessi
+16#27 /quotesingle
+16#60 /grave
+16#7C /bar			%sjp20Aug87
+16#91 /quoteleft
+16#92 /quoteright
+16#93 /quotedblleft
+16#94 /quotedblright
+16#95 /bullet
+16#96 /endash
+16#97 /emdash
+16#A0 /space
+16#A4 /currency
+16#A6 /brokenbar		%sjp20Aug87: changed from /bar
+16#A7 /section
+16#A8 /dieresis
+16#A9 /copyright		%sec 87-1-16
+16#AA /ordfeminine
+16#AB /guillemotleft
+16#AC /logicalnot		%sjp05Nov87 /bullet
+16#AD /hyphen
+16#AE /registered		%sec87-1-16
+16#AF /macron
+16#B0 /degree			%problem here?...sjp21jul87 /ring
+16#B1 /plusminus		%sjp21jul87 /bullet
+16#B2 /twosuperior		%sjp21jul87 /bullet
+16#B3 /threesuperior		%sjp21jul87 /bullet
+16#B4 /acute
+16#B5 /mu			%sjp21jul87 /bullet
+16#B6 /paragraph
+16#B7 /periodcentered
+16#B8 /cedilla
+16#B9 /onesuperior		%sjp21jul87 /bullet
+16#BA /ordmasculine
+16#BB /guillemotright
+16#BC /onequarter		%problem here?...sjp21jul87 /bullet		%sec87-1-16
+16#BD /onehalf			%sjp21jul87 /bullet
+16#BE /threequarters		%sjp21jul87 /bullet
+16#BF /questiondown
+16#C0 /Agrave
+16#C1 /Aacute
+16#C2 /Acircumflex
+16#C3 /Atilde
+16#C4 /Adieresis
+16#C5 /Aring
+16#C6 /AE
+16#C7 /Ccedilla
+16#C8 /Egrave
+16#C9 /Eacute
+16#CA /Ecircumflex
+16#CB /Edieresis
+16#CC /Igrave
+16#CD /Iacute
+16#CE /Icircumflex
+16#CF /Idieresis
+16#D0 /Eth			%sjp21jul87 /bullet
+16#D1 /Ntilde
+16#D2 /Ograve
+16#D3 /Oacute
+16#D4 /Ocircumflex
+16#D5 /Otilde
+16#D6 /Odieresis
+16#D7 /multiply			%sjp20Aug87	/bullet
+16#D8 /Oslash
+16#D9 /Ugrave
+16#DA /Uacute
+16#DB /Ucircumflex
+16#DC /Udieresis
+16#DD /Yacute			%sjp21jul87 /bullet
+16#DE /Thorn			%sjp21jul87 /bullet
+16#DF /germandbls
+16#E0 /agrave
+16#E1 /aacute
+16#E2 /acircumflex
+16#E3 /atilde
+16#E4 /adieresis
+16#E5 /aring
+16#E6 /ae
+16#E7 /ccedilla
+16#E8 /egrave
+16#E9 /eacute
+16#EA /ecircumflex
+16#EB /edieresis
+16#EC /igrave
+16#ED /iacute
+16#EE /icircumflex
+16#EF /idieresis
+16#F0 /eth			%sjp21jul87 /bullet
+16#F1 /ntilde
+16#F2 /ograve
+16#F3 /oacute
+16#F4 /ocircumflex
+16#F5 /otilde
+16#F6 /odieresis
+16#F7 /divide			%sjp20Aug87	/bullet
+16#F8 /oslash
+16#F9 /ugrave
+16#FA /uacute
+16#FB /ucircumflex
+16#FC /udieresis
+16#FD /yacute			%sjp21jul87 /bullet
+16#FE /thorn			%sjp21jul87 /bullet
+16#FF /ydieresis
+] def
+
+/reencdict 12 dict def
+
+
+% CharName  IsChar  BOOL
+% IsChar tests to see if a character is in the basefontdict.
+% It returns true if it is, otherwise false.
+%
+/IsChar {basefontdict /CharStrings get exch known} bd
+
+
+% CharPosition CharName  MapCh  --
+% MapCh sets the specified character mapping in the font
+% being created (newfontdict)
+%
+/MapCh
+{
+	dup IsChar not {
+		pop /bullet
+	} if 
+	newfont /Encoding get 3 1 roll put 
+} bd
+
+
+% --  MapDegree  --
+% MapDegree maps /degree to 0xb0 if it exists in the character set
+% otherwise it tries to map the older /ring.
+%
+/MapDegree{16#b0 /degree IsChar {/degree}{/ring} ifelse MapCh} bd
+
+
+% --  MapBB  --
+% MapBB maps /brokenbar to 0xa6 if it exists in the character set
+% otherwise it tries to map the older /bar.
+%
+/MapBB {16#a6 /brokenbar IsChar {/brokenbar}{/bar}ifelse MapCh} bd
+
+
+% ANSIFont (/PSFontName /NewFontName)
+% This routine creates a new font that has the ANSI character set
+/ANSIFont
+	{
+	reencdict begin
+        /newfontname ed           %may use up VM
+        /basefontname ed
+
+ 	FontDirectory newfontname known not
+ 	{
+ 		/basefontdict basefontname findfont def
+ 		/newfont basefontdict maxlength dict def
+ 		basefontdict
+ 			{
+				exch dup /FID ne
+ 				{ dup /Encoding eq
+ 					{ exch dup length array copy newfont 3 1 roll put }
+ 					{ exch newfont 3 1 roll put }
+ 					ifelse
+ 				}
+ 				{pop pop}
+ 				ifelse
+ 			}forall
+ 		newfont /FontName newfontname put
+ 		127 1 159 {newfont /Encoding get exch /bullet put} for
+ 		ANSIVec aload pop
+ 		ANSIVec length 2 idiv
+
+
+		% If the character is not part of the character set
+		% then substitute a bullet.  This is done because the new
+		% Adobe fonts are a superset of the old, and not all printers
+		% can be assumed to have these character sets available.
+
+		{MapCh} repeat 
+
+		% Since the old Adobe character sets did not have 
+		% /degree or /brokenbar they were previously mapped to
+		% to /ring and /bar (part of the old character set and
+		% also part of the new).  In order to provide some level
+		% of backward compatibility these 2 are remapped to the old
+		% characters (if possible) rather than becoming /bullet.
+
+		MapDegree MapBB
+
+ 		newfontname newfont definefont pop
+ 	} if
+ 	newfontname
+ 	end
+} bd
+
+
+
+%
+% strblt
+%
+% x y width str SB --
+%
+% x is x coordinate
+% y is y + ascent to use postscript char origin
+%
+% the string is expanded to occupy width units, either using the break char
+% or the break char and individual char spacing.
+%
+/SB
+{
+	TC			% set the text color
+ 	/str ed		   	% str
+	str length		% get the length on the stack
+	fBE not	{		% ! Break Extra
+		dup 1 gt {	% length > 1
+			1 sub	% length--
+		} if
+	} if
+	/cbStr ed		% cbStr = string length in chars
+ 	/dxGdi ed	   	% dxGdi = width (to expand string out to)
+	/y0 ed		   	% y
+   	/x0 ed		   	% x
+   	iRes iDevRes ne {
+		x0 y0 AlignXY /y0 ed /x0 ed
+	} if
+   	str stringwidth		% x y width
+
+	% avoid this junk for normal text
+	% we may want to just do this in all cases.  do some profiling
+	% to see...
+
+	esc 0 ne {
+		% here we have to transform the width vector back down
+		% to our rectangular coord system so we can compute the
+		% dx and dy Extra properly.  This is because ashow
+		% and awidthshow take their deltas in the current user
+		% coord system (non rotated)
+
+		mxE itransform	% bring these back to rectangular system
+		exch	      	% swap x an y
+		neg dxGdi add	
+		cbStr div	% dxExtra = (width - str_width) / cbStr
+		exch		% swap back
+		mxE transform	% transform back to rotate space
+		% leave dx dy on stack
+	} {
+		exch	      	% swap x an y
+		neg dxGdi add	
+		cbStr div	% dxExtra = (width - str_width) / cbStr
+		exch		% swap back
+	} ifelse
+
+	/dyExtra ed		% grab these
+	/dxExtra ed
+
+ 	x0 y0 mt		% start drawing here
+
+ 	fBE {			% Break Extra mode?
+		dxBreak 0 BCh dxExtra dyExtra str awidthshow	% yes
+	} {
+		dxExtra dyExtra str ashow			% no
+	} ifelse
+
+ 	fUL {	% do underline
+		x0 y0 M			% move to start pos
+		dxUL dyUL rmt	% move relative to UL pos
+		dxGdi fBE { Break add } if % adjust for justification
+		0
+		mxE transform		% xform length vector
+		rlt			% trace the path
+	 	cyUL sl			% set the line witdh
+		stroke			% draw the line
+	} if
+	fSO {	% do strikeout
+		x0 y0 M			% move to start pos
+		dxSO dySO rmt
+		dxGdi fBE { Break add } if % adjust for justification
+		0 
+		mxE transform
+		rlt
+		cyUL sl
+		stroke
+	} if
+
+ 	/fBE false def	% turn off. needs to be explictly enabled for each line
+} bd
+
+%
+% BCh esc ori Sx Sy fUL fSO Ascent r g b /Font font --
+%
+% select a new font
+%
+/font
+{
+	/name ed		% save the font name (full postscript name)
+	255 div /tB ed   	% save color
+	255 div /tG ed
+	255 div /tR ed
+	/Ascent ed		% windows font ascent
+ 	0 ne /fSO ed	       	% grab fSO strikeout
+ 	0 ne /fUL ed	       	% grab fUL underline
+ 	/Sy ed		       	% Sy
+ 	/Sx ed		       	% Sx
+ 	10.0 div /ori ed 	% orientation (char rotation)
+ 	-10.0 div /esc ed	% escapement (line rotation)
+ 	/BCh ed		       	% break char
+	name findfont		% font_dict
+
+	% scale and flip (neg y flips) to get position in GDI space
+	% translate moves char origin to upper left corner
+
+	[Sx 0 0 Sy neg 0 Ascent]	% scale and translate matrix
+
+	% now rotate to support the escapement requested
+
+ 	esc mxE rotate		% fd m m store escapement in msE
+
+	mxF concatmatrix	% fd m	store this in mxF
+
+ 	makefont setfont	%
+ 
+	fUL {			% set underline params
+		currentfont
+	 	dup		% fd fd
+		/FontInfo get	% fd id
+		/UnderlineThickness known not
+	 	{
+			pop /Courier findfont
+		} if
+ 		/FontInfo get dup /UnderlinePosition get
+	 	1000 div		% char space is 1000 units high
+	 	0 exch mxF transform	% transform UL pos
+	 	/dyUL ed
+ 		/dxUL ed
+	 	/UnderlineThickness get 1000 div Sy mul /cyUL ed
+	} if
+
+	fSO {			% set strikeout params
+		0 .3 mxF transform	% .3 up the font height
+		/dySO ed
+		/dxSO ed
+	} if
+} bd
+
+
+/FC { bR bG bB sc } bd		% fill color
+% r g b fC --
+/fC
+{
+	255 div /bB ed 
+	255 div /bG ed 
+	255 div /bR ed 
+} bd
+
+
+/HC { hR hG hB sc } bd		% hatch and pattern color
+% r g b hC --
+/hC
+{
+	255 div /hB ed
+	255 div /hG ed
+	255 div /hR ed
+} bd
+
+/PC { pR pG pB sc } bd
+% r g b pC --
+/pC {
+	255 div /pB ed
+	255 div /pG ed
+	255 div /pR ed
+} bd
+
+/TC { tR tG tB sc } bd
+
+% x y min min_x_y
+
+/min {2 copy gt {exch} if pop} bd
+/max {2 copy lt {exch} if pop} bd
+/NonZero { dup 0 eq { pop 1 } if } bd	% turn 0 into a 1 or leave unmodified
+
+%
+% fill the current path
+%
+% NOTE: since pfill depends on the state being restored by S (stroke)
+% you must always call S after you call F (fill) to allow you to
+% change the fill pattern font.
+%
+% fill_type F --
+%
+/F
+{
+	/ft ed		% save the fill type 0 == fill 1 == eofill
+
+
+ 	fm 256 and 0 ne {		% FM_FILL (fill with solid color)
+		gs
+		FC	% fill color
+		ft 0 eq {fill}{eofill} ifelse
+		gr
+	} if
+
+ 	fm 1536 and 0 ne {		% FM_HATCH | FM_PATTERN
+		gs			% keep current path
+		HC			% hatch (and pattern) color
+		ft 0 eq
+		{clip}{eoclip} ifelse	% clip to object that was drawn
+
+	 	fm 1024 and 0 ne {	% FM_PATTERN
+			/Tmp save def
+			pfill
+			Tmp restore
+		} {
+			fm 15 and hfill	% pass low nyble for hatch type
+		} ifelse
+		gr			% nothing ever happened
+	} if
+} bd
+
+%-------------------------------------------------------------------------
+%
+% pattern filling code
+%
+% this implements pattern filling by defining a font and tiling chars
+% from the font over the bounding box (clipped) of the object.
+%
+% this works well because our pattern gets cached and thus does not
+% have to be re-rendered every time it is called.
+%
+% see pfill.ps for an alternate implementation of this using imagemask
+%
+
+/patfont 10 dict def patfont begin	% maybe this can be smaller
+/FontType 3 def				% user defined
+/FontMatrix [1 0 0 1 0 0] def		% char space is
+/FontBBox [0 0 1 1] def
+/Encoding StandardEncoding def		% needed to make the cache stuff work
+/BuildChar		% stack has: font char
+{
+	pop pop		% clear unneeded junk
+	1 0		% width between chars
+	0 0 1 1		% lower left and upper right
+	setcachedevice	% make this guy go in the cache
+	16 16 false [16 0 0 16 0 0] {pat} imagemask
+} bd
+end	% of patfont
+
+
+% pat_string P --
+/P
+{
+	/pat 32 string def	% expand the 8x8 to 16x16
+	{} forall		% push the 8 chars from the string
+	
+	0 1 7 {
+		dup
+		2 mul
+		pat exch	% ... val i pat i*2
+		3 index		% ... val i pat i*2 val
+		put		% ... val i
+		dup
+		2 mul 1 add
+		pat exch	% ... val i pat i*2+1
+		3 index		% ... val i pat i*2+1 val
+		put
+		dup
+		2 mul 16 add
+		pat exch	% ... val i pat i*2+16
+		3 index		% ... val i pat i*2+16 val
+		put
+		2 mul 17 add
+		pat exch	% ... val pat i*2+17
+		2 index		% ... val pat i*2+17 val
+		put
+		pop		% done with this guy
+	} for
+} bd
+
+
+% make sure a save restore surounds this so we can redfine this font
+/pfill
+{
+	% width must be a multiple of 8 because allign pattern filling
+	% to byte boundaries
+	/w iDevRes iRes div 32 mul def		% resolution independant
+	/PatFont patfont definefont pop		% generate pattern font
+	/PatFont findfont w scalefont setfont	% scale and select
+
+	/ch (AAAA) def		% do 4 chars at a time (this is faster)
+	X0 w 4 mul X1 {		% width of 4 chars
+		Y0 w Y1 {
+			1 index exch
+			mt
+			ch show
+		} for
+	} for
+} bd
+
+%-------------------------------------------------------------------------
+
+%
+% hatch_type hfill --
+%
+% uses globals X0 Y0 X1 Y1 (hatch bounding box)
+% 
+/hfill
+{
+	2 sl		% seems to look ok
+	newpath			% don't draw outline
+	/w iDevRes iRes div 16 mul def	% hatch width
+
+	dup 0 eq {horz} if		% HS_HORIZONTAL	    0 ----- 
+	dup 1 eq {vert} if		% HS_VERTICAL	    1 ||||| 
+	dup 2 eq {fdiag} if		% HS_FDIAGONAL	    2 ///// 
+	dup 3 eq {bdiag} if		% HS_BDIAGONAL	    3 \\\\\ 
+	dup 4 eq {horz vert} if		% HS_CROSS	    4 +++++ 
+	    5 eq {fdiag bdiag} if	% HS_DIAGCROSS	    5 xxxxx 
+
+} bd
+
+
+%
+% -- vert --
+%
+% draw horzontal lines
+%
+% uses gloabals X0 Y0 X1 Y1
+%
+/vert
+{
+	X0 w X1 {
+		dup Y0 mt
+		Y1 lto
+		stroke
+	} for
+} bd
+
+%
+% -- horz --
+%
+% draw horzontal lines
+%
+% uses gloabals X0 Y0 X1 Y1
+%
+/horz
+{
+	Y0 w Y1 {
+		dup X0 exch mt
+		X1 exch lto
+		stroke
+	} for
+} bd
+
+
+%
+% -- fdiag --
+%
+% draw horzontal lines lower left to upper right
+%
+% uses gloabals X0 Y0 X1 Y1
+%
+/fdiag
+{
+	X0 w X1 {
+		Y0 mt		% x Y0 moveto
+		X1 X0 sub dup rlt
+		stroke
+	} for
+	Y0 w Y1 {
+		X0 exch mt		% X0 Y moveto
+		Y1 Y0 sub dup rlt
+		stroke
+	} for
+} bd
+
+%
+% -- bdiag --
+%
+% draw horzontal lines upper left to lower right
+%
+% uses gloabals X0 Y0 X1 Y1
+%
+/bdiag
+{
+	X0 w X1 {
+		Y1 mt		% x Y1 moveto
+		X1 X0 sub dup neg rlt	% stroke down to the right
+		stroke
+	} for
+	Y0 w Y1 {
+		X0 exch mt			% Y X0 moveto
+		Y1 Y0 sub dup neg rlt
+		stroke
+	} for
+} bd
+
+
+
+%
+% set hatch rect (sets gloabals bounding rect for hatched fills)
+%
+% X0 Y0 X1 Y1 SHR --
+%
+/SHR
+{
+	/Y1 ed
+	/X1 ed
+	/Y0 ed
+	/X0 ed
+
+#ifdef DEBUG_FILL
+% for debugging		trace bounding rect of hatch/pattern rect
+	gs		
+	1 sl	
+	0 setgray	
+	newpath		
+	X0 Y0 mt	
+	X1 Y0 lto	
+	X1 Y1 lto	
+	X0 Y1 lto	
+	closepath	
+	stroke		
+	gr
+#endif
+
+} bd
+
+
+%
+% stroke the current path with the current pen
+%
+% -- S --
+%
+/S
+{
+ 	PenW sl
+	iPen 5 eq
+	{
+		newpath		% null stroke (style == 5)
+	} {
+		PC stroke
+	} ifelse
+} bd
+
+%
+% uses globals Tx Ty Sx Sy
+%
+/GetAngle
+{
+	Ty sub
+	Sy div
+	exch
+	Tx sub
+	Sx div
+	atan
+} bd
+
+/m matrix def 
+/cellsize 0 def 
+
+
+/GW  { iRes 0.0825 mul PenW mul cvi } bd	% gap width
+/DoW { iRes 0.020 mul PenW mul cvi }  bd	% dot width
+/DW  { iRes 0.125 mul PenW mul cvi }  bd	% dash width
+
+
+
+%
+% SetPen
+%
+% style width SP --
+%
+% sets global pen stuff (iPen PenW)
+%
+/SP
+{
+ 	/PenW ed		% save width
+ 	/iPen ed		% save style
+
+ 	iPen 0 eq 
+	{ [] 0 setdash } if
+
+ 	iPen 1 eq 
+	{ [DW GW] 0 setdash } if
+
+ 	iPen 2 eq 
+	{ [DoW GW] 0 setdash } if
+
+ 	iPen 3 eq 
+	{ [DW GW DoW GW] 0 setdash } if
+
+	iPen 4 eq 
+	{ [DW GW DoW GW DoW GW] 0 setdash} if
+} bd
+
+%
+% Ellipse box
+%
+% given a bounding box of an ellipse or arc this function
+% centers the coord sys at its center and sets the scale
+% properly to stroke out the path.  the center of the coord sys and radius
+% is left on the stack.
+%
+% x0 y0 x1 y1 EBox 0 0 rad
+%
+% note: this modifies the CTM and uses globals (x0 y0 x1 y1) to talk to
+%	ABox
+%
+/EBox
+{
+        /y1 ed /x1 ed
+        /y0 ed /x0 ed
+        /Sx x1 x0 sub 2 div abs NonZero def
+        /Sy y1 y0 sub 2 div abs NonZero def
+        Sx Sy min /r ed
+
+        x0 x1 add 2 div /Tx ed
+        y0 y1 add 2 div /Ty ed
+        Tx Ty translate
+        Sx r div Sy r div scale
+        0 0 r
+} bd
+
+%
+% Ellipse
+%
+%  x0 y0 x1 y1 E --
+%
+/E
+{
+	m currentmatrix		% save current matrix
+	5 1 roll
+	EBox
+        newpath 0 360 arc
+	closepath
+	setmatrix		% restore
+        0 F
+	S
+} bd
+
+%
+% Arc Box
+%
+% x0 y0 x1 y1 x2 y2 x3 y3 ABox 0 0 rad angle angle
+%
+% x0 y0 x1 y1 are the bounding box
+% x2 y2 is the starting point
+% x3 y3 is the end point
+%
+% this function leaves the x y radius and two angle on the stack ready
+% for the arc function
+%
+% note: this modifies the CTM
+%
+/ABox
+{
+        /y3 ed /x3 ed
+        /y2 ed /x2 ed
+        EBox
+
+        % Make a check for degeneracy
+        x0 x1 eq y0 y1 eq or
+        {
+            y0 y1 eq
+            { x2 x3 le { 90 180 } { 0 90 } ifelse }
+            { y2 y3 le { 0 90 } { 270 360 } ifelse }
+            ifelse
+        } {
+		x3 y3 GetAngle x2 y2 GetAngle
+	}
+        ifelse
+} bd
+
+%
+% Arc
+%
+% x0 y0 x1 y1 x2 y2 x3 y3 A --
+%
+/A
+{
+	m currentmatrix		% save current matrix
+	9 1 roll
+	ABox
+	newpath arc
+	setmatrix		% restore
+	S
+} bd
+
+%
+% Pie
+% 
+% x0 y0 x1 y1 x2 y2 x3 y3 Pie --
+%
+/Pie
+{
+	m currentmatrix		% save current matrix
+	9 1 roll
+	ABox
+	newpath
+	0 0 mt
+	arc
+	closepath
+	setmatrix		% restore
+        0 F			% fill it
+	S			% stroke it
+} bd
+
+%
+% GDI rectangle
+%
+% dx dy x y R --
+%
+%
+/R
+{
+	B		% do box
+ 	0 F		% do interior
+	S		% do outline
+} bd
+
+%
+% RoundRect
+%
+% x0 y0 x1 y1 x2 y2 RR --
+%
+/RR {
+	m currentmatrix		% save current matrix
+	7 1 roll
+	/y2 ed	/x2 ed
+	/yscale y2 x2 div 1 max def
+	/xscale x2 y2 div 1 max def
+	/y1 exch yscale div def
+	/x1 exch xscale div def
+	/y0 exch yscale div def
+	/x0 exch xscale div def
+	/r2 x2 y2 min def
+	xscale yscale scale
+	newpath
+	x0 r2 add y0 mt
+	x1 y0 x1 y1 r2 arcto 4 { pop } repeat
+	x1 y1 x0 y1 r2 arcto 4 { pop } repeat
+	x0 y1 x0 y0 r2 arcto 4 { pop } repeat
+	x0 y0 x1 y0 r2 arcto 4 { pop } repeat
+	closepath
+	setmatrix		% restore
+	0 F			% fill
+	S			% stroke
+} bd
+
+
+%
+%	Polygon and Polyline drawing routines
+%
+%	Initiate a polygon or polyline with P (start path)
+%	Generate a series of points with PP (poly points)
+%	stroke the  path with EL (end line)
+%	or
+%	stroke and fill with EF (end fill)
+%
+%	note: all coords except the initial points are relative!
+
+%
+% Move to start of new path
+%
+% x y M --
+%
+/M
+{
+	newpath
+ 	mt
+} bd
+
+%
+% PolyPoints
+%
+% trace a path of n realitive points
+%
+% RPn RPn-1 RPn-2 ... RP1 n PP --
+%
+/PP
+{
+ 	{ rlt } repeat
+} bd
+
+%
+% EndFill
+%
+% stroke and fill the path defined by P and PP with curr pen and brush
+%
+% style EF --
+%
+/EF
+{
+ 	closepath
+ 	F		% pass style on to F (fill)
+ 	S
+} bd
+
+%
+% EndLine
+%
+% stroke the path defined by P and PP
+%
+% -- EL --
+%
+/EL
+{
+ 	S
+} bd
+
+
+%
+% ScanLine
+%
+% {x1 x2} y_coord pt_count use_brush SL --
+%
+/SL
+{
+ 	0 eq
+ 	{
+		PC
+	} {
+	 	FC		% fill color
+	 	1 sl
+	 	[] 0 setdash
+ 	} ifelse
+ 	exch /y0 ed
+ 	{
+	 	y0 mt
+	 	y0 lto
+	 	stroke
+ 	} repeat
+} bd
+
+%
+% OpaqueBox
+%
+% dx dy x y r g b OB --
+%
+% used by ExtTextOut and BitBlt
+%
+/OB
+{
+	gs
+	sc
+	B
+	fill
+	gr
+} bd
+
+#endif	% FULL_HEADER
+
+%
+% Box		make the current path the box defined by dx dy x y
+% 
+% dx dy x y B --
+%
+/B
+{
+ 	newpath
+ 	mt	    	% x y
+ 	/dy ed
+	/dx ed
+ 	dx 0 rlt
+ 	0 dy rlt
+ 	dx neg 0 rlt
+ 	closepath
+} bd
+
+
+
+%
+% ClipBox	set the current clipping region to a box
+% 
+% dx dy x y CB --
+%
+/CB
+{
+	B
+ 	clip
+} bd
+
+

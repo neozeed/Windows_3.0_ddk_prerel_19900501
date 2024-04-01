@@ -1,0 +1,127 @@
+*% comment
+*% comment
+*FormatVersion: "1.1"
+*LanguageVersion: English
+
+*Product: "(PrintServer 40)"
+*NickName: "Digital LPS PrintServer 40"
+*PSVersion: "() "
+
+*% General Information and Defaults ===============
+*ColorDevice: False
+*FileSystem: False
+
+*DefaultResolution: 300dpi
+
+*DefaultTransfer: Normalized
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+*Transfer Normalized: "{
+mark
+1.0 1.0 .91 .84 .79 .69 .62 .46 .39 .29 .15 .0
+counttomark dup 3 add -1 roll exch
+2 sub mul dup floor cvi
+dup 3 1 roll sub
+exch dup
+3 add index exch 2 add index dup
+4 1 roll
+sub mul add
+counttomark 1 add 1 roll
+cleartomark
+}"
+*End:
+*Transfer Normalized.Inverse: "{ 1 exch sub }"
+
+*WindowsAuto: "/AutoTray {} bind def"
+
+*DefaultPaperStock: Letter
+*EndOfFile: False
+
+*PaperDimension A3: "842 1190"
+*PaperDimension A4: "595 842"
+*PaperDimension A4Small: "595 842"
+*PaperDimension A5: "420 595"
+*PaperDimension B4: "729 1032"
+*PaperDimension B5: "516 729"
+*PaperDimension Ledger: "1224 792"
+*PaperDimension Legal: "612 1008"
+*PaperDimension Letter: "612 792"
+*PaperDimension LetterSmall: "612 792"
+*PaperDimension Note: "612 792"
+*PaperDimension Statement: "396 612"
+*PaperDimension Tabloid: "792 1224"
+
+*DefaultPageSize: None
+*PageSize Letter: "statusdict begin lettertray end"
+*PageSize Legal: "statusdict begin legaltray end"
+*PageSize Ledger: "statusdict begin ledgertray end"
+*PageSize Executive: "statusdict begin executivetray end"
+*PageSize Tabloid: "statusdict begin 11x17tray end"
+*PageSize A3: "statusdict begin a3tray end"
+*PageSize A4: "statusdict begin a4tray end"
+*PageSize A5: "statusdict begin a5tray end"
+*PageSize B4: "statusdict begin b4tray end"
+*PageSize B5: "statusdict begin b5tray end"
+
+*DefaultPaperTray: None
+*PaperTray Letter: "statusdict begin lettertray end"
+*PaperTray Legal: "statusdict begin legaltray end"
+*PaperTray Ledger: "statusdict begin ledgertray end"
+*PaperTray Executive: "statusdict begin executivetray end"
+*PaperTray Tabloid: "statusdict begin 11x17tray end"
+*PaperTray A3: "statusdict begin a3tray end"
+*PaperTray A4: "statusdict begin a4tray end"
+*PaperTray A5: "statusdict begin a5tray end"
+*PaperTray B4: "statusdict begin b4tray end"
+*PaperTray B5: "statusdict begin b5tray end"
+
+*DefaultImageableArea: Letter
+*ImageableArea Letter: "14 14 598 778"
+*ImageableArea Legal: "14 14 598 994"
+*ImageableArea Ledger: "14 14 1210 778"
+*ImageableArea Executive: "14 14 508 742"
+*ImageableArea Tabloid: "14 14 778 1210"
+*ImageableArea A3: "14 14 827 1176"
+*ImageableArea A4: "14 14 581 827"
+*ImageableArea A5: "14 14 405 581"
+*ImageableArea B4: "14 14 694 988"
+*ImageableArea B5: "14 14 487 694"
+
+*DefaultInputSlot: LargeCapacity
+*InputSlot AutoSelect: "%auto selected"
+*InputSlot Upper: "statusdict begin 1 setpapertray end"
+*InputSlot Lower: "statusdict begin 2 setpapertray end"
+*InputSlot LargeCapacity: "statusdict begin 3 setpapertray end"
+
+*Font Courier: Standard "(001.004)"
+*Font Courier-Bold: Standard "(001.004)"
+*Font Courier-BoldOblique: Standard "(001.004)"
+*Font Courier-Oblique: Standard "(001.004)"
+*Font Times-Bold: Standard "(001.001)"
+*Font Times-BoldItalic: Standard "(001.001)"
+*Font Times-Italic: Standard "(001.001)"
+*Font Times-Roman: Standard "(001.001)"
+*Font Helvetica: Standard "(001.001)"
+*Font Helvetica-Bold: Standard "(001.001)"
+*Font Helvetica-BoldOblique: Standard "(001.001)"
+*Font Helvetica-Oblique: Standard "(001.001)"
+*Font Symbol: Special "(001.001)"
+*Font AvantGarde-Book: Standard "(001.001)"
+*Font AvantGarde-BookOblique: Standard "(001.001)"
+*Font AvantGarde-Demi: Standard "(001.001)"
+*Font AvantGarde-DemiOblique: Standard "(001.001)"
+*Font NewCenturySchlbk-Bold: Standard "(001.002)"
+*Font NewCenturySchlbk-BoldItalic: Standard "(001.001)"
+*Font NewCenturySchlbk-Italic: Standard "(001.001)"
+*Font NewCenturySchlbk-Roman: Standard "(001.002)"
+*Font LubalinGraph-Book: Standard "(001.002)"
+*Font LubalinGraph-BookOblique: Standard "(001.002)"
+*Font LubalinGraph-Demi: Standard "(001.002)"
+*Font LubalinGraph-DemiOblique: Standard "(001.002)"
+*Font Souvenir-Demi: Standard "(001.002)"
+*Font Souvenir-DemiItalic: Standard "(001.002)"
+*Font Souvenir-Light: Standard "(001.002)"
+*Font Souvenir-LightItalic: Standard "(001.002)"
+
+*% end of APD file for Digital LPS PrintServer 40
+

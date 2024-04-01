@@ -1,0 +1,9 @@
+# Make file to make all fonts
+
+all:
+        masm fonts;
+        cd fixed
+        make fixed
+        cd ..\system
+        make system
+        cd ..

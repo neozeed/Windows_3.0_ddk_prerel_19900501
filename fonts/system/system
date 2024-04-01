@@ -1,0 +1,12 @@
+# Makefile for all system fonts
+
+all:
+        cd cga
+        make cgasys
+        cd ..\ega
+        make egasys
+        cd ..\vga
+        make vgasys
+        cd ..\8514
+        make 8514sys
+        cd ..

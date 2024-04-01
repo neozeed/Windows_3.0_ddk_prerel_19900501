@@ -1,0 +1,260 @@
+	.xlist
+;----------------------------Module-Header------------------------------;
+; Module Name: PDEVICE.BLT
+;
+; Subroutine for processing the physical device data structures.
+;
+; Created: In Windows' distant past (c. 1983)
+;
+; Copyright (c) 1983 - 1987  Microsoft Corporation
+;
+; This file is part of a set that makes up the Windows BitBLT function
+; at driver-level.
+;-----------------------------------------------------------------------;
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+        .list
+
+
+;----------------------------Private-Routine----------------------------;
+; pdevice_processing
+;
+; Check the required bitmaps for validity, get their parameters
+; and store the information locally.
+;
+; If a brush (pattern) is required, get the address of the bits
+; making up the pattern.
+;
+; If an invalid bitmap is encountered, abort.
+;
+; Entry:
+;	BL = Initial gl_flag0
+;	     F0_SRC_PRESENT set is source needed
+;	     F0_PAT_PRESENT set if pattern needed
+; Returns:
+;	Carry flag clear if no error.
+; Error Returns:
+;	Carry flag set if error (null pointer to source device, when
+;		one is expected; error returned from copy_dev).
+; Registers Preserved:
+;	BL,CX,DX,BP
+; Registers Destroyed:
+;	AX,BH,SI,DI,DS,ES,flags
+; Calls:
+;	copy_dev
+; History:
+;  Sun 22-Feb-1987 16:29:09 -by-  Walt Moore [waltm]
+; Created.
+;-----------------------------------------------------------------------;
+
+;------------------------------Pseudo-Code------------------------------;
+; {
+; }
+;-----------------------------------------------------------------------;
+
+	?_pub	pdevice_processing
+pdevice_processing	proc	near
+
+ifdef	THIS_IS_DOS_3_STUFF
+else
+	mov	ScreenSelector,0FFF0h	;!!! rip incase selector is loaded
+endif
+	mov	ax,ss			;Set ES to frame segment
+	mov	es,ax
+	xor	bh,bh			;BH = real gl_flag0
+
+	test	bl,F0_SRC_PRESENT	;Is a source needed?
+	jz	pdevice_decode_dest	;  No, skip source validation
+
+	lds	si,lpSrcDev		;Get pointer to source
+	mov	ax,ds			;Null pointer?
+	or	ax,si
+	jz	pdevice_error		;Null pointer, error, abort
+
+	lea	di,gl_src		;--> where parameters will go
+	call	copy_dev 		;Get all the data
+	jc	pdevice_error
+
+
+;	Decode the destination parameters.  All BLTs must have a destination.
+
+pdevice_decode_dest:
+	lds	si,lpDestDev		;Get pointer to destination
+	lea	di,gl_dest 		;--> where parameters will go
+	call	copy_dev 		;Get all the data
+	jc	pdevice_error
+
+
+;	The pattern fetch code will be based on the color format of the
+;	destination.  If the destination is mono, then a mono fetch will be
+;	performed.  If the destination is color, then a color fetch will be
+;	performed.
+
+	or	bh,bl			;Merge in F0_SRC_PRESENT, F0_PAT_PRESENT
+	test	bh,F0_DEST_IS_COLOR	;Show color pattern needed if
+	jz	pdevice_chk_color_conv	;  destination is color
+	or	bh,F0_COLOR_PAT
+
+
+
+;	Check for color conversion.  If so, then set F0_GAG_CHOKE.
+;	Color conversion will exist if the source and destination are of
+;	different color formats.
+
+
+pdevice_chk_color_conv:
+
+	test	bh,F0_SRC_PRESENT    	;Is there a source?
+	jz	pdevice_proc_end	;  No, cannot be converting.
+
+	mov	al,bh
+	and	al,F0_SRC_IS_COLOR+F0_DEST_IS_COLOR
+	jz	pdevice_proc_end	;Both are monochrome
+
+	xor	al,F0_SRC_IS_COLOR+F0_DEST_IS_COLOR
+	jz	pdevice_proc_end	;Both are color
+
+	or	bh,F0_GAG_CHOKE		;Mono ==> color or color ==> mono
+
+	lds	si,lpDrawMode
+	mov	ah,[si].bkColor.pcol_Clr
+	mov	al,[si].TextColor.pcol_Clr
+	mov	cl_both_colors,ax
+
+
+pdevice_proc_end:
+	clc
+	ret
+
+pdevice_error:
+	stc
+	ret
+
+pdevice_processing	endp
+
+
+;----------------------------Private-Routine----------------------------;
+; copy_device
+;
+; Copy device information to frame.
+;
+; Entry:
+;	DS:SI --> device
+; 	ES:DI --> frame DEV structure
+;	BH     =  gl_flag0, accumulated so far
+; Returns:
+;	BH     =  gl_flag0, accumulated so far
+;	Carry clear if no error
+; Error Returns:
+;	Carry set if error (bad color format)
+; Registers Preserved:
+;	BX,CX,DS,ES,BP
+; Registers Destroyed:
+;	AX,DX,SI,DI,flags
+; Calls:
+;	None
+; History:
+;  Sun 22-Feb-1987 16:29:09 -by-  Walt Moore [waltm]
+; Created.
+;-----------------------------------------------------------------------;
+
+;------------------------------Pseudo-Code------------------------------;
+; {
+; }
+;-----------------------------------------------------------------------;
+
+copy_	macro	si_item,di_item
+
+	if	(size si_item)-(size di_item)
+	.err2	si_item and di_item are different sizes
+	endif
+
+	if	si_item-si_off
+	add	si,si_item-si_off
+si_off	=	si_item
+	endif
+
+	if	di_item-di_off
+	add	di,di_item-di_off
+di_off	=	di_item
+	endif
+
+	&rept	(size si_item)/2
+	movsw
+	&endm
+
+	if	(size si_item) and 1
+	movsb
+	endif
+
+si_off	=	si_off+(size si_item)
+di_off	=	di_off+(size di_item)
+
+	endm
+	
+si_off	=	0
+di_off	=	0
+
+copy_dev	proc near
+
+	lodsw
+	errnz	bmType-si_off
+si_off	=	si_off+2
+
+	cmp	ax,1			;Set 'C' if the device
+	cmc
+	rcl	bh,1			;Move in type
+	errnz	F0_SRC_IS_DEV-00001000b
+	errnz	F0_DEST_IS_DEV-0000010b
+
+	copy_	bmWidth,width_bits
+	copy_	bmHeight,height
+	copy_	bmWidthBytes,width_b
+
+	if	bmPlanes-si_off
+	add	si,bmPlanes-si_off
+si_off	=	bmPlanes
+	endif
+	lodsw				;Get Planes/pixels
+si_off	=	si_off+2
+
+	cmp	ax,0101H		;Monochrome?
+	je	copy_dev_20		;  Yes	('C' clear)
+
+	externA COLOR_FORMAT
+	cmp	ax,COLOR_FORMAT		;Our color?
+	jne	copy_dev_bad_clr_format	;  No, complain about color format
+
+	stc				;  (show color)
+
+copy_dev_20:
+	rcl	bh,1			;Rotate in color flag
+	errnz	F0_SRC_IS_COLOR-00000100b
+	errnz	F0_DEST_IS_COLOR-00000001b
+
+	copy_	bmBits,lp_bits
+;;;;	copy_	bmWidthPlanes,plane_w
+	copy_	bmSegmentIndex,seg_index
+	copy_	bmScanSegment,scans_seg
+	copy_	bmFillBytes,fill_bytes
+
+	mov	al,bh			;Set IS_COLOR and IS_DEVICE
+	and	al,IS_COLOR+IS_DEVICE	;  flags in the Device Flags
+	errnz	IS_COLOR-F0_DEST_IS_COLOR ;Must be same bits
+
+	if	dev_flags-di_off
+	add	di,dev_flags-di_off
+di_off	=	dev_flags
+	endif
+	stosb
+di_off	=	di_off+1
+
+	clc
+	ret
+
+copy_dev_bad_clr_format:
+	stc
+	ret
+
+copy_dev	endp
+
+

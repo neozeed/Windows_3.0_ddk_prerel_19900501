@@ -1,0 +1,104 @@
+-------------------------------------------------------------------------------
+	    This file describes the changes made to the comm driver
+	    to facilitate it's efficient operation in real mode.
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+    The communication driver for windows was modified from April 23, to
+    June 9.  In this time, two major additions to the driver were undertaken.
+-------------------------------------------------------------------------------
+
+The first change delt with the serial port interrupt handlers.
+
+Problem:  The switch from protect mode to real mode on an IBM AT can take
+    a millisecond (1 ms).
+
+Cause of grief:  When an interrupt was signalled on IRQ3 or IRQ4
+    when the processor is in real mode (in the BIOS for disk access,
+    timer ticks, or mouse activity on a PS/2), the interrupt was previously
+    trapped.  The trapper then switches the processor in protect mode,
+    and then simulates an interrupt to the comm driver.  So far, so good,
+    however, when the interrupt was finished processing, the processor must
+    be switched to real mode...a long while later, the mode switch is
+    finished, and the processor continues on in the real mode routine that
+    was interrupted.
+
+Solution:  Have the comm driver process IRQ3 or IRQ4 interrupts in the
+    mode the processor is running at the time.	The driver normally
+    processes interrupts in protect mode, so the queue addresses, and
+    other selectors have to be paralleled with segment values.	The driver
+    initializes the protect mode interrupt vectors, and if the
+    286 DOS extender is installed, it initializes the real mode interrupt
+    vectors to point to a routine just before the main interrupt handler.
+    This routine initializes DS to the data *segment*, rather than the selector.
+    The input or output queue addresses are stored in both selector, and
+    segment forms.  The driver determines what mode it's in, and uses the
+    corresponding address for the queue.  The main body of code is in the
+    initialization, and termination routines which set/unset up the real mode
+    interrupts, and find all of the segment values from selectors.
+
+    These changes do NOT affect the operation of the driver in real mode
+    windows, or windows 386.  In these other environments, the driver
+    skips over the 2867 extender code extensions, and only traps interrupts
+    in one mode (real, and protect respectively).
+
+-------------------------------------------------------------------------------
+
+The second change to the driver was undertaken to speed up 286 protect mode
+printing via int 17h.
+
+Problem:  Driver must do multiple Int 17h 's for every character.  Any
+    BIOS int service must be processed in real mode, thus requiring a
+    switch from protect to real mode.  This switch takes a long time, and
+    must be done multiple times per character, first to determine if the
+    printer is ready for a character, and then to actually print it.
+
+Solution:  Do only one protect to real mode switch per character.  The driver
+    completes some initial homework, and then sets up a real mode call via
+    the Int 31h call real mode subroutine function.  The driver then
+    completes the Int 17h status loop, and outputs the character (another
+    Int 17h) while in real mode.  When complete, the driver returns, and
+    the driver then finishes up with a little housework in protect mode.
+    This method dramatically improves printing performance.
+
+
+
+-------------------------------------------------------------------------------
+		  Changes made to indiviual files
+-------------------------------------------------------------------------------
+File:	ibmcom.asm
+
+Changes:
+	- set real mode int vectors in inicom if running 286 DOS extender (DOSX)
+	- converted several selector values to segment form if DOSX
+	- removed testing for Dos 3.x or higher in TestInt2f
+	- coded all 'jmp' instructions to 'jmp short' where applicable
+	- optimized some code forms and operation instructions
+
+-------------------------------------------------------------------------------
+File:	ibmcom1.asm
+
+Changes:
+	- changed DoLPT to call a subroutine which performs the Int 17h
+	  BIOS work (DoLPT_Subroutine)
+	- added code which calls real mode DoLPT_Subroutine if in DOSX
+	- coded all 'jmp' instructions to 'jmp short' where applicable
+	- optimized some code forms and operation instructions
+
+-------------------------------------------------------------------------------
+File:	ibmint.asm
+
+Changes:
+	- added small real mode stub routine to get data *segment* before
+	  calling subsiquent interrupt handler
+	- loaded queue *segments* if in DOSX and in real mode, otherwise
+	  used selector
+	- coded all 'jmp' instructions to 'jmp short' where applicable
+	- optimized some code forms and operation instructions
+
+
+
+
+-------------------------------------------------------------------------------
+Glenn Steffler		    June 7, 1989	    MicroSoft Corp.
+-------------------------------------------------------------------------------

@@ -1,0 +1,522 @@
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+        page
+
+	externNP far_set_bank_select
+
+	?_pub	cblt88
+cblt88	proc	near
+ 
+	mov	ax,DataBASE
+	mov	ds,ax
+	assumes	ds,Data
+
+;-----------------------------------------------------------------;
+;  save source and destination pointers and remaining line count  ;
+;-----------------------------------------------------------------;
+
+	GEN	I_PUSH_CX		;Save scan line count
+	GEN	I_PUSH_DI		;Save destination ptr
+
+	mov	bl,gl_flag0
+	test	bl,F0_SRC_PRESENT
+	jz	cblt88_025
+
+	GEN	I_PUSH_SI		;  Yes, save source pointer
+
+cblt88_025:
+
+
+;---------------------;
+;  set up loop count  ;
+;---------------------;
+
+	mov	ax,xExt
+	cmp	ax,2			;Is there more than one pixel?
+	jb	cblt88_040		;  No
+
+	GEN	I_MOV_CX_WORD_I
+	mov	ax,xExt
+	stosw
+
+cblt88_040:
+
+;----------------------------------------------;
+;  set display page if source XOR destination  ;
+;----------------------------------------------;
+
+	mov	bl,gl_flag0
+
+	test	bl,F0_DEST_IS_DEV	;Is destination on device?
+	jnz	cblt88_059		;  Yes
+
+	test	bl,F0_SRC_IS_DEV	;Is source on device?
+	jz	cblt88_068		;  No
+
+;	*****>	just S is device
+
+	call	cblt_set_s_page
+	jmp	short cblt88_068
+
+cblt88_059:
+
+	test	bl,F0_SRC_IS_DEV	;Is source on device?
+	jnz	cblt88_068		;  Yes
+
+;	*****>	just D is device
+
+	call	cblt_set_d_page
+	
+cblt88_068:
+
+;---------------------;
+;  set up mono fetch  ;
+;---------------------;
+
+	test	bl,F0_SRC_PRESENT	;Is source present?
+	jz	cblt88_118		;  No
+
+	test	bl,F0_SRC_IS_COLOR	;Is source monochrome?
+	jnz	cblt88_118		;  No
+
+	GEN	I_LODSB
+	GEN	I_MOV_BL_AL
+
+; Note: Mono fetch is always INCREASING
+
+	mov	cx,SrcxOrg
+	and	cx,0111b		;Does first byte need pre-rotation?
+	jz	cblt88_111		;  No
+
+	cmp	cl,1
+	je	cblt88_098
+
+	push	sp
+	pop	ax
+	cmp	ax,sp
+	je	cblt88_106
+
+;  machine only has ROL BL,1
+
+cblt88_098:
+	push	cx
+	mov	ax,I_ROL_BL_1
+	rep	stosw
+	pop	cx
+	jmp	short cblt88_111
+
+;  machine supports ROL BL,nn
+
+cblt88_106:
+	GEN	I_ROL_BL_N
+	mov	al,cl
+	stosb
+
+cblt88_111:
+	mov	al,I_MOV_BH_BYTE_I
+	mov	ah,01h
+	rol	ah,cl
+	stosw
+
+cblt88_118:
+	mov	gl_fetch,di		;Save starting address of operation
+
+;--------------------------;
+;  generate pattern fetch  ;
+;--------------------------;
+
+	mov	bl,gl_flag0
+	mov	bh,gl_direction
+
+	test	bl,F0_PAT_PRESENT	;Is there a pattern?
+	jz	cblt88_171		;  No
+
+	test	bl,F0_SRC_PRESENT
+	jz	cblt88_137
+
+	GEN	I_PUSH_DS
+	GEN	I_PUSH_SI
+
+cblt88_137:
+
+	; ** FETCH PATTERN BYTE
+	; lds si,ss:gl_lp_pattern
+	; add si,row*8
+	; add si,col
+	; mov dh,[si]
+
+	GEN	I_SS_OVERRIDE
+	GEN	I_LDS_SI_MEM
+	lea	ax,gl_lp_pattern
+	stosw
+
+	GEN	I_ADD_SI_BYTE_I
+	mov	gl_row_fixup,di
+	mov	al,gl_pat_row
+	shiftl	al,3
+	stosb
+
+	GEN	I_ADD_SI_BYTE_I
+	mov	gl_col_fixup,di
+	mov	al,gl_pat_col
+	stosb
+
+	GEN	I_MOV_DH_SI
+
+
+	test	bl,F0_SRC_PRESENT
+	jz	cblt88_169
+
+	GEN	I_POP_SI
+	GEN	I_POP_DS
+cblt88_169:
+
+cblt88_171:
+
+;-------------------------;
+;  generate source fetch  ;
+;-------------------------;
+
+	mov	bl,gl_flag0
+
+	test	bl,F0_SRC_PRESENT	;Is there a source?
+	jz	cblt88_218		;  No, don't generate fetch code
+
+	test	bl,F0_SRC_IS_COLOR	;Is source monochrome?
+	jnz	cblt88_204		;  No
+
+;------------------------------;
+;  generate mono source fetch  ;
+;------------------------------;
+
+	GEN	I_ROL_BL_1
+	GEN	I_SBB_AL_AL
+	mov	al,I_AND_AL_BYTE_I
+	mov	ah,byte ptr cl_both_colors[0]
+	xor	ah,byte ptr cl_both_colors[1]
+	stosw
+	mov	al,I_XOR_AL_BYTE_I
+	mov	ah,byte ptr cl_both_colors[0]
+	stosw
+	jmp	short cblt88_217
+
+;-------------------------------;
+;  generate color source fetch  ;
+;-------------------------------;
+
+cblt88_204:
+	test	bl,F0_SRC_IS_DEV	;Generate S page select?
+	jz	cblt88_213		;  No, isn't device
+
+	test	bl,F0_DEST_IS_DEV	;Select already generated
+	jz	cblt88_213		;  Yes
+
+	call	cblt_set_s_page
+
+cblt88_213:
+
+	GEN	I_LODSB			;Generate source fetch
+
+ifdef PALETTES ;========================>
+
+	test	PaletteModified, 0ffh
+	jz	cblt_216
+
+;-------------------------------------------;
+;  generate color translation if mem<->dev  ;
+;-------------------------------------------;
+
+	mov	bh,bl
+
+	and	bh,F0_SRC_IS_DEV or F0_DEST_IS_DEV
+	jz	cblt_216		;..if both memory
+
+	xor	bh,F0_SRC_IS_DEV or F0_DEST_IS_DEV
+	jz	cblt_216		;..if both device
+
+	GEN	I_PUSH_DS
+
+	GEN	I_MOV_BX_WORD_I
+	mov	ax, DataBASE
+	stosw
+
+	GEN	I_MOV_DS_BX
+
+	GEN	I_MOV_BX_WORD_I
+
+	lea	ax, PaletteTranslationTable
+
+	test	bl,F0_SRC_IS_DEV
+	jz	cblt_214		;..if dest device
+
+	lea	ax, PaletteIndexTable
+
+cblt_214:
+	stosw
+
+	GEN	I_XLAT
+
+	GEN	I_POP_DS
+
+cblt_216:
+
+endif ;=================================>
+
+cblt88_217:
+cblt88_218:
+
+
+        mov     bl,gl_flag0
+
+	test	bl,F0_DEST_IS_DEV	;Generate D page select
+	jz	cblt88_219		;  No, isn't device
+
+	test	bl,F0_SRC_IS_DEV	;Select already generated?
+	jz	cblt88_219		;  Yes
+
+	call	cblt_set_d_page
+
+cblt88_219:
+
+;-----------------------------;
+;  generate raster operation  ;
+;-----------------------------;
+
+	mov	ax,gl_operands		;Get back rop data
+	mov	bl,ah			;Get count of number of bits to move
+	and	bx,HIGH ROPLength
+	shr	bx,1
+	shr	bx,1
+	mov	cl,bptr roptable+256[bx];Get length into cx
+	xor	ch,ch			;
+	errnz	ROPLength-0001110000000000b
+
+	mov	bx,ax			;Get offset of the template
+	and	bx,ROPOffset
+	jz	cblt88_240		;Source copy
+
+	lea	si,roptable[bx] 	;--> the template
+	rep	movs bptr es:[di],cs:[si]
+
+cblt88_240:
+
+	mov	bx,ax			;Keep rop around
+	or	ah,ah			;Generate a negate?
+	jns	cblt88_248		; No
+
+	GEN	I_NOT_AL
+
+cblt88_248:
+
+;------------------;
+;  generate store  ;
+;------------------;
+
+IF 0
+	mov	bl,gl_flag0
+
+	test	bl,F0_DEST_IS_DEV	;Generate D page select
+	jz	cblt88_264		;  No, isn't device
+
+	test	bl,F0_SRC_IS_DEV	;Select already generated?
+	jz	cblt88_264		;  Yes
+
+	call	cblt_set_d_page
+ENDIF
+
+cblt88_264:
+	GEN	I_STOSB
+
+;----------------------------------;
+;  generate mono expansion update  ;
+;----------------------------------;
+
+	mov	bl,gl_flag0
+
+	test	bl,F0_SRC_PRESENT	;Is there a source?
+	jz	cblt88_289		;  No
+
+	test	bl,F0_SRC_IS_COLOR	;Is source monochrome?
+	jnz	cblt88_289		;  No
+
+	GEN	I_ROL_BH_1
+	mov	al,I_JNC
+	mov	ah,1+2
+	stosw
+
+	mov	al,I_LODSB
+	stosb
+	mov	ax,I_MOV_BL_AL
+	stosw
+
+cblt88_289:
+
+;
+;--------------------------;	
+;  generate column update  ;
+;--------------------------;
+
+	mov	bl,gl_flag0
+	mov	bh,gl_direction
+
+	test	bl,F0_PAT_PRESENT
+	jz	cblt88_322
+
+	; inc bptr ss:[col_fixup]
+	; and bptr ss:[col_fixup],SIZE_PATTERN-1
+
+	GEN	I_SS_OVERRIDE
+	rol	bh,1			;set carry iff DECREASING
+		errnz	INCREASING-1
+		errnz	DECREASING+1
+	sbb	ax,ax
+	and	ax,I_INC_MEM_BYTE xor I_DEC_MEM_BYTE
+	xor	ax,I_INC_MEM_BYTE
+	stosw
+	mov	ax,gl_col_fixup
+	stosw
+
+	GEN	I_SS_OVERRIDE
+	GEN	I_AND_MEM_BYTE_I
+	mov	ax,gl_col_fixup
+	stosw
+	mov	al,SIZE_PATTERN-1
+	stosb
+
+cblt88_322:
+
+;----------------------------------;
+;  generate inner loop completion  ;
+;----------------------------------;
+
+	mov	ax,xExt
+	cmp	ax,2
+	jb	cblt88_335
+
+	mov	bx,gl_fetch
+	call	gen_loop
+
+cblt88_335:
+
+;	Get saved parameters off of the stack.
+;
+;	<	pop	si	      > ;Get source pointer
+;		pop	di		;Get destination pointer
+;		pop	cx		;Get loop count
+
+
+
+	mov	bl,gl_flag0
+	test	bl,F0_SRC_PRESENT
+	jz	cblt88_350
+
+	GEN	I_POP_SI		;  Yes, get source pointer
+cblt88_350:
+	GEN	I_POP_DI		;Get destination pointer
+	GEN	I_POP_CX		;and loop count
+
+	mov	bl,gl_flag0
+	test	bl,F0_SRC_PRESENT	;Is there a source?
+	jz	cblt88_359		;  No, skip source processing
+
+	call	s_update 		;Generate the Y scan line update code
+cblt88_359:
+	call	d_update 		;Generate the Y scan line update code
+
+
+	mov	bl,gl_flag0
+	mov	bh,gl_direction
+
+	test	bl,F0_PAT_PRESENT
+	jz	cblt88_396
+
+	; ** UPDATE FOR NEXT ROW
+	; add  bptr ss:[row_fixup],SIZE_PATTERN*1
+	; and  bptr ss:[row_fixup],SIZE_PATTERN*(SIZE_PATTERN-1)
+	; mov  bptr ss:[col_fixup],COL_OFF
+
+	GEN	I_SS_OVERRIDE
+	rol	bh,1			;set carry iff DECREASING
+		errnz	INCREASING-1
+		errnz	DECREASING+1
+	sbb	ax,ax
+	and	ax,I_ADD_MEM_BYTE_I xor I_SUB_MEM_BYTE_I
+	xor	ax,I_ADD_MEM_BYTE_I
+	stosw
+	mov	ax,gl_row_fixup
+	stosw
+	mov	al,SIZE_PATTERN*1
+	stosb
+
+	GEN	I_SS_OVERRIDE
+	GEN	I_AND_MEM_BYTE_I
+	mov	ax,gl_row_fixup
+	stosw
+	mov	al,SIZE_PATTERN*(SIZE_PATTERN-1)
+	stosb
+
+	GEN	I_SS_OVERRIDE
+	GEN	I_MOV_MEM_BYTE_I
+	mov	ax,gl_col_fixup
+	stosw
+	mov	al,gl_pat_col
+	stosb
+
+cblt88_396:
+
+;----------------------------------;
+;  generate outer loop completion  ;
+;----------------------------------;
+
+	mov	bx,off_gl_blt_addr
+	call	gen_loop
+
+	GEN	I_RET_FAR		;Stuff the far return instruction
+
+	ret
+
+cblt88	endp
+
+	page
+
+;-----------------------------------------------------------------------
+
+cblt_set_s_page	proc
+
+	GEN	I_MOV_DL_BYTE_I
+
+	mov	gl_s_fixup,di
+
+	mov	al,gl_src.init_page
+	stosb
+
+	GEN	I_CALL_FAR
+	lea	ax,far_set_bank_select
+	stosw
+	mov	ax,cs
+	stosw
+
+	ret
+
+cblt_set_s_page	endp
+
+;-----------------------------------------------------------------------
+
+cblt_set_d_page	proc
+
+	GEN	I_MOV_DL_BYTE_I
+
+	mov	gl_d_fixup,di
+
+	mov	al,gl_dest.init_page
+	stosb
+
+	GEN	I_CALL_FAR
+	lea	ax,far_set_bank_select
+	stosw
+	mov	ax,cs
+	stosw
+
+	ret
+
+cblt_set_d_page	endp
+

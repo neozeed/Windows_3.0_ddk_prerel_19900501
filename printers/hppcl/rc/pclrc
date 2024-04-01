@@ -1,0 +1,102 @@
+COMPILER=cl
+
+LIBRARIAN=lib
+
+INC_LOC=..\ink
+
+# this is a utility which generates the .TBL files from TRANS.H:
+
+makeres.exe: makeres.c \
+..\ink\printer.h \
+..\ink\hppcl.h \
+..\ink\pfm.h \
+..\ink\trans.h \
+..\ink\paperfmt.h
+	$(COMPILER) -I$(INC_LOC) -W2 -Zl makeres.c slibce.lib
+
+# generate the .TBL files: (if any one of them doesn't exist, one
+# execution of makeres.exe generates them ALL
+
+usascii.tbl: makeres.exe
+	makeres
+
+roman8.tbl: makeres.exe
+	makeres
+
+generic7.tbl: makeres.exe
+	makeres
+
+generic8.tbl: makeres.exe
+	makeres
+
+ecma94.tbl: makeres.exe
+	makeres
+
+xfaces.exe: xfaces.c
+	$(COMPILER) -I$(INC_LOC) -W2 -Zl xfaces.c slibce.lib
+	xfaces
+
+# Create .TBL files from .ASM sources.. These are also in the FINSTALL\RC
+# sources.  (But we've generated all of these from TRANS.H instead!!)
+
+#.asm.tbl:
+#    masm $*;
+#    link $*;
+#    exe2bin $*, $@
+#    del $*.obj
+#    del $*.exe
+
+#usascii.tbl: usascii.asm
+
+#ecma94.tbl: ecma94.asm
+
+#generic7.tbl: generic7.asm
+
+#generic8.tbl: generic8.asm
+
+#roman8.tbl: roman8.asm
+
+hppcl.res: hppcl.rc \
+usascii.tbl ecma94.tbl generic7.tbl generic8.tbl roman8.tbl \
+makeres.exe \
+xfaces.exe \
+portrait.ico \
+landscap.ico \
+ pcm\hppcla.pcm \
+ pcm\hppclb.pcm \
+ pcm\hppclc.pcm \
+ pcm\hppcld.pcm \
+ pcm\hppcle.pcm \
+ pcm\hppclf.pcm \
+ pcm\hppclg.pcm \
+ pcm\hppclh.pcm \
+ pcm\hppclj.pcm \
+ pcm\hppclk.pcm \
+ pcm\hppcll.pcm \
+ pcm\hppclm.pcm \
+ pcm\hppcln.pcm \
+ pcm\hppclp.pcm \
+ pcm\hppclq.pcm \
+ pcm\hppclr.pcm \
+ pcm\hppcls1.pcm \
+ pcm\hppcls2.pcm \
+ pcm\hppclt.pcm \
+ pcm\hppclu.pcm \
+ pcm\hppclv.pcm \
+ pcm\hppcly.pcm \
+ pcm\hppclz1.pcm \
+ pcm\hppclz1a.pcm \
+ pcm\hp_bar.pcm \
+ pcm\hp_forms.pcm \
+ pcm\hp_globl.pcm \
+ pcm\hp_great.pcm \
+ pcm\hp_polws.pcm \
+ pcm\hp_persu.pcm \
+ pcm\hp_pro.pcm \
+ pcm\hp_text.pcm \
+ pcm\hp_wp.pcm \
+..\ink\resource.h \
+..\ink\strings.h \
+..\ink\version.h
+	rc -v3 -r -e -i..\ink hppcl.rc
+

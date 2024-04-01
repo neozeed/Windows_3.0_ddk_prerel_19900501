@@ -1,0 +1,22 @@
+#
+#  Standard command line definitions
+#
+OPT= -W2				#NOP the options feature
+as=masm
+
+#
+#  DOS 3.x inference rules
+#
+.asm.obj:
+    $(as) $(OPT) $*.asm;
+
+ccom.obj: ccom.asm
+
+ibmcom.obj: ibmcom.asm ibmcom1.asm ibmcom.inc comdev.inc ins8250.inc
+
+ibmint.obj: ibmint.asm ibmcom.inc comdev.inc ins8250.inc
+
+comm.drv: ccom.obj ibmcom.obj ibmint.obj comm.def
+    link4 ccom.obj+ibmcom.obj+ibmint.obj,comm.drv,comm.map/map,kernel.lib /NOD /AL:16,comm.def
+    rc comm.drv
+    mapsym comm

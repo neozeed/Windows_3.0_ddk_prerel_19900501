@@ -1,0 +1,28 @@
+NetTest.res:  NetTest.rc nettest.dlg nettest.h
+    rc -r NetTest.rc
+
+Connect.obj:  Connect.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd Connect.c
+
+Errors.obj:   Errors.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd Errors.c
+
+Misc.obj:    Misc.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd Misc.c
+
+Test.obj:  Test.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd Test.c
+
+NetTest.obj:  NetTest.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd NetTest.c
+
+NWndProc.obj: NWndProc.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd NWndProc.c
+
+WriteLog.obj: WriteLog.c
+    cl -c -Asnw -Gsw -Oas -W2 -Zipd WriteLog.c
+
+NetTest.exe: WriteLog.obj NetTest.obj Connect.obj Errors.obj Misc.obj Test.obj NWndProc.obj NetTest.res NetTest.def
+    link4 WriteLog+NetTest+Test+Connect+Errors+Misc+NWndProc,nettest.exe,,slibcew slibw,NetTest.def/align:16/map/noe/NOD/CO
+    rc -l NetTest.res
+    mapsym Nettest

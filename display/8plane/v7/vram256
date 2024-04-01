@@ -1,0 +1,253 @@
+#   Window's Sample Display Drivers.
+#
+#   Requirements:
+#
+#	MASM 4.01 or greater with the environment variable INCLUDE set to
+#	the directories containing CMACROS.INC, GDIDEFS.INC, and WINDEFS.INC.
+#
+#	MASM 4.00 or greater with the ASM inference definition changed to
+#	include the directories containing CMACROS.INC, GDIDEFS.INC, and
+#	WINDEFS.INC.
+
+
+
+#   Options:
+#
+#	The command line may define options to MASM by defining the OPT
+#	macro.	By defining the OPT parameter in the make file, any
+#	possible interaction with an environment definition is avoided.
+
+    OPT  =				    #NOP the options feature
+    DRVS = .				    #NOP the driver feature
+    OPTS = -DPALETTES $(OPT)
+    NAME=v7vga
+
+#   Includes:
+#
+#	Define the include on up the display driver tree for this
+#	particular directory.
+
+    INCS = -I.\ -I..\inc
+
+
+#   Resolution is used to define if hires or lores dithering should take
+#   Place.  It will be define when needed.
+
+
+    RES =
+
+#   RESDIR is where the resources are
+#   Place.  It will be define when needed.
+
+
+    RESDIR = res\96x96
+
+
+#   Define the default assemble command.  This command could actually
+#   be overridden from the command line, but shouldn't be.
+
+    ASM = masm $(INCS) -B63 -v -ML  $(OPTS)		     # MASM 4.01 & >
+#   ASM = masm $(INCS) -v -ML  $(OPTS) -I\finc		     # MASM 4.00
+
+#   Define the default library command.
+
+    LIB = lib
+    OBJ = .\DEBUG
+    SRC =
+
+#   Location of objs
+
+    DS = debug
+
+#   Define the default inference rules
+
+    .asm.obj:
+	$(ASM) $*,$(DS)\$@;
+
+
+#   Define the dependencies
+
+$(ds)\3xswitch.obj:   3xswitch.asm
+	$(ASM) $*,$@;
+
+$(ds)\bitblt.obj:     bitblt.asm bitblt.var \
+		genconst.blt	\
+		gendata.blt	\
+		ropdefs.blt	\
+		roptable.blt	\
+		clrconst.blt	\
+		clrdata.blt	\
+		pdevice.blt	\
+		pattern.blt	\
+		devconst.blt	\
+		computey.blt	\
+		special.blt	\
+		cursor.inc
+	$(ASM) $*,$@;
+
+$(ds)\bmc_main.obj:  bmc_main.asm bmc_main.var
+	$(ASM) $*,$@;
+
+$(ds)\bmc_eti.obj:   bmc_eti.asm bmc_main.var
+	$(ASM) $*,$@;
+
+$(ds)\bmc_ite.obj:   bmc_ite.asm bmc_main.var
+	$(ASM) $*,$@;
+
+$(ds)\buildstr.obj:   buildstr.asm strblt.inc fontseg.inc
+	$(ASM) $*,$@;
+
+$(ds)\cblt.obj:  cblt.asm bitblt.var \
+		cblt11.blt	cblt18.blt	\
+		cblt81.blt	cblt88.blt	\
+		genconst.blt	clrconst.blt	devconst.blt	\
+		ropdefs.blt
+	$(ASM) $*,$@;
+
+$(ds)\charwdth.obj:   charwdth.asm fontseg.inc
+	$(ASM) $*,$@;
+
+$(DS)\chkstk.obj:     chkstk.asm
+	$(ASM) $*,$@;
+
+$(ds)\control.obj:    control.asm
+	$(ASM) $*,$@;
+
+$(ds)\colorinf.obj:   colorinf.asm
+	$(ASM) $*,$@;
+
+$(ds)\cursor.obj:    cursor.asm cursor.inc
+	$(ASM) $*,$@;
+
+$(DS)\cursors.obj:    cursors.asm
+	$(ASM) $*,$@;
+
+$(DS)\disable.obj:    disable.asm
+	$(ASM) $*,$@;
+
+$(ds)\discreen.obj:  discreen.asm
+	$(ASM) $*,$@;
+
+$(ds)\dither.obj:     dither.asm
+	$(ASM) -DHIRES $*,$@;
+
+$(ds)\dithers.obj:    dithers.asm
+	$(ASM) -DHIRES $*,$@;
+
+$(ds)\egainit.obj:    egainit.asm
+	$(ASM) $*,$@;
+
+$(ds)\enable.obj:     enable.asm
+	$(ASM) $*,$@;
+
+$(ds)\enum.obj:       enum.asm
+	$(ASM) $*,$@;
+
+$(ds)\fb.obj:	      fb.asm
+	$(ASM) $*,$@;
+
+$(ds)\getrle.obj:    getrle.asm rledat.inc
+	$(ASM) $*,$@;
+
+$(DS)\inquire.obj:    inquire.asm
+	$(ASM) $*,$@;
+
+$(ds)\output.obj:     output.asm
+	$(ASM) $*,$@;
+
+$(ds)\pixel.obj:      pixel.asm
+	$(ASM) $*,$@;
+
+$(ds)\polyline.obj:  polyline.asm    \
+		polyline.inc	\
+		polybitm.asm	\
+		polystyl.asm	\
+		clip.asm	\
+		lines.inc
+	$(ASM) $*,$@;
+
+$(ds)\rgb2ipc.obj:    rgb2ipc.asm
+	$(ASM) $*,$@;
+
+$(ds)\rlecom.obj:    rlecom.asm rledat.inc
+	$(ASM) $*,$@;
+
+$(ds)\rledat.obj:    getrle.inc setrle.inc
+	$(ASM) $*,$@;
+
+$(ds)\robject.obj:    robject.asm
+	$(ASM) $*,$@;
+
+$(ds)\scanlr.obj:     scanlr.asm
+	$(ASM) $*,$@;
+
+$(ds)\scanline.obj:   scanline.asm
+	$(ASM) $*,$@;
+
+$(DS)\setmode.obj:    setmode.asm
+	$(ASM) $*,$@;
+
+$(ds)\setrle.obj:    setrle.asm rledat.inc
+	$(ASM) $*,$@;
+
+$(ds)\smartpro.obj:   smartpro.asm strblt.inc fontseg.inc
+	$(ASM) $*,$@;
+
+$(ds)\sswitch.obj:    sswitch.asm
+	$(ASM) $*,$@;
+
+$(ds)\stretch.obj:    stretch.asm
+	$(ASM) $*,$@;
+
+$(ds)\strblt.obj:     strblt.asm   strblt.inc fontseg.inc
+	$(ASM) $*,$@;
+
+$(ds)\tracer.obj:     tracer.asm   tracer.inc
+	$(ASM) $*,$@;
+
+$(ds)\trn_pal.obj: trn_pal.asm
+	$(ASM) $*,$@;
+
+$(ds)\vgastate.obj:   vgastate.asm  bank.inc
+	$(ASM) $*,$@;
+
+$(ds)\vgavram.obj:	vga.asm
+    $(ASM) vga,$@;
+
+$(ds)\$(NAME).drv:	$(OBJ)\bitblt.obj	$(OBJ)\bmc_eti.obj	\
+			$(OBJ)\bmc_ite.obj	$(OBJ)\bmc_main.obj	\
+			$(OBJ)\buildstr.obj	$(OBJ)\cblt.obj 	\
+			$(OBJ)\charwdth.obj	$(OBJ)\chkstk.obj	\
+			$(OBJ)\colorinf.obj	$(OBJ)\control.obj	\
+			$(OBJ)\cursor.obj	$(OBJ)\cursors.obj	\
+			$(OBJ)\disable.obj	$(OBJ)\discreen.obj	\
+			$(OBJ)\dither.obj	$(OBJ)\egainit.obj	\
+			$(OBJ)\enable.obj	$(OBJ)\enum.obj 	\
+			$(OBJ)\fb.obj		$(OBJ)\getrle.obj	\
+			$(OBJ)\inquire.obj	$(OBJ)\pixel.obj	\
+			$(OBJ)\output.obj	$(OBJ)\polyline.obj	\
+			$(OBJ)\rgb2ipc.obj	$(OBJ)\rlecom.obj	\
+			$(OBJ)\rledat.obj	$(OBJ)\robject.obj	\
+			$(OBJ)\scanline.obj	$(OBJ)\scanlr.obj	\
+			$(OBJ)\setmode.obj	$(OBJ)\setrle.obj	\
+			$(OBJ)\smartpro.obj	$(OBJ)\sswitch.obj	\
+			$(OBJ)\strblt.obj	$(OBJ)\tracer.obj	\
+			$(OBJ)\trn_pal.obj	$(OBJ)\vgastate.obj	\
+			$(OBJ)\vgavram.obj	$(OBJ)\3xswitch.obj	\
+			$(OBJ)\stretch.obj	$(OBJ)\dithers.obj	\
+			$(DRVS)\vgavram.def	$(SRC)vgalink		\
+			$(RESDIR)\rc-high.res
+    copy $(DRVS)\vgavram.def vga.def
+    cd $(DS)
+    if exist $(NAME).drv erase $(NAME).drv
+    if exist $(NAME).map erase $(NAME).map
+    if exist $(NAME).sym erase $(NAME).sym
+    link4 @..\vgalink
+    rc ..\$(RESDIR)\rc-high.res display.drv
+    mapsym display
+    ren display.drv $(NAME).drv
+    ren display.map $(NAME).map
+    ren display.sym $(NAME).sym
+    cd ..
+    del vga.def
+

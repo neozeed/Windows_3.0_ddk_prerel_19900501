@@ -1,0 +1,95 @@
+#   Window's Sample Color Drivers.
+#
+#   Requirements:
+#
+#	MASM 4.01 or greater with the environment variable INCLUDE set to
+#	the directories containing CMACROS.INC, GDIDEFS.INC, and WINDEFS.INC.
+#
+#	MASM 4.00 or greater with the ASM inference definition changed to
+#	include the directories containing CMACROS.INC, GDIDEFS.INC, and
+#	WINDEFS.INC.
+
+
+
+#   Options:
+#
+#	The command line may define options to MASM by defining the OPT
+#	macro.	By defining the OPT parameter in the make file, any
+#	possible interaction with an environment definition is avoided.
+
+    OPT =				    #NOP the options feature
+
+
+
+#   Includes:
+#
+#	Define the include on up the display driver tree for this
+#	particular directory.
+
+    INCS = -I.\
+
+
+
+#   Define the default assemble command.  This command could actually
+#   be overridden from the command line, but shouldn't be.
+
+    ASM = masm $(INCS)			    # MASM 4.01 or greater
+#   ASM = masm $(INCS) -I\finc		    # MASM 4.00 or greater
+
+
+
+#   Define the default inference rules
+
+    .asm.obj:
+	$(ASM) -v -n $(OPT) $*;
+
+
+
+#   Define the dependancies
+
+drawmode.obj:	drawmode.asm
+
+hidither.obj:	hidither.asm
+
+chkstk.obj:	chkstk.asm
+
+robject.obj:	robject.asm
+
+enum.obj:	enum.asm
+
+colorinf.obj:	colorinf.asm
+
+pixel.obj:	pixel.asm
+
+bitblt.obj:	bitblt.asm bitblteq.inc
+
+#strblt.obj:	 strblt.asm
+
+#strblt2.obj:	strblt2.asm
+
+rlstrblt.obj:	rlstrblt.asm
+
+rlbldstr.obj: 	rlbldstr.asm
+
+realpro.obj:	realpro.asm
+
+pmstrblt.obj:	pmstrblt.asm
+
+pmbldstr.obj: 	pmbldstr.asm
+
+pmpro.obj:	pmpro.asm
+
+output.obj:	output.asm
+
+scanlr.obj:	scanlr.asm
+
+color.obj:	color.asm
+
+dmcolor.lib:	drawmode.obj hidither.obj chkstk.obj robject.obj enum.obj \
+		colorinf.obj pixel.obj bitblt.obj output.obj scanlr.obj \
+		color.obj rlstrblt.obj rlbldstr.obj realpro.obj \
+                pmstrblt.obj pmbldstr.obj pmpro.obj
+		command /c del dmcolor.lib
+		lib @dmcolor2
+		implib temp.lib gdi.def
+		lib dmcolor +temp.lib;

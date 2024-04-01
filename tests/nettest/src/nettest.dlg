@@ -1,0 +1,121 @@
+#include "windows.h"
+#include "netdlg.h"
+
+HELPBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 24, 11, 193, 189
+/* STYLE WS_DLGFRAME | WS_SYSMENU | WS_POPUP*/
+CAPTION "App Info"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "Help", -1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 25, 8, 140, 8
+	   CONTROL "OK", 1, "button", BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 77, 168, 40, 14
+	   CONTROL "  The NetTest application tests the funct-", -1, "static", SS_CENTER | WS_CHILD, 10, 35, 170, 10
+	   CONTROL "ality of the WinNet driver API, & Windows'", -1, "static", SS_CENTER | WS_CHILD, 10, 43, 170, 10
+	   CONTROL "handling of NetBIOS API calls as well as  ", -1, "static", SS_CENTER | WS_CHILD, 10, 50, 170, 10
+	   CONTROL "some miscellaneous functionality.  All    ", -1, "static", SS_CENTER | WS_CHILD, 10, 57, 170, 10
+	   CONTROL "activity performed during a NetTest session", -1, "static", SS_CENTER | WS_CHILD, 10, 65, 170, 10
+	   CONTROL "is recorded in the log file NetTest.log,  ", -1, "static", SS_CENTER | WS_CHILD, 10, 73, 170, 10
+	   CONTROL "which is created in the current directory.", -1, "static", SS_CENTER | WS_CHILD, 10, 81, 170, 10
+	   CONTROL "  The NetTest application is not an all-  ", -1, "static", SS_CENTER | WS_CHILD, 10, 89, 170, 10
+	   CONTROL "inclusive test of the WinNet driver or the", -1, "static", SS_CENTER | WS_CHILD, 10, 97, 170, 10
+	   CONTROL "Windows handling of NetBIOS services.  It ", -1, "static", SS_CENTER | WS_CHILD, 10, 105, 170, 10
+	   CONTROL "is to be used in conjunction with the     ", -1, "static", SS_CENTER | WS_CHILD, 10, 112, 170, 10
+	   CONTROL "Windows 3.0 Network Test script	      ", -1, "static", SS_CENTER | WS_CHILD, 10, 119, 170, 10
+	   CONTROL "Network.doc.			      ", -1, "static", SS_CENTER | WS_CHILD, 10, 127, 170, 10
+	   CONTROL "  If you have questions or bugs to report ", -1, "static", SS_CENTER | WS_CHILD, 10, 135, 170, 10
+	   CONTROL "against NetTest.exe please see Richsa.    ", -1, "static", SS_CENTER | WS_CHILD, 10, 143, 170, 10
+	   CONTROL "?????????????????????????????", -1, "static", SS_CENTER | WS_CHILD, 12, 18, 166, 10
+END
+
+ABOUTBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 22, 17, 144, 75
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+	   CONTROL "MS Windows 3.0 NetTest Application", 1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 0, 5, 144, 8
+	   CONTROL "Copyright (c) 1989, 1990 Microsoft Corp.", 1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 0, 15, 144, 8
+	   CONTROL "Rich Saunders rel 1.07", -1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 0, 25, 144, 8
+	   CONTROL "Version 3.0", -1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 0, 35, 144, 8
+	   CONTROL "OK", 1, "button", BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 53, 59, 32, 14
+END
+
+BATCHFILEBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 21, 17, 144, 75
+CAPTION "Batch Output File"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "Outputing Results to:", -1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 0, 12, 144, 8
+	   CONTROL "NETTEST.LOG", -1, "static", SS_CENTER | WS_GROUP | WS_CHILD, 22, 29, 98, 12
+	   CONTROL "Enter", 1, "button", BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 34, 56, 32, 14
+	   CONTROL "Cancel", 2, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 79, 56, 32, 14
+END
+
+ADDCONNECTIONBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 70, 20, 205, 105
+CAPTION "Add Net Connection"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "&Local Name:", -1, "static", SS_LEFT | WS_CHILD, 10, 12, 50, 10
+	   CONTROL "&Net Path:", -1, "static", SS_LEFT | WS_CHILD, 10, 38, 45, 8
+	   CONTROL "&Password:", -1, "static", SS_LEFT | WS_CHILD, 10, 62, 45, 10
+	   CONTROL "x:", IDD_LOCALNAME, "edit", ES_LEFT | WS_BORDER | WS_GROUP | WS_TABSTOP | WS_CHILD, 61, 10, 39, 12
+	   CONTROL "\\\\server\\share", IDD_NETPATHNAME, "edit", ES_LEFT | WS_BORDER | WS_GROUP | WS_TABSTOP | WS_CHILD, 60, 35, 133, 12
+	   CONTROL "", IDD_PASSWORD, "edit", ES_LEFT | ES_PASSWORD | WS_BORDER | WS_GROUP | WS_TABSTOP | WS_CHILD, 60, 60, 62, 12
+	   CONTROL "&Add", IDD_ADD, "button", BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 45, 85, 45, 15
+	   CONTROL "&Cancel", 2, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 121, 85, 43, 14
+END
+
+ERRORTEXTBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 66, 40, 218, 108
+CAPTION "Error Text Test"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "", IDD_ERRORCODELIST, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_TABSTOP | WS_CHILD, 8, 12, 145, 41
+	   CONTROL "", IDD_CORRECTTEXT, "edit", ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD, 8, 64, 198, 12
+	   CONTROL "", IDD_DRIVERTEXT, "edit", ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD, 8, 88, 198, 12
+	   CONTROL "&Test", 1, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 160, 12, 44, 14
+	   CONTROL "&Cancel", 2, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 160, 32, 44, 14
+	   CONTROL "&Correct Text For Error Code:", -1, "static", SS_LEFT | WS_CHILD, 8, 54, 124, 8
+	   CONTROL "Text &Returned From Driver:", -1, "static", SS_LEFT | WS_CHILD, 8, 78, 104, 10
+	   CONTROL "&Select Error Code:", -1, "static", SS_LEFT | WS_CHILD, 9, 3, 78, 8
+END
+
+LISTCONNSBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 59, 18, 227, 108
+CAPTION "Network Connections"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "Local Name", -1, "static", SS_LEFT | WS_CHILD, 15, 5, 50, 10
+	   CONTROL "Remote Name", -1, "static", SS_LEFT | WS_CHILD, 86, 4, 60, 10
+	   CONTROL "Status", -1, "static", SS_LEFT | WS_CHILD, 175, 5, 26, 10
+	   CONTROL "&Get Connections", IDD_GETNETCONS, "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD, 50, 89, 70, 14
+	   CONTROL "&Cancel", 2, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 135, 90, 39, 14
+	   CONTROL "", IDD_NETLIST, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | LBS_USETABSTOPS | WS_BORDER | WS_VSCROLL | WS_TABSTOP | WS_CHILD, 5, 17, 216, 65
+END
+
+NETCAPSDLG DIALOG LOADONCALL MOVEABLE DISCARDABLE 35, 14, 290, 168
+CAPTION "Driver Capabilities - Functionality"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "Spec Version:", -1, "static", SS_LEFT | WS_CHILD, 5, 7, 54, 12
+	   CONTROL "Net Type:", -1, "static", SS_LEFT | WS_CHILD, 5, 68, 60, 12
+	   CONTROL "Driver Ver:", -1, "static", SS_LEFT | WS_CHILD, 5, 38, 54, 12
+	   CONTROL "Device Mode:", -1, "static", SS_LEFT | WS_CHILD, 5, 98, 54, 12
+	   CONTROL "Get User:", -1, "static", SS_LEFT | WS_CHILD, 5, 126, 54, 12
+	   CONTROL "OK", 1, "button", BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 128, 152, 32, 14
+	   CONTROL "", IDD_SPECVER, "edit", ES_LEFT | WS_BORDER | WS_CHILD, 5, 18, 66, 12
+	   CONTROL "", IDD_DRVVER, "edit", ES_LEFT | WS_BORDER | WS_CHILD, 5, 48, 66, 12
+	   CONTROL "", IDD_NETTYPE, "edit", ES_LEFT | WS_BORDER | WS_CHILD, 5, 78, 66, 12
+	   CONTROL "", IDD_DEVMODE, "edit", ES_LEFT | WS_BORDER | WS_CHILD, 5, 108, 66, 12
+	   CONTROL "", IDD_USER, "edit", ES_LEFT | WS_BORDER | WS_CHILD, 5, 138, 65, 12
+	   CONTROL "", IDD_CONNECTIONS, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD, 85, 17, 95, 65
+	   CONTROL "Connections:", -1, "static", SS_LEFT | WS_CHILD, 86, 7, 60, 8
+	   CONTROL "", IDD_ERROR, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD, 82, 99, 95, 49
+	   CONTROL "Errors:", -1, "static", SS_LEFT | WS_CHILD, 83, 90, 61, 8
+	   CONTROL "", IDD_PRINTING, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD, 194, 16, 88, 129
+	   CONTROL "Printing:", -1, "static", SS_LEFT | WS_CHILD, 192, 6, 60, 8
+END
+
+REMOVECONBOX DIALOG LOADONCALL MOVEABLE DISCARDABLE 95, 15, 177, 47
+CAPTION "Remove Net Connection"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_POPUP
+BEGIN
+	   CONTROL "", IDD_DEVICEREM, "edit", ES_LEFT | WS_BORDER | WS_TABSTOP | WS_CHILD, 101, 8, 59, 12
+	   CONTROL "Force", IDD_FORCE, "button", BS_PUSHBUTTON | WS_GROUP | WS_TABSTOP | WS_CHILD, 13, 27, 43, 14
+	   CONTROL "Remove", IDD_REMOVE, "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD, 64, 27, 45, 14
+	   CONTROL "&Device to Remove:", -1, "static", SS_CENTER | WS_CHILD, 17, 10, 80, 10
+	   CONTROL "Cancel", 2, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 115, 27, 49, 13
+END

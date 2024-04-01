@@ -1,0 +1,5 @@
+ibmcolor control reset physical devmode stubs realize chphys data extext init
+ibmcolor.exe/ALIGN:16
+ibmcolor.map/map
+..\dmcolor swinlibc user gdi/NOD
+ibmcolor.def

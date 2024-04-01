@@ -1,0 +1,140 @@
+#   Window's Sample Display Drivers.
+#
+#   Requirements:
+#
+#	MASM 4.01 or greater with the environment variable INCLUDE set to
+#	the directories containing CMACROS.INC, GDIDEFS.INC, and WINDEFS.INC.
+#
+#	MASM 4.00 or greater with the ASM inference definition changed to
+#	include the directories containing CMACROS.INC, GDIDEFS.INC, and
+#	WINDEFS.INC.
+
+#   Options:
+#
+#	The command line may define options to MASM by defining the OPT
+#	macro.	By defining the OPT parameter in the make file, any
+#	possible interaction with an environment definition is avoided.
+
+    OPT =				    #NOP the options feature
+
+
+#   Includes:
+#
+#	Define the include on up the display driver tree for this
+#	particular directory.
+
+    INCS = -I. -I.. -I..\.. -I..\..\..
+
+
+#   Define the default assemble command.  This command could actually
+#   be overridden from the command line, but shouldn't be.
+
+    ASM = masm $(INCS) -v -n -ML $(OPT) 			# MASM 4.01
+#   ASM = masm $(INCS) -I\finc -v -n -ML $(OPT) 		# MASM 4.00
+
+
+#   Define the dependencies
+
+#   The files cursor.asm and bitblt reside in other directories, so the
+#   normal inference rule does not apply.
+
+bitblt.obj:	..\..\..\bitblt\bitblt.asm	\
+		..\..\..\bitblt\genlocal.blt	\
+		..\..\..\bitblt\genconst.blt	\
+		..\..\..\bitblt\gendata.blt	\
+		..\..\..\bitblt\ropdefs.blt	\
+		..\..\..\bitblt\roptable.blt	\
+			  ..\..\clrlocal.blt	\
+			  ..\..\clrconst.blt	\
+			  ..\..\clrdata.blt	\
+			  ..\..\pdevice.blt	\
+			  ..\..\pattern.blt	\
+			  ..\..\copydev.blt	\
+			     ..\devlocal.blt	\
+			     ..\devconst.blt	\
+			     ..\computey.blt	\
+			     ..\special.blt	\
+			     ..\exit.blt	\
+				cursor.inc
+	$(ASM) ..\..\..\bitblt\$*,$@;
+
+bmc_main.obj:  ..\..\..\bitblt\bmc_main.asm
+	$(ASM) ..\..\..\bitblt\$*,$@;
+
+bmc_eti.obj:   ..\..\..\bitblt\bmc_eti.asm
+	$(ASM) ..\..\..\bitblt\$*,$@;
+
+bmc_ite.obj:   ..\..\..\bitblt\bmc_ite.asm
+	$(ASM) ..\..\..\bitblt\$*,$@;
+
+discreen.obj:   ..\..\..\bitblt\discreen.asm
+	$(ASM) ..\..\..\bitblt\$*,$@;
+
+rlebm.obj:   ..\..\..\bitblt\rlebm.asm
+	$(ASM) ..\..\..\bitblt\$*,$@;
+
+cursor.obj:	..\cursor.asm ..\egamemd.inc cursor.inc
+    $(ASM) ..\$*,$@;
+
+polyline.obj:	..\polyline.asm ..\polybitm.asm ..\polystyl.asm  \
+                ..\plysolid.asm ..\lines.inc ..\clip.asm
+    $(ASM) ..\$*,$@;
+
+textout.obj:    ..\textout.asm
+    $(ASM) ..\$*,$@;
+
+strblt.obj:	..\strblt.asm ..\strblt.inc ..\..\..\fontseg.inc
+    $(ASM) ..\$*,$@;
+
+scanline.obj:	..\scanline.asm
+    $(ASM) ..\$*,$@;
+
+enable.obj:	..\..\..\enable.asm
+    $(ASM) ..\..\..\$*,$@;
+
+egastate.obj:	..\egastate.asm
+    $(ASM) ..\$*,$@;
+
+egahires.obj:	egahires.asm
+    $(ASM) $**,$@;
+
+ega.res:   ..\..\..\rc-med\rc-med.res
+    copy ..\..\..\rc-med\rc-med.res ega.res
+
+.\egahires.drv: egahires.def egahires.lnk ega.res               \
+		       .\egahires.obj	     .\cursor.obj	\
+		       .\bitblt.obj	     .\bmc_main.obj	\
+                       .\bmc_eti.obj         .\bmc_ite.obj      \
+		       .\discreen.obj	     .\rlebm.obj	\
+                       .\enable.obj	     .\polyline.obj	\
+ 		       .\scanline.obj	     .\strblt.obj	\
+		       .\egastate.obj	    ..\cblt.obj 	\
+		      ..\pixel.obj	     .\textout.obj	\
+		      ..\output.obj				\
+		      ..\buildstr.obj				\
+		      ..\smartfix.obj	    ..\smartpro.obj	\
+		      ..\rlstrblt.obj       ..\rlbldstr.obj     \
+                      ..\realfix.obj        ..\realpro.obj      \
+		      ..\scanlr.obj				\
+		      ..\ssb.obj	    ..\egainit.obj	\
+		      ..\3xswitch.obj	 ..\..\dithers.obj	\
+		   ..\..\robject.obj	 ..\..\colorinf.obj	\
+		   ..\..\enum.obj	 ..\..\colors.obj	\
+		..\..\..\control.obj  ..\..\..\cursors.obj	\
+		..\..\..\inquire.obj  ..\..\..\setmode.obj	\
+		..\..\..\hidither.obj ..\..\..\disable.obj	\
+		..\..\..\chkstk.obj				\
+		..\..\..\charwdth.obj ..\..\..\fb.obj		\
+		..\..\..\sswitch.obj
+    if exist display.drv  erase display.drv
+    if exist display.map  erase display.map
+    if exist display.sym  erase display.sym
+    if exist egahires.drv erase egahires.drv
+    if exist egahires.map erase egahires.map
+    if exist egahires.sym erase egahires.sym
+    link4 @egahires.lnk
+    rc -v -b ega.res egahires.drv
+    copy egahires.drv display.drv
+    copy egahires.map display.map
+    mapsym display
+    copy display.sym egahires.sym

@@ -1,0 +1,10 @@
+ABORTDLG DIALOG LOADONCALL MOVEABLE DISCARDABLE 105, 63, 137, 45
+CAPTION "Printer Driver Test - Printing"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | WS_POPUP
+BEGIN
+     CONTROL PRNTTESTICON            , 100         , "static", SS_ICON | WS_CHILD                   ,  5, 12, 18, 21
+     CONTROL "CANCEL"               , IDCANCEL    , "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 51, 25, 35, 14
+     CONTROL "Do you wish to CANCEL", -1, "static", SS_CENTER | WS_CHILD                           , 23,  3, 91,  8
+     CONTROL "the print test?"      , -1, "static", SS_CENTER | WS_CHILD                           , 42, 12, 53,  8
+END
+

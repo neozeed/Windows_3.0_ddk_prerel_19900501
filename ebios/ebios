@@ -1,0 +1,23 @@
+# sample make file for building ebios virtual device for Windows/386
+
+# comment this definition out with a "#", if building a non-debugging version
+Debug=-DDEBUG
+
+.asm.obj:
+        masm5 -p -w2 -Mx $(Debug) -I..\include $*;
+
+.asm.lst:
+        masm5 -l -p -w2 -Mx $(Debug) -I..\include $*;
+
+
+
+ebios.obj : ebios.asm ..\include\sysinfo.inc ..\include\ebios.inc \
+	 ..\include\debug.inc ..\include\vmm.inc
+
+
+OBJS =  ebios.obj 
+
+ebios.386: ebios.def $(OBJS)
+        link386 @ebios.lnk
+        addhdr ebios.386
+        mapsym32 ebios

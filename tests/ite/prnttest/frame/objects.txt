@@ -1,0 +1,16 @@
+PRINTER DRIVER OBJECTS (Pens and Brushes)
+
+The following pages contain the Pens and Brushes this particular printer driver supports.  They are obtained by calling the device EnumObj() function.	If the device does not perform it's own enumeration, then it is passed on to GDI to provide the
+brushes Display  Drivers enumeration routine.  This has an adverse effect for the
+printer driver.  Since the Display Driver is supplying the objects, it will
+generate all objects which it supports.  If it is a color driver, then it will
+produce objects for all colors that it supports.  Most printer drivers support
+only two colors (BLACK, WHITE).
+
+If this printer driver doesn't perform it's own enumeration, then some of the
+output might look odd.  Particularly outputing WHITE/HATCHED brushes.  They
+could tend to look like a SOLID WHITE BRUSH, depending whether the printer
+driver supports the output of WHITE/HATCHED brushes.
+
+Pens are usually enumerated by printer drivers.
+

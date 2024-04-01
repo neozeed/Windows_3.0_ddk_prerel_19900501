@@ -1,0 +1,19 @@
+FAR PASCAL RealizeObject(lpDevice, Style, lpInObj, lpOutObj, lpTextXForm)
+LPDEVICE   lpDevice;
+short   Style;
+LPSTR lpInObj;
+LPSTR lpOutObj;
+LPSTR lpTextXForm;
+{
+        if (Style == -OBJ_FONT)
+                return 0;
+        if (Style == OBJ_FONT)
+                {
+                /* hardware fonts in portrait mode only */
+                if (lpDevice->epType != DEV_PORT)
+                        return 0;
+                return chRealizeObject(lpDevice, (LPLOGFONT) lpInObj,(LPFONTINFO) lpOutObj, (LPTEXTXFORM) lpTextXForm);
+                }
+
+        return dmRealizeObject((lpDevice->epType ? (LPDEVICE) &lpDevice->epBmpHdr: lpDevice), Style, lpInObj, lpOutObj, lpTextXForm);
+}

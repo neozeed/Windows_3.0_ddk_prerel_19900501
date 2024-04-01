@@ -1,0 +1,5 @@
+tabs trap init toascii xlatus enable setspeed oemscan getname wep
+keyboard.exe/align:16
+keyboard/map
+swinlibc /NOD
+keyboard.def

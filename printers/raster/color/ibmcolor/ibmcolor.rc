@@ -1,0 +1,11 @@
+#include "printer.h"
+#include "resource.h"
+
+
+1      MYFONT    Ocr_b10.fnt
+2      MYFONT    Ocr_b5.fnt
+
+#define IBMCOLOR	  1
+#define COLOR		  1
+
+#include "printer.rc"

@@ -1,0 +1,100 @@
+#==============================================================================
+# WINDOWS DISPLAY-TEST MAKE FILE
+#   This Make-file will build the DISPLAY application.
+#
+#
+# LIBRARIES
+#   This application is built with SMALL MODEL LIBRARY
+#
+#
+# BUILDING SYNTAX
+#      MAKE [LinkExt={CVW | SMD}] [Options=$({SYMDEB | CODEVIEW | RETAIL})]
+#
+#      The default is for Compile options set for SYMDEB Link
+#==============================================================================
+
+SYMDEB  = -c -Asnd -Gsw -Od -W2 -Zped
+CODEVIEW= -c -Asnd -Gsw -Od -W2 -Zpei
+RETAIL  = -c -Asnd -Gsw -Ox -W2 -Zp
+
+LinkExt=SMD
+Options=$(SYMDEB)
+
+
+#==============================================================================
+# COMPILER OBJECTS ============================================================
+#==============================================================================
+RastFnct.obj : RastFnct.asm
+     masm RastFnct ;
+
+Init.obj : Init.c
+     cl $(Options) -NT _INIT Init.c
+
+DispTest.obj : DispTest.c
+     cl $(Options) -NT _TEXT DispTest.c
+
+DispBitm.obj : DispBitm.c
+     cl $(Options) -NT _TEXT DispBitm.c
+
+BitmTsts.obj : BitmTsts.c
+     cl $(Options) -NT _TEXT BitmTsts.c
+
+TextTsts.obj : TextTsts.c
+     cl $(Options) -NT _TEXT TextTsts.c
+
+PolyTsts.obj : PolyTsts.c
+     cl $(Options) -NT _TEXT PolyTsts.c
+
+LineTsts.obj : LineTsts.c
+     cl $(Options) -NT _TEXT LineTsts.c
+
+CurvTsts.obj : CurvTsts.c
+     cl $(Options) -NT _TEXT CurvTsts.c
+
+DispCurv.obj : DispCurv.c
+     cl $(Options) -NT _TEXT DispCurv.c
+
+DispLine.obj : DispLine.c
+     cl $(Options) -NT _TEXT DispLine.c
+
+DispPoly.obj : DispPoly.c
+     cl $(Options) -NT _TEXT DispPoly.c
+
+DispText.obj : DispText.c
+     cl $(Options) -NT _TEXT DispText.c
+
+Command.obj : Command.c
+     cl $(Options) -NT _TEXT Command.c
+
+Paint.obj : Paint.c
+     cl $(Options) -NT _TEXT Paint.c
+
+Destroy.obj : Destroy.c
+     cl $(Options) -NT _TEXT Destroy.c
+
+About.obj : About.c
+     cl $(Options) -NT _TEXT About.c
+
+Misc.obj : Misc.c
+     cl $(Options) -NT _TEXT Misc.c
+
+Setup.obj : Setup.c
+     cl $(Options) -NT _SETUP Setup.c
+
+#==============================================================================
+# LINK/RESOURCE OBJECTS =======================================================
+#==============================================================================
+
+DispTest.res : DispTest.rc DispTest.h
+     rc -r DispTest.rc
+
+DispTest.exe : DispTest.obj DispTest.res DispTest.def
+     link @DispTest.$(LinkExt)
+     rc DispTest.res
+     mapsym DispTest
+     copy *.exe ..\bin
+     copy *.sym ..\bin
+     erase *.exe
+     erase *.sym
+     erase *.map
+

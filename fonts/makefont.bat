@@ -1,0 +1,16 @@
+masm fonts;
+cd fixed
+make fixed
+cd ..\system
+make system
+cd ..\cour
+make cour
+cd ..\helv
+make helv
+cd ..\tmsr
+make tmsr
+cd ..\vector
+make vector
+cd ..\symbol
+make symbol
+cd ..

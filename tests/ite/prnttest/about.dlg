@@ -1,0 +1,14 @@
+ABOUTDLG DIALOG LOADONCALL MOVEABLE DISCARDABLE 62, 30, 193, 84
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+     CONTROL "Microsoft Windows Printer Driver"  , -1  , "static", SS_CENTER | WS_CHILD                 , 33,  0, 126,  8
+     CONTROL "Test Application"                  , -1  , "static", SS_CENTER | WS_CHILD                 , 65,  8,  62,  8
+     CONTROL "Copyright © 1989, Microsoft Corp." , -1  , "static", SS_CENTER | WS_CHILD                 , 32, 16, 128,  8
+     CONTROL "ISG:Windows:Testing"               , -1  , "static", SS_CENTER | WS_CHILD                 , 55, 24,  82,  8
+     CONTROL "Version 3.00/RC19"                 , -1  , "static", SS_CENTER | WS_CHILD                 , 61, 37,  70,  8
+     CONTROL "April 13, 1990"                    , -1  , "static", SS_CENTER | WS_CHILD                 , 61, 45,  70,  8
+     CONTROL ""                                  , -1  , "static", SS_BLACKFRAME | WS_CHILD             , 58, 36,  76, 19
+     CONTROL "PRNTTEST"                          , -1  , "static", SS_ICON | WS_CHILD                   , 13, 37,  18, 16
+     CONTROL "OK"                                , IDOK, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD, 78, 62,  36, 14
+END
+

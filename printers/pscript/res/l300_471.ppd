@@ -1,0 +1,515 @@
+*% Adobe PostScript(R) Printer Description File
+*% For "Linotype" version 47.1
+*% Produced by GetAPD.ps" with some hand editing
+*%
+*% Copyright 1988 Adobe Systems Incorporated.  All Rights Reserved.
+*% Permission is granted for redistribution of this file as
+*% long as this copyright notice is intact and the contents
+*% of the file is not altered in any way from its original form.
+*%
+*% The byte count of this file should be exactly 015901.
+*%
+*% Date: 11/15/88
+*FormatVersion: "2.0"
+*FileVersion: "1.0"
+*LanguageVersion: English
+
+*Product: "(Linotype)"
+*PSVersion: "(47.1) 0"
+*NickName: "Linotronic 300 v47.1"
+
+*% General Information and Defaults ===============
+*FreeVM: "176776"
+*ColorDevice: False
+*VariablePaperSize: True
+
+*FileSystem: True
+*?FileSystem: "
+statusdict begin diskstatus end
+exch pop
+0 eq {(False)} {(True)} ifelse
+= flush
+"
+*End
+
+*Password: "0"
+*ExitServer: "serverdict begin exitserver"
+
+*Reset: "
+serverdict begin 0 exitserver
+systemdict /quit get exec
+(WARNING : Printer Reset Failed.) = flush
+"
+*End
+
+*?Resolution: "
+save
+  statusdict begin resolution end
+  128 string cvs print(dpi)= flush
+restore
+"
+*End
+*DefaultResolution: 1270dpi
+*SetResolution 635dpi: "
+  statusdict begin
+  256 string li5backendparams length 0 eq
+  end
+  { quit } if
+  serverdict begin 0 exitserver
+  statusdict begin 635 setresolution end
+"
+*End
+*SetResolution 1270dpi: "
+  statusdict begin
+  256 string li5backendparams length 0 eq
+  end
+  { quit } if
+  serverdict begin 0 exitserver
+  statusdict begin 1270 setresolution end
+"
+*End
+*SetResolution 2540dpi: "
+  statusdict begin
+  256 string li5backendparams length 0 eq
+  end
+  { quit } if
+  serverdict begin 0 exitserver
+  statusdict begin 2540 setresolution end
+"
+*End
+
+*% Halftone Information ===============
+*ScreenFreq: "90.0"
+*ScreenAngle: "45.0"
+*DefaultScreenProc: Dot
+*ScreenProc Dot: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }
+"
+*End
+*ScreenProc Line: "{ pop }"
+*ScreenProc Ellipse: "{ dup 5 mul 8 div mul exch dup mul exch add sqrt 1 exch sub }"
+
+*DefaultTransfer: Null
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+*Transfer Normalized: "
+{
+mark
+1.0 1.0 .92 .76 .64 .54 .44 .36 .28 .2 .1 .0
+counttomark dup 3 add -1 roll exch
+2 sub mul dup floor cvi
+dup 3 1 roll sub
+exch dup
+3 add index exch 2 add index dup
+4 1 roll
+sub mul add
+counttomark 1 add 1 roll
+cleartomark
+} bind
+"
+*End
+*Transfer Normalized.Inverse: "
+{
+mark
+.0 .0 .1 .2 .28 .36 .44 .54 .64 .76 .92 1.0
+counttomark dup 3 add -1 roll exch
+2 sub mul dup floor cvi
+dup 3 1 roll sub
+exch dup
+3 add index exch 2 add index dup
+4 1 roll
+sub mul add
+counttomark 1 add 1 roll
+cleartomark
+} bind
+"
+*End
+
+*% Paper Handling ===================
+*PageSize LetterExtra: "statusdict begin 684 864 1 setpage end"
+*PageSize A4Extra: "statusdict begin 668 914 1 setpage end"
+*PageSize LegalExtra: "statusdict begin 684 1080 1 setpage end"
+*PageSize TabloidExtra: "statusdict begin 864 1296 1 setpage end"
+
+*PageRegion LetterExtra: "statusdict begin 684 864 1 setpage end"
+*PageRegion A4Extra: "statusdict begin 668 914 1 setpage end"
+*PageRegion LegalExtra: "statusdict begin 684 1080 1 setpage end"
+*PageRegion TabloidExtra: "statusdict begin 864 1296 1 setpage end"
+
+*ImageableArea LetterExtra: "0 0 684 864"
+*ImageableArea A4Extra: "0 0 668 914"
+*ImageableArea LegalExtra: "0 0 684 1080"
+*ImageableArea TabloidExtra: "0 0 864 1296"
+
+*PaperDimension LetterExtra: "684 864"
+*PaperDimension A4Extra: "668 914"
+*PaperDimension LegalExtra: "684 1080"
+*PaperDimension TabloidExtra: "864 1296"
+
+
+
+*% Use these entries to set paper size most of the time, unless there is
+*% specific reason to use PageRegion or PaperTray.
+*DefaultPageSize: Letter
+*PageSize Letter: "letter"
+*PageSize Legal: "legal"
+*PageSize Note: "note"
+*PageSize Ledger: "ledger"
+*PageSize Tabloid: "11x17"
+*PageSize A3: "a3"
+*PageSize A4: "a4"
+*PageSize A5: "a5"
+*PageSize B5: "b5"
+*?PageSize: "
+save
+        /d0 5 dict def
+        d0 begin        /420_596        (A5.Transverse) def
+                                                /499_709        (B5.Transverse) def
+                                                /596_840        (A4.Transverse) def
+                                                /612_792        (Letter.Transverse)     def
+                                                /1224_792       (Ledger)        def     end
+        /d1 7 dict def
+        d1 begin        /596_420        (A5)            def
+                                                /709_499        (B5)            def
+                                                /792_612        (Letter)def
+                                                /842_596        (A4)            def
+                                                /1008_612       (Legal) def
+                                                /1191_840       (A3)            def
+                                                /1224_792       (Tabloid)       def     end
+        statusdict begin pageparams end
+        4 1 roll pop
+        /high exch 10 string cvs dup length /hlen exch def def
+        /wide exch 10 string cvs def
+        /key hlen 1 add wide length add string def
+        key 0                   high    putinterval
+        key hlen        (_)             putinterval
+        key hlen 1 add  wide    putinterval
+        0 eq{d0}{d1}ifelse
+        key cvn{get}stopped{(OTHER)}if
+        = flush
+restore
+"
+*End
+
+*% Default Paper Handling Features
+*% Because the Linotronics are roll-fed machines, most of these features
+*% have values of "None".  None of them have related invocation keywords.
+*DefaultPaperTray: None
+*DefaultOutputBin: Upper
+*DefaultInputSlot: None
+*DefaultManualFeed: None
+*DefaultOutputOrder: Normal
+*DefaultCollator: None
+*DefaultSorter: None
+*DefaultDuplex: None
+
+*% The following entries provide information about specific paper keywords.
+*DefaultImageableArea: Letter
+*ImageableArea Letter: "0 1 613 792 "
+*ImageableArea Legal: "0 1 613 1008 "
+*ImageableArea Note: "0 1 613 792 "
+*ImageableArea Ledger: "0 0 1223 792 "
+*ImageableArea Tabloid: "0 1 792 1224 "
+*ImageableArea A3: "0 0 841 1191 "
+*ImageableArea A4: "0 0 596 842 "
+*ImageableArea A5: "0 0 420 596 "
+*ImageableArea B5: "0 0 500 709 "
+*?ImageableArea: "
+ save /cvp { cvi (            ) cvs print ( ) print } bind def
+  newpath clippath pathbbox
+  4 -2 roll exch 2 {ceiling cvp} repeat
+  exch 2 {floor cvp} repeat flush
+ restore
+"
+*End
+
+*% These provide the physical dimensions of the paper (by keyword)
+*DefaultPaperDimension: Letter
+*PaperDimension Letter: "612 792"
+*PaperDimension Legal: "612 1008"
+*PaperDimension Note: "612 792"
+*PaperDimension Ledger: "1224 792"
+*PaperDimension Tabloid: "792 1224"
+*PaperDimension A3: "842 1190"
+*PaperDimension A4: "595 842"
+*PaperDimension A5: "420 595"
+*PaperDimension B5: "516 729"
+
+
+*% Font Information =====================
+
+*DefaultFont: Courier
+*Font Courier: Standard "(001.004)"
+*Font Courier-Bold: Standard "(001.004)"
+*Font Courier-BoldOblique: Standard "(001.004)"
+*Font Courier-Oblique: Standard "(001.004)"
+*Font Helvetica: Standard "(001.001)"
+*Font Helvetica-Bold: Standard "(001.001)"
+*Font Helvetica-BoldOblique: Standard "(001.001)"
+*Font Helvetica-Oblique: Standard "(001.001)"
+*Font Symbol: Special "(001.001)"
+*Font Times-Bold: Standard "(001.001)"
+*Font Times-BoldItalic: Standard "(001.001)"
+*Font Times-Italic: Standard "(001.001)"
+*Font Times-Roman: Standard "(001.001)"
+*?FontQuery: "
+save 4 dict begin /sv exch def
+/s128 128 string def
+{       count 0 gt
+        {       dup FontDirectory exch known
+                {       pop 1   }
+                {       s128 cvs /fnt exch def
+                        /fn 6 fnt length add string def
+                        fn 0 (fonts/) putinterval
+                        fn 6 fnt      putinterval
+                        fn status
+                        {       pop pop pop pop 1       }
+                        {       0       }
+                        ifelse
+                }
+                ifelse = flush
+        }
+        {       exit    }
+        ifelse
+}bind loop sv end restore
+"
+*End
+
+*?FontList: "
+FontDirectory { pop == } bind forall flush
+/filenameforall where
+{pop
+ save
+        (fonts/*)
+        {dup length 6 sub 6 exch getinterval cvn == } bind
+        128 string
+        filenameforall flush
+ restore
+}if
+(*) = flush
+"
+*End
+
+*% Printer Messages (verbatim from printer):
+*Message: "%%[ exitserver: permanent state may be changed ]%%"
+*Message: "%%[ Flushing: rest of job (to end-of-file) will be ignored ]%%"
+*Message: "\FontName\ not found, using Courier"
+
+*% Status (format: %%[ status: <one of these> ]%% )
+*Status: "idle"
+*Status: "busy"
+*Status: "waiting"
+*Status: "printing"
+*Status: "warming up"
+*Status: "PrinterError: recorder idle"
+*Status: "PrinterError: recorder busy"
+*Status: "PrinterError: recorder offline or film problem"
+*Status: "PrinterError: recorder not responding"
+*Status: "PrinterError: page too large at current resolution"
+*Status: "PrinterError: knife not in end position"
+*Status: "PrinterError: cassette error"
+*Status: "PrinterError: change cassette"
+*Status: "PrinterError: knife error"
+*Status: "PrinterError: no cassette"
+*Status: "PrinterError: end of film"
+*Status: "PrinterError: end of job"
+
+*% Input Sources (format: %%[ status: <stat>; source: <one of these> ]%% )
+*Source: "serial9"
+*Source: "serial25"
+*Source: "AppleTalk"
+*Source: "Centronics"
+*Source: "other"
+
+*% Printer Error (format: %%[ PrinterError: <one of these> ]%%)
+*PrinterError: "recorder idle"
+*PrinterError: "recorder busy"
+*PrinterError: "recorder offline or film problem"
+*PrinterError: "recorder not responding"
+*PrinterError: "page too large at current resolution"
+*PrinterError: "knife not in end position"
+*PrinterError: "cassette error"
+*PrinterError: "change cassette"
+*PrinterError: "knife error"
+*PrinterError: "no cassette"
+*PrinterError: "end of film"
+*PrinterError: "end of job"
+
+*DeviceAdjustMatrix: "[1 0 0 1 0 0]"
+
+*% Color Separation Information =====================
+
+*DefaultColorSep: ProcessCyan.90lpi/90 lpi
+
+*InkName: ProcessCyan/Process Cyan
+*InkName: ProcessMagenta/Process Magenta
+*InkName: ProcessYellow/Process Yellow
+*InkName: ProcessBlack/Process Black
+*InkName: CustomColor/Custom Color
+
+*% For 90 lpi set  ===============================
+
+*ColorSepScreenAngle ProcessCyan.90lpi/90 lpi: "15"
+*ColorSepScreenAngle ProcessMagenta.90lpi/90 lpi: "75"
+*ColorSepScreenAngle ProcessYellow.90lpi/90 lpi: "0"
+*ColorSepScreenAngle ProcessBlack.90lpi/90 lpi: "45"
+*ColorSepScreenAngle CustomColor.90lpi/90 lpi: "45"
+
+*ColorSepScreenFreq ProcessCyan.90lpi/90 lpi: "90"
+*ColorSepScreenFreq ProcessMagenta.90lpi/90 lpi: "90"
+*ColorSepScreenFreq ProcessYellow.90lpi/90 lpi: "90"
+*ColorSepScreenFreq ProcessBlack.90lpi/90 lpi: "90"
+*ColorSepScreenFreq CustomColor.90lpi/90 lpi: "90"
+
+*ColorSepScreenProc ProcessCyan.90lpi/90 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessMagenta.90lpi/90 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessYellow.90lpi/90 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessBlack.90lpi/90 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc CustomColor.90lpi/90 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+
+*ColorSepTransfer ProcessCyan.90lpi/90 lpi: "{ }"
+*ColorSepTransfer ProcessMagenta.90lpi/90 lpi: "{ }"
+*ColorSepTransfer ProcessYellow.90lpi/90 lpi: "{ }"
+*ColorSepTransfer ProcessBlack.90lpi/90 lpi: "{ }"
+*ColorSepTransfer CustomColor.90lpi/90 lpi: "{ }"
+
+*% For 120 lpi set  ==============================
+
+*ColorSepScreenAngle ProcessCyan.120lpi/120 lpi: "15"
+*ColorSepScreenAngle ProcessMagenta.120lpi/120 lpi: "75"
+*ColorSepScreenAngle ProcessYellow.120lpi/120 lpi: "0"
+*ColorSepScreenAngle ProcessBlack.120lpi/120 lpi: "45"
+*ColorSepScreenAngle CustomColor.120lpi/120 lpi: "45"
+
+*ColorSepScreenFreq ProcessCyan.120lpi/120 lpi: "120"
+*ColorSepScreenFreq ProcessMagenta.120lpi/120 lpi: "120"
+*ColorSepScreenFreq ProcessYellow.120lpi/120 lpi: "120"
+*ColorSepScreenFreq ProcessBlack.120lpi/120 lpi: "120"
+*ColorSepScreenFreq CustomColor.120lpi/120 lpi: "120"
+
+*ColorSepScreenProc ProcessCyan.120lpi/120 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessMagenta.120lpi/120 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessYellow.120lpi/120 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessBlack.120lpi/120 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc CustomColor.120lpi/120 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+
+*ColorSepTransfer ProcessCyan.120lpi/120 lpi: "{ }"
+*ColorSepTransfer ProcessMagenta.120lpi/120 lpi: "{ }"
+*ColorSepTransfer ProcessYellow.120lpi/120 lpi: "{ }"
+*ColorSepTransfer ProcessBlack.120lpi/120 lpi: "{ }"
+*ColorSepTransfer CustomColor.120lpi/120 lpi: "{ }"
+
+*% For 133 lpi set  ==============================
+
+*ColorSepScreenAngle ProcessCyan.133lpi/133 lpi: "15"
+*ColorSepScreenAngle ProcessMagenta.133lpi/133 lpi: "75"
+*ColorSepScreenAngle ProcessYellow.133lpi/133 lpi: "0"
+*ColorSepScreenAngle ProcessBlack.133lpi/133 lpi: "45"
+*ColorSepScreenAngle CustomColor.133lpi/133 lpi: "45"
+
+*ColorSepScreenFreq ProcessCyan.133lpi/133 lpi: "133"
+*ColorSepScreenFreq ProcessMagenta.133lpi/133 lpi: "133"
+*ColorSepScreenFreq ProcessYellow.133lpi/133 lpi: "133"
+*ColorSepScreenFreq ProcessBlack.133lpi/133 lpi: "133"
+*ColorSepScreenFreq CustomColor.133lpi/133 lpi: "133"
+
+*ColorSepScreenProc ProcessCyan.133lpi/133 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessMagenta.133lpi/133 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessYellow.133lpi/133 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessBlack.133lpi/133 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc CustomColor.133lpi/133 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+
+*ColorSepTransfer ProcessCyan.133lpi/133 lpi: "{ }"
+*ColorSepTransfer ProcessMagenta.133lpi/133 lpi: "{ }"
+*ColorSepTransfer ProcessYellow.133lpi/133 lpi: "{ }"
+*ColorSepTransfer ProcessBlack.133lpi/133 lpi: "{ }"
+*ColorSepTransfer CustomColor.133lpi/133 lpi: "{ }"
+
+*% For 150 lpi set  ==============================
+
+*ColorSepScreenAngle ProcessCyan.150lpi/150 lpi: "15"
+*ColorSepScreenAngle ProcessMagenta.150lpi/150 lpi: "75"
+*ColorSepScreenAngle ProcessYellow.150lpi/150 lpi: "0"
+*ColorSepScreenAngle ProcessBlack.150lpi/150 lpi: "45"
+*ColorSepScreenAngle CustomColor.150lpi/150 lpi: "45"
+
+*ColorSepScreenFreq ProcessCyan.150lpi/150 lpi: "150"
+*ColorSepScreenFreq ProcessMagenta.150lpi/150 lpi: "150"
+*ColorSepScreenFreq ProcessYellow.150lpi/150 lpi: "150"
+*ColorSepScreenFreq ProcessBlack.150lpi/150 lpi: "150"
+*ColorSepScreenFreq CustomColor.150lpi/150 lpi: "150"
+
+*ColorSepScreenProc ProcessCyan.150lpi/150 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessMagenta.150lpi/150 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessYellow.150lpi/150 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc ProcessBlack.150lpi/150 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+*ColorSepScreenProc CustomColor.150lpi/150 lpi: "
+{abs exch abs 2 copy add 1 gt {1 sub dup mul exch 1 sub dup mul add 1
+sub }{dup mul exch dup mul add 1 exch sub }ifelse }"
+*End
+
+*ColorSepTransfer ProcessCyan.150lpi/150 lpi: "{ }"
+*ColorSepTransfer ProcessMagenta.150lpi/150 lpi: "{ }"
+*ColorSepTransfer ProcessYellow.150lpi/150 lpi: "{ }"
+*ColorSepTransfer ProcessBlack.150lpi/150 lpi: "{ }"
+*ColorSepTransfer CustomColor.150lpi/150 lpi: "{ }"
+
+

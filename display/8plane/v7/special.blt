@@ -1,0 +1,2906 @@
+
+
+	.xlist
+;----------------------------Module-Header------------------------------;
+; Module Name: SPECIAL.BLT
+;
+; Dispatcher for special cases of BLT's and supporting subroutines.
+;
+; Created: In Windows' distant past (c. 1983)
+;
+; Copyright (c) 1983 - 1987  Microsoft Corporation
+;
+; This file is part of a set that makes up the Windows BitBLT function
+; at driver-level.
+;-----------------------------------------------------------------------;
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+        .list
+
+subttl  check_device_special_cases
+page
+;----------------------------Private-Routine----------------------------;
+; check_device_special_cases
+;
+; Check for fast special cases of BLT.
+;
+;
+; Determine if the BLT is a special case which can be performed with
+; static code as opposed to code compiled on the stack, and, if so,
+; dispatch to the proper static code.
+;
+; The parameters needed for the BLT (phase alignment, directions of
+; movement, ...) have been computed and saved.  These parameters will
+; now be interpreted and a BLT created on the stack.
+;
+; If the rasterop is P, Pn, DDx (0), DDxn (1), and the brush is solid
+; or grey (for P and Pn), and the destination device is the screen,
+; then the operation can be performed by the static code using the EGA's
+; write mode 2 (write mode 0 for greys).
+;
+; Entry:
+;       SS:BP --> frame of BitBLT local variables
+; Returns:
+;       Carry set if BLT was performed with static code.
+;       Carry clear if BLT was not a special case.
+; Error Returns:
+;       None.
+; Registers Destroyed:
+;       AX,BX,CX,DX,SI,DI,DS,ES,flags
+; Registers Preserved:
+;       BP
+; Calls:
+;
+; History:
+;  Sun 22-Feb-1987 16:29:09 -by-  Walt Moore [waltm]
+; wrote original in distant past.
+;-----------------------------------------------------------------------;
+
+SIXTEENBIT	equ	1		; Turn on 16 bit operations
+
+SC_INDEX        equ     03C4h           ; Sequence Controller Index register
+SC_MAP          equ     002h
+SC_MEM          equ     004h
+SC_EXTEND       equ     006h            ; not in parameter table, don't count
+ER_BACK_LATCH   equ     0F2h
+ER_PAGE_SEL     equ     0F9h            ; Extended page select (bit 0)
+ER_BANK_SEL     equ     0F6h            ; 256K bank select
+
+GC_INDEX        equ     03CEh           ; Graphics Controller Index register
+GC_MODE         equ     005h
+
+MISC_OUTPUT     equ     03C2h           ; Miscellaneous Output register
+MISC_INPUT      equ     03CCh           ; Miscellaneous Output register read
+
+
+SCREEN_DSCAN		equ	1024
+
+REG_SEQUENCER_INDEX	equ	03C4H
+REG_SEQUENCER_DATA	equ	03C5H
+SC_MAP_MASK		equ	0002H
+SC_MEMORY_MODE		equ	0004H
+SC_BACKLATCH0		equ	00A0H
+SC_BACKLATCH1		equ	00A1H
+SC_BACKLATCH2		equ	00A2H
+SC_BACKLATCH3		equ	00A3H
+SC_FORELATCH0           equ     00ECH
+SC_FORELATCH1		equ	00EDH
+SC_FORELATCH2		equ	00EEH
+SC_FORELATCH3		equ	00EFH
+SC_MASKED_WRITE_ENABLE	equ	00F3H
+SC_BANK_SELECT          equ     00F6H
+SC_EXTENDED_PAGE	equ	00F9H
+SC_COMPATIBILITY	equ	00FCH
+SC_FOREBACK_CONTROL     equ     00FEH
+
+REG_MISC_IN		equ	03CCH
+REG_MISC_OUT		equ	03C2H
+PAGE_BIT		equ	0020H
+EXTENDED_PAGE_BIT	equ	0001H
+
+REG_GRAPHICS_INDEX	equ	03CEH
+REG_GRAPHICS_DATA	equ	03CFH
+GC_ENABLE_SET_RESET	equ	0001H
+GC_DATA_ROTATE          equ     0003H
+GC_FUNCTION		equ	0003H
+GC_MODE 		equ	0005H
+GC_BITMASK		equ	0008H
+
+;sequencer mode reg values
+CHAIN_4_MODE			equ	000EH
+PLANAR_MODE			equ	0006H
+
+;RAM bank select reg values
+READ_BANK_SELECT		equ	000CH
+WRITE_BANK_SELECT		equ	0003H
+
+;fg/bg control reg
+SET_RESET_MODE			equ	0000H
+DITHERED_FOREGROUND_MODE	equ	0008H
+
+;data rotate reg values
+FUNCTION_NOCHG			equ	0000H
+FUNCTION_XOR			equ	0018H
+
+ifdef VRAM768
+WRITE_MODE_0			equ	0000H
+WRITE_MODE_1			equ	0001H
+else
+;graphics mode reg values
+WRITE_MODE_0			equ	0040H
+WRITE_MODE_1			equ	0041H
+endif
+
+DO_LEFT_EDGE_FLAG               equ     0002H
+DO_RIGHT_EDGE_FLAG		equ	0001H
+
+VERT_SIZE_PATTERN               equ     SIZE_PATTERN
+HORZ_SIZE_PATTERN		equ	SIZE_PATTERN
+
+DIRECTION_RIGHT 		equ	0
+DIRECTION_UP			equ	1
+DIRECTION_LEFT			equ	2
+DIRECTION_DOWN			equ	3
+
+
+
+;------------------------------Pseudo-Code------------------------------;
+; {
+; }
+;-----------------------------------------------------------------------;
+
+ROP_P           equ     11110000b
+ROP_Pn          equ     00001111b
+ROP_S           equ     11001100b
+ROP_Sn          equ     00110011b
+ROP_DDx         equ     00000000b
+ROP_DDxn        equ     11111111b
+ROP_Dn          equ     01010101b
+ROP_DPx         equ     01011010b
+
+        assume  ds:nothing
+        assume  es:nothing
+
+        ?_pub   check_device_special_cases
+check_device_special_cases      proc    near
+
+        mov     x_page,-1
+        xor     cx,cx
+
+  ; exit if the destination is neither
+  ; the device nor a small color bitmap
+
+        mov     dh,gl_flag0
+
+        test    dh,F0_DEST_IS_DEV
+        jz      cdsc_fail               ;if not display
+
+  ; branch to ROP-specific routine
+
+        mov     al,bptr (Rop[2])        ;Get the raster op
+
+	cmp	al,ROP_S
+	jnz	@F
+	jmp	cdsc_S
+@@:
+        cmp     al,ROP_P
+        jz      cdsc_P
+
+        cmp     al,ROP_Pn
+        jz      cdsc_Pn
+
+        cmp     al,ROP_Dn
+        jz      cdsc_Dn
+
+        cmp     al,ROP_DDx
+        jz      cdsc_0
+
+        cmp     al,ROP_DDxn
+        jz      cdsc_1
+
+        cmp     al,ROP_DPx
+        jz      cdsc_DPx
+
+cdsc_fail:
+        clc
+        ret
+
+cdsc_done:
+        stc
+        ret
+
+
+;---------------------------------------
+
+        ?_pub   cdsc_1
+cdsc_1:
+        mov     al,0FFh
+        jmp     cdsc_dst
+
+;---------------------------------------
+
+	public	 cdsc_0
+cdsc_0:
+        xor     al,al
+        jmp     cdsc_dst
+
+;---------------------------------------
+
+        ?_pub   cdsc_P
+cdsc_P:
+        mov     bl,cl_brush_accel
+        test    bl,SOLID_BRUSH
+	jz	@F
+	xor	ah,ah
+	jmp	cdsc_pat_solid
+@@:	mov	ah	,0
+	jmp	cdsc_pat
+
+;---------------------------------------
+
+        ?_pub   cdsc_Pn
+cdsc_Pn:
+        mov     bl,cl_brush_accel
+        test    bl,SOLID_BRUSH
+	jz	@F
+	mov	ah,0ffh
+	jmp	cdsc_pat_solid
+@@:	mov	ah	,0FFH
+	jmp	cdsc_pat
+
+;---------------------------------------
+
+        ?_pub   cdsc_Dn
+cdsc_Dn:
+        mov     al,0FFh
+        jmp     cdsc_dst_xor
+
+;---------------------------------------
+
+        ?_pub   cdsc_DPx
+cdsc_DPx:
+        mov     al,cl_brush_accel
+        test    al,SOLID_BRUSH
+        njz     cdsc_pat_xor
+
+	lds	si,gl_lp_pattern
+        mov     al,[si].oem_brush_clr
+        jmp     cdsc_dst_xor
+
+;---------------------------------------
+
+        ?_pub   cdsc_S
+cdsc_S:
+        test    dh,F0_SRC_IS_DEV
+        njnz    cdsc_src
+
+        test    dh,F0_SRC_IS_COLOR
+        njz     cdsc_exp
+
+        jmp     cdsc_fail
+
+
+;
+;   special_blit_common_prep
+;
+;   This routine handles preparation code common to most of the special case
+;   blits.
+;
+;   PARMS:
+;   AL	    -	value to be placed in graphics write mode register
+;   AH	    -	value to be placed in graphics function select register
+;   BL	    -	value to be placed in the foreground/background control reg
+;   xDst    -   stack parm: left edge of blit rectangle
+;   cxExt   -	width of blit rectangle
+;
+;   RETURNS:
+;   direction flag is cleared
+;   4 plane mode is set
+;   write mode is set as passed in AL
+;   function select register is set as passed in AH
+;   foreground / background control set as passed in BL
+;   bank select register is saved
+;   foreground latches are saved  (used by DOS for temporary storage)
+;   BL	    -	left edge mask
+;   BH	    -	right edge mask
+;   CX	    -	full nibble count
+;   ES:DI   -	ptr to dest of blit
+;   bank select register is set appropriately
+;
+
+special_blit_common_prep	proc	near
+
+	call	save_regs_state 	    ;save some extension regs state
+
+	call	set_write_and_func_regs     ;set write mode and func select reg
+	xchg	ax	 ,bx
+	call	set_plane_and_control_regs  ;background control reg
+	xchg	ax	 ,bx
+
+	mov	bx	,DestxOrg
+	mov	cx	,xExt
+	call	compute_edge_masks	    ;compute the plane masks
+
+	cld				    ;assume direction is up
+        ret
+
+special_blit_common_prep	endp
+
+
+
+
+;
+;   special_blit_common_cleanup
+;
+;   This routine handles all the necessary cleanup common to the special blits.
+;
+;   PARMS:
+;   NONE
+;
+;   RETURNS:
+;   chain 4 mode is set
+;   write mode is set to 0
+;   function select register is set to no change.
+;   foreground / background control set to set / reset mode
+;   bank select register is restored
+;   foreground latches are restored  (used by DOS for temporary storage)
+;
+
+special_blit_common_cleanup	   proc    near
+
+	call	restore_regs_state	;restore some extension regs state
+
+
+
+	ret
+
+special_blit_common_cleanup	   endp
+
+
+
+;***************************************************************************
+;=======================================
+;
+;  cdsc_pat_solid
+;
+;  AH = inversion mask
+;
+;	- 3/89, Irene Wu, V7
+;
+;  - This stuff uses the latches in a 256 color mode!!! May not work
+;    on all VGA boards.
+;---------------------------------------
+;  get brush color and (maybe) invert
+;  then pass off to cdsc_dst
+
+        public  cdsc_pat_solid
+cdsc_pat_solid:
+
+
+	lds	si,gl_lp_pattern
+        mov     al,[si].oem_brush_clr
+	xor	al,ah			; xor pattern with mask
+
+        errn$   cdsc_dst
+
+;=======================================
+;
+;  cdsc_dst
+;
+;  AL = byte to store
+
+        ?_pub   cdsc_dst
+cdsc_dst:
+
+	call	solid_pattern
+	jmp	cdsc_done
+
+
+
+;
+;   solid_pattern
+;
+;   This routine blits a solid pattern into a rectangle on the screen.
+;
+;   PARMS:
+;   AL	     -	contains the solid pattern byte with which to fill
+;
+;   RETURNS:
+;   NONE
+;
+
+public	solid_pattern
+solid_pattern    proc    near
+
+	push	ax
+	mov	ax	,(FUNCTION_NOCHG SHL 8) or WRITE_MODE_1
+        mov     bx      ,(PLANAR_MODE SHL 8) or SET_RESET_MODE
+        call    special_blit_common_prep
+	pop	ax
+
+	call	set_background_latches	;set the graphics latches with pattern
+	call	set_plane_dst_addr	;sets es:di, dst_bank, VGA bank select
+
+solid_pattern_loop:
+	dec	yExt				;one less scanline to do
+	js	solid_pattern_done		;if bx < 0 then done
+	call	solid_pattern_one_scanline	;do one scan line
+	add	di	,SCREEN_DSCAN / 4	;point to next scan line
+	jnc	solid_pattern_loop		;if there was wrap to next bank
+	inc	dst_bank
+	call	set_dst_bank			;  then update dest bank
+        jmp     short   solid_pattern_loop
+
+solid_pattern_done:
+	call	special_blit_common_cleanup
+        ret
+
+solid_pattern	 endp
+
+
+
+
+;
+;   solid_pattern_one_scanline
+;
+;   This routine blits a solid pattern into a segment of one scanline.
+;
+;   PARMS:
+;   4 plane mode,
+;   write mode 1
+;   background latches hold the solid fill value
+;   BL      -   left edge mask
+;   BH	    -	right edge mask
+;   CX	    -	full nibble count
+;   ES:DI   -	ptr to first byte (four bytes, right!) to fill with pattern
+;
+;   RETURNS:
+;   NONE
+;
+
+solid_pattern_one_scanline	proc	near
+
+	push	ax
+        push    cx
+	push	dx
+        push    di
+
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_MAP_MASK
+	out	dx	,al
+	inc	dx
+
+	mov	al	,bl		;set the left edge mask
+	out	dx	,al
+        stosb                           ;fill the bytes in the leftmost nibble
+
+	mov	al	,0FH		;all planes on for full nibble copy
+	out	dx	,al
+        rep     stosb
+
+	mov	al	,bh		;set the right edge mask
+	out	dx	,al
+        stosb                           ;fill any bytes in rightmost nibble
+
+        pop     di
+	pop	dx
+        pop     cx
+	pop	ax
+        ret
+
+solid_pattern_one_scanline	endp
+
+
+
+
+
+
+;=======================================
+;
+;  cdsc_pat
+;
+;  AH = xor mask for pattern
+
+        ?_pub   cdsc_pat
+cdsc_pat:
+
+	call	pattern
+	jmp	cdsc_done
+
+
+;
+;   pattern
+;
+;   This routine copies an SIZE_PATTERN x SIZE_PATTERN pattern into the
+;   clipping rectangle.
+;
+;   PARMS:
+;   gl_lp_pattern  -   stack parm: pointer to the pattern
+;   DestxOrg	   -   stack parm: the left edge coord of the blit rectangle
+;   xExt	   -   stack parm: the width of the blit rectangle
+;   yExt	   -   stack parm: the height of the blit rectangle
+;   gl_pat_row	   -   stack parm: pattern row to be drawn on first scanline
+;   AH	    -	00 if pattern copy is direct, FF if pattern is to be inverted
+;
+;   RETURNS:
+;   NONE
+;
+
+public	pattern
+pattern  proc    near
+
+	mov	invert_flag	,ah
+	mov	repeat_nibble	,0
+
+	mov	ax	,(FUNCTION_NOCHG SHL 8) or WRITE_MODE_0
+	mov	bx	,(PLANAR_MODE SHL 8) or DITHERED_FOREGROUND_MODE
+	call	special_blit_common_prep
+
+        call    set_plane_dst_addr
+
+        mov     al      ,gl_pat_row
+	xor	ah	,ah
+        shiftl  al      ,3
+	add	al	,gl_pat_col
+	mov	gl_row_fixup ,ax
+        mov     ax      ,HORZ_SIZE_PATTERN
+	sub	al	,gl_pat_col
+	mov	gl_col_fixup ,ax
+        mov     dx      ,yExt
+	add	dx	,VERT_SIZE_PATTERN - 1
+	cmp	yExt	,VERT_SIZE_PATTERN
+	jl	pattern_loop
+	mov	yExt	,VERT_SIZE_PATTERN
+
+pattern_loop:
+	lds	si	,gl_lp_pattern	;ds:[si] brush pattern ptr; 64 bytes
+	add	si	,gl_row_fixup	;byte offset of pattern start
+
+        mov     repeat_nibble ,0
+;	 mov	 ax	 ,[si]
+;	 cmp	 ax	 ,[si + 4]
+;	 jne	 pattern_8wide
+
+;	 mov	 ax	 ,[si + 2]
+;	 cmp	 ax	 ,[si + 6]
+;	 jne	 pattern_8wide
+;	 mov	 repeat_nibble ,1
+
+pattern_8wide:
+	mov	ax	,gl_col_fixup
+	call	load_latches_with_pattern
+
+	call	pattern_same			;do rows that are equal mod 8
+	add	di	,SCREEN_DSCAN / 4	;point to next scan line
+	jnc	pattern_same_bank		;if we wrapped a 256K bank
+	inc	dst_bank
+	call	set_dst_bank			;  then inc dest bank
+
+pattern_same_bank:
+	add	gl_row_fixup ,HORZ_SIZE_PATTERN
+	cmp	gl_row_fixup ,VERT_SIZE_PATTERN * HORZ_SIZE_PATTERN
+	jc	pattern_ok
+	sub	gl_row_fixup ,VERT_SIZE_PATTERN * HORZ_SIZE_PATTERN
+
+pattern_ok:
+        dec     dx
+	dec	yExt
+	jne	pattern_loop
+
+        call    special_blit_common_cleanup
+	ret
+
+pattern  endp
+
+
+
+
+;
+;   pattern_same
+;
+;   This routine copies pattern fills every eighth (every SIZE_PATTERN) line
+;   in the clipping rectangle. The reason for doing things this way, is
+;   because both the foreground and background latches are being used (with
+;   the VGA in four plane mode) to do this blit, and if every eighth line
+;   is done then these latches only need to be reloaded eight times. If
+;   instead, the scanlines were done sequentially, the latches would have to
+;   be reloaded every scanline.
+;
+;   PARMS:
+;   BL	    -	left edge mask
+;   BH	    -	right edge_mask
+;   CX	    -	full nibble count
+;   DX	    -	scanlines remaining in clipping rectangle + SIZE_PATTERN - 1.
+;   ES:DI   -	first address to blit with pattern.
+;
+;   RETURNS:
+;   NONE
+;
+
+public	pattern_same
+pattern_same     proc    near
+
+	push	ax
+	push	di
+        push    dx
+	call	save_bank_select
+
+pattern_same_loop:
+	sub	dx	,VERT_SIZE_PATTERN
+	js	pattern_same_done
+	call	pattern_one_scanline
+	add	di	,VERT_SIZE_PATTERN * (SCREEN_DSCAN / 4)
+	jnc	pattern_same_loop
+	inc	dst_bank
+	call	set_dst_bank
+	jmp	short	pattern_same_loop
+
+pattern_same_done:
+	call	restore_bank_select
+	mov	al	,dl_banksave
+	mov	dst_bank	,al
+        pop     dx
+	pop	di
+        pop     ax
+	ret
+
+pattern_same	endp
+
+
+
+
+;
+;   pattern_one_scanline
+;
+;   This routine blits a simple pattern into a segment of one scanline. Notice
+;   that if an edge mask is zero, then nothing will get stored for that byte.
+;   Similarly, if the full nibble count is zero, nothing will get stored for
+;   those bytes either. Hence, this routine will work even for blits of small
+;   width (even 0!).
+;
+;   PARMS:
+;   4 plane mode
+;   write mode 0
+;   pattern must be loaded into the foreground and background latches
+;   BL	    -	left edge mask
+;   BH	    -	right edge mask
+;   CX	    -	full nibble count
+;   ES:DI   -	ptr to first byte (four bytes, right!) to fill with pattern
+;
+;   RETURNS:
+;   NONE
+;
+
+
+public	pattern_one_scanline
+pattern_one_scanline     proc    near
+
+	push	ax
+        push    cx
+        push    di
+	push	dx
+	push	si
+
+	mov	dx	,REG_GRAPHICS_INDEX
+	mov	ax	,GC_MODE + (WRITE_MODE_0 SHL 8)
+        out     dx      ,ax
+
+        mov     dx      ,REG_SEQUENCER_INDEX
+	mov	al	,SC_MAP_MASK	; left edge first
+	mov	ah	,bl
+	out	dx	,ax
+	stosb
+
+	mov	ah	,0FH
+        out     dx      ,ax
+
+        cmp     repeat_nibble ,1
+	jne	no_repeat_nibbles
+
+	shr	cx	,1
+	rep	stosw
+	rcl	cx	,1
+	rep	stosb
+	jmp	second_pass_right_edge
+
+
+no_repeat_nibbles:
+	mov	si	,di
+if 0
+	jcxz	pattern_first_pass_done
+
+	inc	di
+	push	cx
+	dec	cx
+	shr	cx	,1
+	rep	stosw
+	rcr	cx	,1
+	rol	cx	,1
+	rep	stosb
+	pop	cx
+	jc	pattern_first_pass_done
+else
+	inc	di
+	cmp	cx,1
+	je	skip_first_pass_loop
+	jb	pattern_first_pass_done
+
+	push	cx
+	dec	cx
+first_pass_loop:
+	stosb
+	inc	di
+	sub	cx	,2
+	ja	first_pass_loop
+	pop	cx
+	jb	pattern_first_pass_done
+
+skip_first_pass_loop:
+endif
+
+pattern_first_pass_right_edge:
+	mov	ah	,bh
+	out	dx	,ax
+	stosb
+	mov	ah	,0FH
+        out     dx      ,ax
+
+pattern_first_pass_done:
+	mov	di	,si
+	jcxz	second_pass_right_edge
+
+	mov	dx	,REG_GRAPHICS_INDEX
+	mov	ax	,GC_MODE + (WRITE_MODE_1 SHL 8)
+        out     dx      ,ax
+
+second_pass_loop:
+	stosb
+	inc	di
+	sub	cx	,2
+	ja	second_pass_loop
+	jb	no_second_pass_right_edge
+
+second_pass_right_edge:
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_MAP_MASK
+	mov	ah	,bh
+        out     dx      ,ax
+	stosb
+
+no_second_pass_right_edge:
+	pop	si
+	pop	dx
+	pop	di
+	pop	cx
+	pop	ax
+        ret
+
+pattern_one_scanline	 endp
+
+
+
+;=======================================
+;
+;  cdsc_pat_xor
+;
+;  AH = xor mask for pattern
+
+        ?_pub   cdsc_pat_xor
+cdsc_pat_xor:
+
+;  set destination starting point
+
+        call    set_d_esdi
+        call    set_d_page
+
+;  set pattern origin
+
+	lds	si,gl_lp_pattern
+
+;  set pattern starting row
+
+	mov	al,gl_pat_row
+	xor	ah,ah
+	shiftl	ax,3
+	mov	gl_row_fixup,ax
+
+; ** starting a new row
+
+cdsc_pat_xor_10:
+
+        push    di
+
+;  get starting point within pattern
+
+	mov	al,gl_pat_col
+	xor	ah,ah
+	mov	gl_col_fixup,ax
+
+        mov     cx,xExt
+
+; ** starting a new column
+
+cdsc_pat_xor_20:
+
+	mov	bx,gl_row_fixup
+	add	bx,gl_col_fixup
+        mov     al,ds:[si+bx]           ; get current pattern byte
+        xor     es:[di],al              ; xor with destination
+        inc     di
+
+        inc     gl_col_fixup            ; advance pattern column
+	and	gl_col_fixup,07h
+        loop    cdsc_pat_xor_20         ; continue for x extent
+
+        pop     di
+
+	add	gl_row_fixup,08h	; advance pattern row
+	and	gl_row_fixup,38h
+        add     di,gl_dest.width_b      ; advance to next raster
+        jc      cdsc_pat_xor_40         ; if we switched banks
+
+cdsc_pat_xor_30:
+
+        dec     yExt
+        jnz     cdsc_pat_xor_10         ; continue for y extent
+        jmp     cdsc_done
+
+;  bank crossing detected, set up next row
+
+cdsc_pat_xor_40:
+
+        inc     d_page                  ; advance bank number
+        call    set_d_page              ; tell the hardware
+        jmp     cdsc_pat_xor_30         ; pick up where we left off
+
+
+;=======================================
+;
+;  cdsc_dst_xor
+;
+
+        ?_pub   cdsc_dst_xor
+cdsc_dst_xor:
+
+
+	call	no_pattern
+	jmp	cdsc_done
+
+
+
+;
+;   no_pattern
+;
+;   This routine XORs the destination with 0FFH.
+;
+;   PARMS:
+;   NONE
+;
+;   RETURNS:
+;   NONE
+;
+
+public no_pattern
+no_pattern       proc    near
+
+	push	ds
+	push	ax
+	mov	ax	,(FUNCTION_XOR SHL 8) or WRITE_MODE_0
+        mov     bx      ,(PLANAR_MODE SHL 8) or DITHERED_FOREGROUND_MODE
+        call    special_blit_common_prep
+	pop	ax
+
+	call	set_foreground_latches
+	call	set_plane_dst_addr
+	call	set_src_to_dst
+
+no_pattern_loop:
+	dec	yExt				;one less scanline to do
+	js	no_pattern_done 		;if < 0 then done
+	call	no_pattern_one_scanline 	;do one scan line
+        add     di      ,SCREEN_DSCAN / 4       ;point to next scan line
+	add	si	,SCREEN_DSCAN / 4	;point to next scan line
+        jnc     no_pattern_loop                 ;if there was wrap to next bank
+	inc	src_bank
+        inc     dst_bank
+	call	set_src_bank
+        call    set_dst_bank                    ;  then update the banks
+        jmp     short   no_pattern_loop
+
+no_pattern_done:
+        call    special_blit_common_cleanup
+	pop	ds
+        ret
+
+no_pattern    endp
+
+
+
+;
+;   no_pattern_one_scanline
+;
+;   This routine xors the dest with FF into a segment of one scanline.
+;   MOVSB is used here so that the video hardware will see a memory read
+;   cycle followed by a write cycle. The read cycle will cause the VGA
+;   background latches to be loaded with byte ptr ds:si. The write cycle
+;   XORS background latch i (0-3) with foreground latch i. It then stores
+;   the result of this logical operation in byte ptr es:di. Since the
+;   foreground latches are preset to contain FF, the effect is to invert
+;   the old values.
+;
+;   PARMS:
+;   4 plane mode
+;   write mode 0
+;   function select = XOR
+;   FG/BG control Extension Reg should select Dithered Foreground mode
+;   BL      -   left edge mask
+;   BH	    -	right edge mask
+;   CX	    -	full nibble count
+;   DS:SI   -	ptr to first byte to invert
+;   ES:DI   -	ptr to first byte to invert (ds:si should equal es:di)
+;
+;   RETURNS:
+;   NONE
+;
+
+public no_pattern_one_scanline
+no_pattern_one_scanline proc	near
+
+	push	ax
+        push    cx
+	push	dx
+        push    di
+	push	si
+
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_MAP_MASK
+	out	dx	,al
+	inc	dx
+
+	mov	al	,bl		;set left edge mask
+	out	dx	,al
+	movsb
+
+	mov	al	,0FH		;all planes on for full nibble copy
+	out	dx	,al
+	rep	movsb
+
+	mov	al	,bh		;set right edge mask
+	out	dx	,al
+	movsb				;read value, XOR with FF and write
+
+	pop	si
+        pop     di
+	pop	dx
+        pop     cx
+	pop	ax
+        ret
+
+no_pattern_one_scanline endp
+
+
+
+
+
+;
+;       left edge map mask table
+;
+
+left_edge_mask_table    label   byte
+
+        db      00001111b       ;0-> enable plane 0,1,2,3
+	db	00001110b	;1->		    1,2,3
+	db	00001100b	;2->		      2,3
+	db	00001000b	;3->			3
+
+;
+;       right edge map mask table
+;
+right_edge_mask_table	label	byte
+
+	db	00001111b	;0-> enable plane 0,1,2,3
+	db	00000001b	;1-> enable plane 0
+	db	00000011b	;2->		  0,1
+	db	00000111b	;3->		  0,1,2
+
+
+
+
+	public	cdsc_src
+cdsc_src:
+
+        test    dh,F0_SRC_IS_DEV        ; is the source the display?
+        jz      not_src                 ; ..no
+        test    dh,F0_DEST_IS_DEV       ; is the destination the display?
+        jz      not_src                 ; ..no
+	mov	ax,SrcxOrg		;
+	and	ax  ,3
+	mov	bx  ,DestxOrg
+	and	bx  ,3
+	cmp	ax,bx			; is source X = destination X?
+	je	cdsc_vsc		; ..yes, go do vertical screen copy
+
+not_src:
+
+	call	source_copy_not_aligned
+	jmp	cdsc_done
+
+cdsc_vsc:
+	call	source_copy_aligned
+	jmp	cdsc_done
+
+
+
+
+;
+;   source_copy_not_aligned
+;
+;   This routine handles source to destination copies where the source and
+;   destination need not have any specific alignment. The only restriction
+;   is that the source and destination must lie in the same 64K page. This
+;   routine is intended for horizontal blits where the source and destination
+;   are on the same scanline, but it can be used more generally if desired.
+;
+;   PARMS:
+;
+
+public source_copy_not_aligned
+source_copy_not_aligned     proc    near
+
+	sub	sp	,SCREEN_DSCAN + SCREEN_DSCAN
+	push	ds
+
+        mov     ax      ,(FUNCTION_NOCHG SHL 8) or WRITE_MODE_0
+	mov	bx	,(CHAIN_4_MODE SHL 8) or SET_RESET_MODE
+	call	special_blit_common_prep
+	mov	cx	,xExt
+
+	call	set_directions
+	call	set_chain_src_addr		;set ds:si,READ BANK SELECT
+	call	set_chain_dst_addr		;set es:di,WRITE BANK SELECT
+
+source_ncopy_left:
+        cmp     vert_dir, DIRECTION_UP
+	je	source_ncopy_up_loop
+
+source_ncopy_down_loop:
+	dec	yExt
+	js	source_ncopy_down_done
+
+	call	set_src_page
+	push	cx
+        push    di
+	push	es
+        push    si
+	mov	ax	,ss
+	mov	es	,ax
+	mov     di      ,sp
+	add	di	,SCREEN_DSCAN
+ 	rep	movsb
+	pop	si
+	pop	es
+        pop     di
+	pop	cx
+
+	call	set_dst_page
+	push	cx
+	push	di
+        push    ds
+        push    si
+	mov	ax	,ss
+	mov	ds	,ax
+ 	mov	si	,sp
+	add	si	,SCREEN_DSCAN
+        rep     movsb
+	pop	si
+	pop     ds
+	pop	di
+        pop     cx
+
+	sub	si	,SCREEN_DSCAN
+	sbb	src_page	,0
+	sub	di	,SCREEN_DSCAN
+	sbb	dst_page	,0
+	jmp	source_ncopy_down_loop
+
+source_ncopy_down_done:
+	jmp	source_ncopy_done
+
+source_ncopy_up_loop:
+	dec	yExt
+	js	source_ncopy_done
+
+	call	set_src_page
+	push	cx
+	push	di
+	push	es
+	push	si
+        mov     ax      ,ss
+	mov	es	,ax
+	mov     di      ,sp
+	add	di	,SCREEN_DSCAN
+        rep     movsb
+	pop	si
+        pop     es
+        pop     di
+	pop	cx
+
+	call	set_dst_page
+	push	cx
+	push	di
+        push    ds
+	push	si
+	mov	ax	,ss
+	mov	ds	,ax
+ 	mov	si	,sp
+	add	si	,SCREEN_DSCAN
+        rep     movsb
+	pop	si
+        pop     ds
+	pop	di
+        pop     cx
+
+	add	si	,SCREEN_DSCAN
+	adc	src_page	,0
+	add	di	,SCREEN_DSCAN
+	adc	dst_page	,0
+	jmp	source_ncopy_up_loop
+
+source_ncopy_done:
+	pop	ds
+        add     sp      ,SCREEN_DSCAN + SCREEN_DSCAN
+	call	special_blit_common_cleanup
+        ret
+
+source_copy_not_aligned     endp
+
+
+
+;
+;   source_copy_aligned
+;
+;   This routine handles source to dest copies where the source and
+;   destination are equal modulo 4.
+;
+;   PARMS:
+;
+
+public	source_copy_aligned
+source_copy_aligned     proc    near
+
+        mov     ax      ,(FUNCTION_NOCHG SHL 8) or WRITE_MODE_1
+	mov	bx	,(PLANAR_MODE SHL 8) or SET_RESET_MODE
+	call	special_blit_common_prep
+
+	call	set_directions
+        call    set_plane_src_addr
+	call	set_plane_dst_addr
+
+        cmp     horz_dir        ,DIRECTION_LEFT
+	je	source_acopy_left
+	xchg	bl	 ,bh
+
+source_acopy_left:
+        cmp     vert_dir        ,DIRECTION_UP
+	je	source_acopy_up_loop
+
+source_acopy_down_loop:
+	dec	yExt
+	js	source_acopy_done
+	call	source_copy_one_scanline
+	sub	si	,SCREEN_DSCAN / 4
+	jnc	source_acopy_down_src_noov
+	dec	src_bank
+	call	set_src_bank
+
+source_acopy_down_src_noov:
+	sub	di	,SCREEN_DSCAN / 4
+	jnc	source_acopy_down_loop
+	dec	dst_bank
+        call    set_dst_bank
+	jmp	source_acopy_down_loop
+
+
+source_acopy_up_loop:
+	dec	yExt
+	js	source_acopy_done
+	call	source_copy_one_scanline
+	add	si	,SCREEN_DSCAN / 4
+	jnc	source_acopy_up_src_noov
+	inc	src_bank
+	call	set_src_bank
+
+source_acopy_up_src_noov:
+        add     di      ,SCREEN_DSCAN / 4
+	jnc	source_acopy_up_loop
+	inc	dst_bank
+        call    set_dst_bank
+	jmp	source_acopy_up_loop
+
+source_acopy_done:
+        call    special_blit_common_cleanup
+	ret
+
+source_copy_aligned	endp
+
+
+
+;
+;   source_copy_one_scanline
+;
+;   This routine blits one scanline where source and destination are equal
+;   modulo 4.
+;
+;   PARMS:
+;   4 plane mode
+;   write mode 1
+;   direction flag cleared or set as appropriate
+;   BL          -       left edge mask
+;   BH		-	right edge mask
+;   CX		-	number of full nibbles
+;   DS:SI       -       ptr to src
+;   ES:DI	-	ptr to dest
+;
+
+source_copy_one_scanline     proc    near
+
+	push	ax
+        push    cx
+	push	dx
+        push    di
+	push	si
+
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_MAP_MASK
+	out	dx	,al
+	inc	dx
+
+        mov     al      ,bl             ;set the left edge mask
+        out     dx      ,al
+	movsb				;move the left edge bytes
+
+	mov	al	,0FH		;set mask for full nibble moves
+        out     dx      ,al
+	rep	movsb			;move all four byte "nibbles"
+
+	mov	al	,bh		;set the right edge mask
+	out	dx	,al
+	movsb				;move the right edge bytes
+
+	pop	si
+        pop     di
+	pop	dx
+        pop     cx
+	pop	ax
+        ret
+
+source_copy_one_scanline   endp
+
+
+
+
+;
+;   compute_edge_masks
+;
+;   This routine computes the edge masks. Edge masks are essentially map
+;   masks for the left and right edges of a scanline blit. They are usually
+;   necessary when using the graphics latches in 4 plane mode to perform blits
+;   because the blits are not always nibble aligned.
+;
+;   PARMS:
+;   bx	    -	    left edge x-coordinate
+;   cx	    -	    width of the scanline blit (x extent)
+;
+;   RETURNS:
+;   cx	    -	    number of full nibbles
+;   bl	    -	    left edge mask
+;   bh	    -	    right edge mask
+;
+;           Note: if the scanline blit width is contained within a single
+;		  nibble, cx and ah will equal 0, and al will contain the
+;		  single nibble mask.
+;
+
+public	compute_edge_masks
+compute_edge_masks       proc    near
+
+	push	ax
+	push	bx
+
+	add	cx	,bx
+        and     bx      ,3
+	mov	al	,cs:left_edge_mask_table[bx]
+
+	mov	bx	,cx
+        and     bx      ,3
+	mov	ah	,cs:right_edge_mask_table[bx]
+	mov	bx	,ax
+
+	pop	ax
+	dec	cx
+        and     cx      ,0FFFCH
+	and	ax	,0FFFCH
+	sub	cx	,ax
+        shr     cx      ,1                      ;compute full nibble count
+	shr	cx	,1			;if full nibble count not 0
+	je	compute_edge_masks_one_nibble	;   then done
+	dec	cx
+	pop	ax
+	ret
+
+compute_edge_masks_one_nibble:
+	and	bl	,bh
+	xor	bh	,bh
+        pop     ax
+	ret
+
+compute_edge_masks	endp
+
+
+
+
+
+;
+;   set_directions
+;
+;   This routine returns the X and Y directions of the blit.
+;
+;   RETURNS:
+;   vert_dir	set to either DIRECTION_UP or DIRECTION_DOWN
+;   horz_dir	set to either DIRECTION_LEFT or DIRECTION_RIGHT
+;
+
+set_directions		proc	near
+
+	push	ax
+
+	mov	vert_dir	,DIRECTION_UP
+	mov	ax	,SrcyOrg
+	cmp	ax	,DestyOrg
+	jge	set_directions_yup
+
+	mov	vert_dir	,DIRECTION_DOWN
+	mov	ax	,yExt
+	dec	ax
+	add	SrcyOrg ,ax
+	add	DestyOrg,ax
+
+set_directions_yup:
+	cld
+	mov	horz_dir,DIRECTION_LEFT
+	mov	ax	,SrcxOrg
+	cmp	ax	,DestxOrg
+	jge	set_directions_xleft
+
+	std
+        mov     horz_dir       ,DIRECTION_RIGHT
+	mov	ax	,xExt
+	dec	ax
+	add	SrcxOrg ,ax
+	add	DestxOrg,ax
+
+set_directions_xleft:
+        pop     ax
+	ret
+
+set_directions	    endp
+
+
+
+;
+;   set_plane_and_control_regs
+;
+;   This routine sets 4 plane mode in the sequencer_mode reg, and sets the
+;   control reg to the value in AL.
+;   PARMS:
+;   AL	    -	    sequencer foreground / background control reg value
+;
+
+set_plane_and_control_regs	 proc	 near
+
+	push	dx
+	push	ax
+	push	ax
+
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_MEMORY_MODE
+	out	dx	,ax
+
+	pop	ax
+	mov	ah	,al
+	mov	al	,SC_FOREBACK_CONTROL
+	out	dx	,ax
+
+	pop	ax
+        pop     dx
+	ret
+
+set_plane_and_control_regs	 endp
+
+
+
+
+;
+;   set_write_and_func_regs
+;
+;   This routine sets the graphics mode register,
+;   and the graphics function select / data rotate register.
+;   PARMS:
+;   AL	    -	    value to place in the graphics mode register
+;   AH	    -	    value to place in graphics data rotate register
+;
+
+set_write_and_func_regs       proc    near
+
+	push	dx
+	push	ax
+	push	ax
+
+	mov	dx	,REG_GRAPHICS_INDEX
+	mov	al	,GC_FUNCTION
+	out	dx	,ax
+
+	pop	ax
+	mov	ah	,al
+	mov	al	,GC_MODE
+	out	dx	,ax
+
+	pop	ax
+        pop     dx
+	ret
+
+set_write_and_func_regs       endp
+
+
+
+;
+;   save_bank_select
+;
+;   This routine saves the bank select register (sequencer register F6). There
+;   is a routine restore_bank_select which restores the bank select register.
+;   save_bank_select only allocates one memory location for saving the reg.
+;   If a second call is made to this routine without an intervening restore,
+;   the first value of the bank select reg is lost.
+;
+;   PARMS:
+;   NONE
+;
+;   RETURNS:
+;   NONE
+;
+
+save_bank_select   proc    near
+
+        push    ax
+        push    dx
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_BANK_SELECT
+        out     dx      ,al
+	inc	dx
+	in	al	,dx
+	mov	dl_banksave ,al
+        pop     dx
+        pop     ax
+        ret
+
+save_bank_select   endp
+
+
+
+;
+;   restore_bank_select
+;
+;   This routine restores the bank select register (sequencer register F6),
+;   whch was saved by the routine save_bank_select.
+;
+;   PARMS:
+;   NONE
+;
+;   RETURNS:
+;   NONE
+;
+
+
+restore_bank_select	proc	near
+
+        push    ax
+        push    dx
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_BANK_SELECT
+	out	dx	,al
+	inc	dx
+	mov	al	,dl_banksave
+	out	dx	,al
+        pop     dx
+        pop     ax
+        ret
+
+restore_bank_select	endp
+
+
+
+
+
+;
+;   save_regs_state
+;
+;   This routine saves the state of several extension registers. This is
+;   necessary because of the way some controlling tasks operate. There is a
+;   sister routine restore_regs_state which should be called before leaving
+;   special blit.
+;
+;   PARMS:
+;   NONE
+;
+;   RETURNS:
+;   NONE
+;
+
+save_regs_state 	proc	near
+
+        push    ax
+        push    dx
+	cli
+
+        mov      dx     ,REG_GRAPHICS_INDEX
+	mov	 al	,GC_ENABLE_SET_RESET
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_enable_set_reset,al
+	mov	 al	,0
+	out	 dx	,al
+
+	dec	 dx
+	mov	 al	,GC_DATA_ROTATE
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_data_rotate ,al
+
+        dec      dx
+	mov	 al	,GC_MODE
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_mode ,al
+
+	dec	 dx
+	mov	 al	,GC_BITMASK
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_bitmask ,al
+	mov	 al	,0FFH
+	out	 dx	,al
+
+	mov	 dx	,SC_INDEX
+	mov	 al	,SC_MAP_MASK
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_map_mask ,al
+
+	dec	 dx
+	mov	 al	,SC_MEMORY_MODE
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_memory_mode ,al
+
+	dec	 dx
+        mov      al     ,SC_BACKLATCH0
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_backlatch0 ,al
+
+	dec	 dx
+        mov      al     ,SC_BACKLATCH1
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_backlatch1 ,al
+
+	dec	 dx
+        mov      al     ,SC_BACKLATCH2
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_backlatch2 ,al
+
+	dec	 dx
+        mov      al     ,SC_BACKLATCH3
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_backlatch3 ,al
+
+	dec	 dx
+	mov	 al	,SC_FORELATCH0
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_forelatch0 ,al
+
+	dec	 dx
+	mov	 al	,SC_FORELATCH1
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_forelatch1 ,al
+
+	dec	 dx
+	mov	 al	,SC_FORELATCH2
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_forelatch2 ,al
+
+	dec	 dx
+	mov	 al	,SC_FORELATCH3
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_forelatch3 ,al
+
+        dec      dx
+	mov	 al	,SC_MASKED_WRITE_ENABLE
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_masked_write_enable ,al
+	mov	 al	,0
+	out	 dx	,al
+
+	dec	 dx
+        mov      al     ,SC_BANK_SELECT
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_bank_select ,al
+
+	dec	 dx
+        mov      al     ,SC_EXTENDED_PAGE
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_extended_page ,al
+
+	dec	 dx
+        mov      al     ,SC_COMPATIBILITY
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_compatibility ,al
+	mov	 al	,6CH
+	out	 dx	,al
+
+	dec	 dx
+        mov      al     ,SC_FOREBACK_CONTROL
+	out	 dx	,al
+	inc	 dx
+	in	 al	,dx
+	mov	 cdsc_foreback_control ,al
+
+	mov	 dx	,REG_MISC_IN
+	in	 al	,dx
+	mov	 cdsc_misc ,al
+
+	sti
+        pop     dx
+        pop     ax
+        ret
+
+save_regs_state 	endp
+
+
+
+;
+;   restore_regs_state
+;
+;   This routine restores the state of several extension  registers that
+;   were saved by the routine save_regs_state.
+;
+;   PARMS:
+;   NONE
+;
+;   RETURNS:
+;   NONE
+;
+
+
+restore_regs_state	proc	near
+
+        push    ax
+        push    dx
+	cli
+
+	mov	 dx	,GC_INDEX
+	mov	 al	,GC_ENABLE_SET_RESET
+	mov	 ah	,cdsc_enable_set_reset
+	out	 dx	,ax
+
+	mov	 al	,GC_DATA_ROTATE
+	mov	 ah	,cdsc_data_rotate
+	out	 dx	,ax
+
+	mov	 al	,GC_MODE
+	mov	 ah	,cdsc_mode
+	out	 dx	,ax
+
+	mov	 al	,GC_BITMASK
+	mov	 ah	,cdsc_bitmask
+	out	 dx	,ax
+
+	mov	 dx	,SC_INDEX
+        mov      al     ,SC_MAP_MASK
+	mov	 ah	,cdsc_map_mask
+	out	 dx	,ax
+
+	mov	 al	,SC_MEMORY_MODE
+	mov	 ah	,cdsc_memory_mode
+	out	 dx	,ax
+
+        mov      al     ,SC_BACKLATCH0
+	mov	 ah	,cdsc_backlatch0
+	out	 dx	,ax
+
+        mov      al     ,SC_BACKLATCH1
+	mov	 ah	,cdsc_backlatch1
+        out      dx     ,ax
+
+        mov      al     ,SC_BACKLATCH2
+	mov	 ah	,cdsc_backlatch2
+        out      dx     ,ax
+
+        mov      al     ,SC_BACKLATCH3
+	mov	 ah	,cdsc_backlatch3
+        out      dx     ,ax
+
+	mov	 al	,SC_FORELATCH0
+	mov	 ah	,cdsc_forelatch0
+	out	 dx	,ax
+
+	mov	 al	,SC_FORELATCH1
+	mov	 ah	,cdsc_forelatch1
+        out      dx     ,ax
+
+	mov	 al	,SC_FORELATCH2
+	mov	 ah	,cdsc_forelatch2
+        out      dx     ,ax
+
+	mov	 al	,SC_FORELATCH3
+	mov	 ah	,cdsc_forelatch3
+        out      dx     ,ax
+
+	mov	 al	,SC_MASKED_WRITE_ENABLE
+	mov	 ah	,cdsc_masked_write_enable
+	out	 dx	,ax
+
+        mov      al     ,SC_BANK_SELECT
+	mov	 ah	,cdsc_bank_select
+        out      dx     ,ax
+
+        mov      al     ,SC_EXTENDED_PAGE
+	mov	 ah	,cdsc_extended_page
+        out      dx     ,ax
+
+        mov      al     ,SC_COMPATIBILITY
+	mov	 ah	,cdsc_compatibility
+        out      dx     ,ax
+
+        mov      al     ,SC_FOREBACK_CONTROL
+	mov	 ah	,cdsc_foreback_control
+        out      dx     ,ax
+
+	mov	 dx	,REG_MISC_OUT
+	mov	 al	,cdsc_misc
+	out	 dx	,al
+
+	sti
+        pop     dx
+        pop     ax
+        ret
+
+restore_regs_state	endp
+
+
+
+
+;
+;   set_src_to_dst
+;
+;   This routine sets the source address equal to the current dest addr.
+;   It adjusts the read-bank bits in the RAM bank select register to match
+;   the write bits in the same register. This routine is used because
+;   some of the special blits perform MOVSBs. If ds:si = es:di, then certain
+;   games can be played with the VGA hardware.
+;
+;   PARMS:
+;   ES:DI  and	the write-bank select bits should be the current destination
+;
+;   RETURNS:
+;   DS:SI	-	ptr to blit destination
+;   READ_BANK_SELECT bits in sequencer register BANK_SELECT (index F6) are
+;   set appropriately.
+;
+
+public	set_src_to_dst
+set_src_to_dst	  proc	  near
+
+        push    ax
+	mov	ax	,es
+	mov	ds	,ax
+	mov	si	,di
+
+        mov     al      ,dst_bank
+	mov	src_bank	,al
+	call	set_src_bank
+
+	pop     ax
+        ret
+
+set_src_to_dst	  endp
+
+
+
+
+;
+;   set_chain_src_addr
+;
+;   This routine sets the src address for the blit. The routine
+;   set_src_page is called to set the correct page, extended page, and
+;   read-bank bits.
+;
+;   PARMS:
+;   Ysrc     -	     y coord of top of source blit rectangle
+;   Xsrc     -	     x coord of left edge of source blit rectangle
+;
+;   RETURNS:
+;   DS:SI	-	ptr to blit source
+;   PAGE_SELECT_BIT in misc output reg (3CC) is set appropriately
+;   EXTENDED_PAGE_SELECT_BIT in sequencer reg (index F9) is set appropriately
+;   READ_BANK_SELECT bits in sequencer register BANK_SELECT (index F6) are
+;   set appropriately.
+;
+
+set_chain_src_addr   proc    near
+
+        push    ax
+        push    dx
+	mov	ax	,ScreenSelector
+	mov	ds	,ax
+	mov	si	,SrcxOrg
+	mov	ax	,SrcyOrg
+	mov	dx	,SCREEN_DSCAN
+	mul	dx
+	add	si	,ax			;add in row offset in frame
+	adc	dl	,dh			;(dh always 0) dl is 256K bank
+	mov	src_page,dl
+	call	set_src_page			;assign the 64K src page
+        pop     dx
+        pop     ax
+        ret
+
+set_chain_src_addr    endp
+
+
+
+
+;
+;   set_chain_dst_addr
+;
+;   This routine sets the destination address for the blit. The routine
+;   set_dst_page is called to set the correct page, extended page, and
+;   write-bank bits.
+;
+;   PARMS:
+;   gl_dest.lp_bits  -	data structure: field .lp_bits points to frame buffer
+;   Ydst	 -  line offset into the frame buffer
+;   Xdst	 - column offset into the frame buffer
+;
+;   RETURNS:
+;   ES:DI	-	ptr to blit destination
+;   PAGE_SELECT_BIT in misc output reg (3CC) is set appropriately
+;   EXTENDED_PAGE_SELECT_BIT in sequencer reg (index F9) is set appropriately
+;   WRITE_BANK_SELECT bits in sequencer register BANK_SELECT (index F6) are
+;   set appropriately.
+;
+
+set_chain_dst_addr   proc    near
+
+        push    ax
+        push    dx
+	les	di	,gl_dest.lp_bits	;ptr to start of device frame
+	add	di	,DestxOrg		;add in column offset in frame
+	mov	ax	,DestyOrg
+	mov	dx	,SCREEN_DSCAN		;row width for chain 4 mode
+	mul	dx
+	add	di	,ax			;add in row offset in frame
+	adc	dl	,dh			;(dh always 0) dl is 256K bank
+	mov	dst_page,dl
+	call	set_dst_page			;assign the 64K dest page
+        pop     dx
+        pop     ax
+        ret
+
+set_chain_dst_addr    endp
+
+
+
+
+
+;
+;   set_plane_src_addr
+;
+;   This routine sets the src address for the blit. The routine
+;   set_src_bank is called to set the correct read-bank bits.It is assumed
+;   that 4 plane mode is being used; hence, the address that is returned
+;   in ds:si will be the destination "plane" address which is the linear
+;   sequential address divided by 4.
+;
+;   PARMS:
+;   Ysrc     -	     y coord of top of source blit rectangle
+;   Xsrc     -	     x coord of left edge of source blit rectangle
+;
+;   RETURNS:
+;   DS:SI	-	ptr to blit source
+;   READ_BANK_SELECT bits in sequencer register BANK_SELECT (index F6) are
+;   set appropriately.
+;
+
+set_plane_src_addr   proc    near
+
+        push    ax
+        push    dx
+	mov	ax	,ScreenSelector
+	mov	ds	,ax
+	mov	si	,SrcxOrg
+	shr	si	,1
+	shr	si	,1
+	mov	ax	,SrcyOrg
+	mov	dx	,SCREEN_DSCAN / 4
+	mul	dx
+	add	si	,ax			;add in row offset in frame
+	adc	dl	,dh			;(dh always 0) dl is 256K bank
+	mov	src_bank,dl
+	call	set_src_bank			;assign the 256K dest bank
+        pop     dx
+        pop     ax
+        ret
+
+set_plane_src_addr    endp
+
+
+
+
+;
+;   set_plane_dst_addr
+;
+;   This routine sets the destination address for the blit. The routine
+;   set_dst_bank is called to set the correct write-bank bits. It is assumed
+;   that 4 plane mode is being used; hence, the address that is returned
+;   in es:di will be the destination "plane" address which is the linear
+;   sequential address divided by 4.
+;
+;   PARMS:
+;   gl_dest.lp_bits  -	data structure: field .lp_bits points to frame buffer
+;   Ydst	 -  line offset into the frame buffer
+;   Xdst	 - column offset into the frame buffer
+;
+;   RETURNS:
+;   ES:DI	-	ptr to blit destination
+;   WRITE_BANK_SELECT bits in sequencer register BANK_SELECT (index F6) are
+;   set appropriately.
+;
+
+public	set_plane_dst_addr
+set_plane_dst_addr   proc    near
+
+        push    ax
+        push    dx
+	les	di	,gl_dest.lp_bits	;ptr to start of device frame
+	mov	ax	,DestxOrg
+	shr	ax	,1			;in 4 plane mode, divide the
+	shr	ax	,1			;coords by 4
+	add	di	,ax			;add in column offset in frame
+	mov	ax	,DestyOrg
+	mov	dx	,SCREEN_DSCAN / 4	;row width for 4 plane mode
+	mul	dx
+	add	di	,ax			;add in row offset in frame
+	adc	dl	,dh			;(dh always 0) dl is 256K bank
+	mov	dst_bank,dl
+	call	set_dst_bank			;assign the 256K dest bank
+        pop     dx
+        pop     ax
+        ret
+
+set_plane_dst_addr    endp
+
+
+
+
+;
+;   set_src_page
+;
+;   This routine sets the page select, extended page select and, if
+;   necessary the 256K bank select bits for CPU READS.
+;   PARMS:
+;   src_page	-   module stack parm: 64K video page
+;
+
+set_src_page	proc	near
+
+	push	ax
+
+	mov	al	,src_page
+	call	set_page
+
+	shr	al	,1
+	shr	al	,1
+	mov	src_bank,al
+        call    set_src_bank
+
+        pop     ax
+	ret
+
+set_src_page	endp
+
+
+
+
+;
+;   set_dst_page
+;
+;   This routine sets the page select, extended page select and, if
+;   necessary the 256K bank select bits for CPU WRITES.
+;   PARMS:
+;   dst_page	-   module stack parm: 64K video page
+;
+
+set_dst_page	proc	near
+
+	push	ax
+
+	mov	al	,dst_page
+	call	set_page
+
+	shr	al	,1
+	shr	al	,1
+	mov	dst_bank,al
+	call	set_dst_bank
+
+        pop     ax
+	ret
+
+set_dst_page	endp
+
+
+
+;
+;   set_page
+;
+;   This routine sets the page select and extended page select bits.
+;   PARMS:
+;   AL(1:0)	-   64K page number within the 256K bank
+;
+
+set_page    proc    near
+
+	push	dx
+	push	bx
+        push    ax
+
+	mov	ah	,al
+	mov	bl	,al
+	mov	dx	,REG_SEQUENCER_INDEX
+	in	al	,dx
+	mov	bh	,al
+
+	mov	al	,SC_EXTENDED_PAGE
+	and	ah	,EXTENDED_PAGE_BIT
+        out     dx      ,ax
+
+	mov	al	,bh
+	out	dx	,al			;restore the sequencer index
+
+	mov	dx	,REG_MISC_IN
+	in	al	,dx
+	and	al	,NOT PAGE_BIT
+	and	bl	,02H
+        shl     bl      ,1
+	shl	bl	,1
+        shl     bl      ,1
+        shl     bl      ,1
+        or      al      ,bl
+	mov	dx	,REG_MISC_OUT
+        out     dx      ,al                     ;set the page select bit
+
+        pop     ax
+	pop	bx
+        pop     dx
+	ret
+
+set_page    endp
+
+
+
+
+;
+;   set_src_bank
+;
+;   This routine sets the 256K bank select bits for CPU READS. These bits
+;   are located in sequencer extension register F6.
+;   PARMS:
+;
+
+set_src_bank	proc	near
+
+	push	dx
+	push	ax
+	mov	al	,src_bank
+
+        mov     ah      ,al
+	shl	ah	,1			;align read-bank select bits
+	shl	ah	,1			;  to correct field
+	and	ah	,READ_BANK_SELECT	;mask out any extra stuff
+ 
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_BANK_SELECT
+	out	dx	,al
+	inc	dx
+	in	al	,dx			;get current bank select bits
+	and	al	,not READ_BANK_SELECT	;clear out read-bank bits
+	or	al	,ah			;assign new read-bank bits
+	out	dx	,al			;write new bank select data
+
+	pop	ax
+        pop     dx
+	ret
+
+set_src_bank	endp
+
+
+
+
+;
+;   set_dst_bank
+;
+;   This routine sets the 256K bank select bits for CPU WRITES. These bits
+;   are located in sequencer extension register F6.
+;   PARMS:
+;   AL(1:0)    -       write bank select bits
+;
+
+set_dst_bank	proc	near
+
+	push	dx
+	push	ax
+	mov	al	,dst_bank
+
+	mov	ah	,al
+	and	ah	,WRITE_BANK_SELECT	;mask out any extra stuff
+ 
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	al	,SC_BANK_SELECT
+	out	dx	,al
+	inc	dx
+	in	al	,dx			;get current bank select bits
+	and	al	,not WRITE_BANK_SELECT	;clear out write-bank bits
+	or	al	,ah			;assign new write-bank bits
+	out	dx	,al			;write new bank select data
+
+	pop	ax
+        pop     dx
+	ret
+
+set_dst_bank	endp
+
+
+
+;
+;   load_latches_with_pattern
+;
+;   This routine loads the foreground and background latches with the pattern
+;   pointed to by ds:[si]. Since the pattern can start on a non-nibble
+;   aligned boundary, we must decide which foreground latch to load first.
+;   This decision is made by looking at the left edge mask passed in BX.
+;   The left edge mask specifies the first pixel within the nibble that will
+;   be filled. Once the starting fglatch (call it fglatch i) is determined,
+;   the foreground latches are filled sequentially up to fglatch 3, the
+;   bglatches are then filled sequentially 0 thru 3, and then foreground
+;   latches 0 thru i-1 are filled.
+;   PARMS:
+;   al		-	number of pattern values to place before wrapping
+;   bx		-	left edge mask
+;   ds:[si]     -       ptr to four values to place in foreground latches
+;
+;   RETURNS:
+;   NONE	Note: si has been modified
+;
+
+public	load_latches_with_pattern
+load_latches_with_pattern  proc    near
+
+	push	dx
+	push	bx
+	push	ax
+        xchg    ax      ,bx
+	mov	bh	,HORZ_SIZE_PATTERN	;number of latches to fill
+	mov	dx	,REG_SEQUENCER_INDEX
+
+	shr	ax	,1
+	jc	load_foreground_0
+	shr	ax	,1
+	jc	load_foreground_1
+	shr	ax	,1
+	jc	load_foreground_2
+	shr	ax	,1
+	jc	load_foreground_3
+	jmp	load_background_0
+
+load_latches_done:
+	pop	ax
+	pop	bx
+	pop	dx
+	ret
+
+load_foreground_0:
+	mov	ah	,SC_FORELATCH0
+        lodsb
+	xor	al	,invert_flag
+	xchg	ah	,al
+	out	dx	,ax		;load foreground latch 0
+	dec	bh
+	je	load_latches_done
+        dec     bl
+	jne	load_foreground_1
+        sub     si      ,HORZ_SIZE_PATTERN
+
+load_foreground_1:
+	mov	ah	,SC_FORELATCH1
+        lodsb
+	xor	al	,invert_flag
+	xchg	ah	,al
+	out	dx	,ax		;load foreground latch 1
+	dec	bh
+	je	load_latches_done
+        dec     bl
+	jne	load_foreground_2
+	sub	si	,HORZ_SIZE_PATTERN
+
+load_foreground_2:
+	mov	ah	,SC_FORELATCH2
+        lodsb
+	xor	al	,invert_flag
+	xchg	ah	,al
+	out	dx	,ax		;load foreground latch 2
+	dec	bh
+	je	load_latches_done
+        dec     bl
+	jne	load_foreground_3
+	sub	si	,HORZ_SIZE_PATTERN
+
+load_foreground_3:
+	mov	ah	,SC_FORELATCH3
+        lodsb
+	xor	al	,invert_flag
+	xchg	ah	,al
+	out	dx	,ax		;load foreground latch 3
+	dec	bh
+	je	load_latches_done
+        dec     bl
+	jne	load_background_0
+	sub	si	,HORZ_SIZE_PATTERN
+
+load_background_0:
+	lodsb
+	xor	al	,invert_flag
+	mov	ah	,SC_BACKLATCH0
+	xchg	ah	,al
+	out	dx	,ax		;load background latch 0
+	dec	bh
+	dec	bl
+        jne     load_background_1
+        sub     si      ,HORZ_SIZE_PATTERN
+
+load_background_1:
+	lodsb
+	xor	al	,invert_flag
+	mov	ah	,SC_BACKLATCH1
+	xchg	ah	,al
+	out	dx	,ax		;load background latch 1
+	dec	bh
+	dec	bl
+        jne     load_background_2
+	sub	si	,HORZ_SIZE_PATTERN
+
+load_background_2:
+	lodsb
+	xor	al	,invert_flag
+	mov	ah	,SC_BACKLATCH2
+	xchg	ah	,al
+	out	dx	,ax		;load background latch 2
+	dec	bh
+	dec	bl
+        jne     load_background_3
+	sub	si	,HORZ_SIZE_PATTERN
+
+load_background_3:
+	lodsb
+	xor	al	,invert_flag
+	mov	ah	,SC_BACKLATCH3
+	xchg	ah	,al
+	out	dx	,ax		;load background latch 3
+	dec	bh
+	je	load_latches_done_relay
+        dec     bl
+        jne     load_background_4
+	sub	si	,HORZ_SIZE_PATTERN
+
+load_background_4:
+	jmp	load_foreground_0
+
+load_latches_done_relay:
+	jmp	load_latches_done
+load_latches_with_pattern  endp
+
+
+
+;
+;   set_foreground_latches
+;
+;   This routine sets the foreground latches to the value in the al register.
+;   PARMS:
+;   AL	    -	    value to place in the foreground latches.
+;
+
+set_foreground_latches  proc    near
+
+	push	dx
+	push	ax
+
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	ah	,al
+	mov	al	,SC_FORELATCH0
+	out	dx	,ax
+	inc	al
+	out	dx	,ax
+	inc	al
+	out	dx	,ax
+	inc	al
+	out	dx	,ax
+
+	pop	ax
+        pop     dx
+	ret
+
+set_foreground_latches	endp
+
+
+
+;
+;   set_background_latches
+;
+;   This routine sets the background latches to the value in the al register.
+;   PARMS:
+;   AL	    -	    value to place in the background latches.
+;
+
+set_background_latches	proc	near
+
+	push	dx
+	push	ax
+
+	mov	dx	,REG_SEQUENCER_INDEX
+	mov	ah	,al
+	mov	al	,SC_BACKLATCH0
+	out	dx	,ax
+	inc	al
+	out	dx	,ax
+	inc	al
+	out	dx	,ax
+	inc	al
+	out	dx	,ax
+
+	pop	ax
+        pop     dx
+	ret
+
+set_background_latches	endp
+
+
+
+
+;
+;       Routine:        set_256k_bank
+;                       this routine only programs the ER_BANK_SEL reg
+;                       which covers both read and write 256K banks selection
+;       Exit:           Correct 256k bank set
+;
+        public  set_256k_bank
+set_256k_bank    proc    near
+        push    dx
+        push    ax
+
+        cli                             ; No interruptions til we set registers
+        mov     al,byte ptr dl_srcbank
+        and     al,0ch
+        mov     ah,al                   ; bit 3,2 <= read (src) bank
+        mov     al,byte ptr dl_destbank
+        shr     al,1
+        shr     al,1                    ; bit 1,0 <= write (dest) bank
+        or      ah,al                   ; read/write 256K banks
+
+        mov     dx,SC_INDEX
+        mov     al,ER_BANK_SEL          ; 256K bank select
+        out     dx,al
+        inc     dx                      ; Point to data
+        in      al,dx
+
+        and     al,0f0h                 ; Clear out bank select banks
+        or      al,ah                   ; Set bank select banks (maybe)
+        out     dx,al                   ; f6 <- bit 3,2
+        sti                             ; Okay to interrupt now
+
+        pop     ax
+        pop     dx
+        ret
+set_256k_bank    endp
+
+
+
+
+;
+;       save the orginal bank-selecting extension registers
+;       when entering the scroll functions
+;
+savbank         proc    near
+        cli
+        mov     dx,SC_INDEX
+        mov     al,ER_BANK_SEL
+        out     dx,al
+        inc     dx
+        in      al,dx
+        mov     dl_banksave,al
+
+        dec     dx
+        mov     ax,0604h
+        out16   dx,ax                   ; set sequential access & 256k ram
+        mov     dl,0ceh
+        mov     ax,04105h               ; set shift 256 and write mode 1
+        out16   dx,ax
+        sti
+        ret
+savbank         endp
+
+
+
+
+;
+;       restore the orginal bank-selecting extension registers
+;       when leaving the scroll functions
+;
+restobank       proc    near
+        cli
+        mov     dx,SC_INDEX
+        mov     ax,0e04h
+        out16   dx,ax
+        mov     ax,0f02h
+        out16   dx,ax
+        mov     dl,0ceh
+        mov     ax,04005h
+        out16   dx,ax
+
+        mov     dx,SC_INDEX
+        mov     al,ER_BANK_SEL
+        mov     ah,dl_banksave
+        out16   dx,ax
+        sti
+        ret
+restobank       endp
+
+
+
+
+;***************************************************************************
+;  select forward (inc) or reverse (dec) traverse
+;
+        cmp     gl_direction,INCREASING
+        jne     cdsc_dec
+
+;---------------------------------------
+
+        ?_pub   cdsc_inc
+cdsc_inc:
+
+        call    set_w_pointer
+        call    set_s_pointer
+        call    set_d_pointer
+
+; ** start a new row
+
+cdsc_inc_10:
+
+        mov     dl,s_page
+        call    set_bank_select
+        lds     si,s_pointer
+        les     di,w_pointer
+        mov     cx,xExt
+        rep     movsb
+
+        mov     dl,d_page
+        call    set_bank_select
+        lds     si,w_pointer
+        les     di,d_pointer
+        mov     cx,xExt
+        rep     movsb
+
+        mov     di,gl_dest.width_b
+        add     off_d_pointer,di
+        adc     d_page,cl
+
+        mov     si,gl_src.width_b
+        add     off_s_pointer,si
+        adc     s_page,cl
+; note: this may be huge bitmap OR device
+
+        dec     yExt
+        jnz     cdsc_inc_10
+        jmp     cdsc_done
+
+;---------------------------------------
+
+        ?_pub   cdsc_dec
+cdsc_dec:
+
+        call    set_w_pointer_dec
+        call    set_s_pointer_dec
+        call    set_d_pointer_dec
+
+; ** start a new row
+
+cdsc_dec_10:
+
+        mov     dl,s_page
+        call    set_bank_select
+        lds     si,s_pointer
+        les     di,w_pointer
+        mov     cx,xExt
+        rep     movsb
+
+        mov     dl,d_page
+        call    set_bank_select
+        lds     si,w_pointer
+        les     di,d_pointer
+        mov     cx,xExt
+        rep     movsb
+
+        mov     di,gl_dest.width_b
+        sub     off_d_pointer,di
+        sbb     d_page,cl
+
+        mov     si,gl_src.width_b
+        sub     off_s_pointer,si
+        sbb     s_page,cl
+
+        dec     yExt
+        jnz     cdsc_dec_10
+        jmp     cdsc_done
+
+;=======================================
+;
+;  cdsc_exp - expand mono bitmap to color
+;
+
+        ?_pub   cdsc_exp
+cdsc_exp:
+
+	call	set_s_mem_pointer_map
+        call    set_d_pointer
+
+        lds     si,s_pointer
+        les     di,d_pointer
+        mov     dl,d_page
+        call    set_bank_select
+
+; ** start a new row
+
+cdsc_exp_10:
+
+;  set up mono=>color conversion register
+
+        mov     dx,cl_both_colors       ; dl = bg
+        xor     dh,dl                   ; dh = bg xor fg
+
+        push    di
+        push    si
+
+        mov     ah,[si]         ; get first byte
+        mov     cx,SrcxOrg
+	and	cl,0111b
+        rol     ah,cl           ; left justify first bit
+        mov     bx,xExt
+        jmp     short cdsc_exp_30
+
+cdsc_exp_20:
+        and     cl,0111b        ; time for next fetch?
+        jz      cdsc_exp_50     ; --yes
+
+cdsc_exp_30:
+        rol     ah,1            ; get FG/BG bit
+        sbb     al,al           ; convert to color
+        and     al,dh           ;  1->fg
+        xor     al,dl           ;  0->bg
+        stosb                   ; store result
+        inc     cl
+        dec     bx
+        jnz     cdsc_exp_20
+
+        pop     si
+        pop     di
+
+	add	si,gl_src.fill_bytes	; are we in the fill bytes?
+	add	si,gl_src.width_b	; be sure to check for source segment
+	jc	cdsc_exp_70		;  crossing
+
+	sub	si,gl_src.fill_bytes
+
+cdsc_exp_35:
+	add	di,gl_dest.width_b
+        jc      cdsc_exp_60
+
+cdsc_exp_40:
+        dec     yExt
+        jnz     cdsc_exp_10
+        jmp     cdsc_done
+
+cdsc_exp_50:
+        inc     si
+        mov     ah,[si]
+        jmp     cdsc_exp_30
+
+cdsc_exp_60:
+        inc     d_page
+        call    set_d_page
+        jmp     cdsc_exp_40
+
+cdsc_exp_70:
+	mov	ax,ds			; update source segment
+	add	ax,gl_src.seg_index
+	mov	ds,ax
+	jmp	cdsc_exp_35
+
+check_device_special_cases      endp
+
+;=======================================
+;
+
+        ?_pub   set_w_pointer_dec
+set_w_pointer_dec       proc    near
+
+        mov     ax,DataOFFSET work_buf
+        mov     off_w_pointer,ax
+        mov     ax,DataBASE
+        mov     seg_w_pointer,ax
+        ret
+
+set_w_pointer_dec       endp
+
+        ?_pub   set_w_pointer
+set_w_pointer   proc    near
+
+        mov     ax,DataOFFSET work_buf
+        mov     off_w_pointer,ax
+        mov     ax,DataBASE
+        mov     seg_w_pointer,ax
+        ret
+
+set_w_pointer   endp
+
+
+;=======================================
+;
+
+        ?_pub   set_s_pointer_dec
+set_s_pointer_dec       proc    near
+
+        lds     si,gl_src.lp_bits
+        mov     ax,SrcyOrg
+        add     ax,yExt
+        dec     ax
+        mov     dx,gl_src.width_b
+        mul     dx
+        add     si,ax
+        adc     dl,dh
+        mov     ax,SrcxOrg
+        add     si,ax
+        adc     dl,dh
+        mov     off_s_pointer,si
+        mov     seg_s_pointer,ds
+        mov     s_page,dl
+        ret
+
+set_s_pointer_dec       endp
+
+;---------------------------------------
+
+        ?_pub   set_s_pointer
+set_s_pointer   proc    near
+
+        lds     si,gl_src.lp_bits
+        mov     ax,SrcyOrg
+        mov     dx,gl_src.width_b
+        mul     dx
+        add     si,ax
+        adc     dl,dh
+        add     si,SrcxOrg
+        adc     dl,dh
+        mov     off_s_pointer,si
+        mov     seg_s_pointer,ds
+        mov     s_page,dl
+        ret
+set_s_pointer   endp
+
+;---------------------------------------
+
+        ?_pub   set_s_page
+set_s_page              proc    near
+        push    ax
+        push    dx
+        mov     dl,s_page
+        cmp     dl,x_page
+        je      cdsc_ssp_exit
+        mov     x_page,dl
+        call    set_bank_select
+cdsc_ssp_exit:
+        pop     dx
+        pop     ax
+        ret
+set_s_page              endp
+
+
+
+;=======================================
+;
+
+        ?_pub   set_d_pointer_dec
+set_d_pointer_dec       proc    near
+
+        les     di,gl_dest.lp_bits
+        mov     ax,DestyOrg
+        add     ax,yExt
+        dec     ax
+        mov     dx,gl_dest.width_b
+        mul     dx
+        add     di,ax
+        adc     dl,dh
+        mov     ax,DestxOrg
+        add     di,ax
+        adc     dl,dh
+        mov     off_d_pointer,di
+        mov     seg_d_pointer,es
+        mov     d_page,dl
+        ret
+
+set_d_pointer_dec       endp
+
+;---------------------------------------
+
+        ?_pub   set_d_pointer
+set_d_pointer   proc    near
+
+        les     di,gl_dest.lp_bits
+        mov     ax,DestyOrg
+        mov     dx,gl_dest.width_b
+        mul     dx
+        add     di,ax
+        adc     dl,dh
+        add     di,DestxOrg
+        adc     dl,dh
+        mov     off_d_pointer,di
+        mov     seg_d_pointer,es
+        mov     d_page,dl
+        ret
+
+set_d_pointer   endp
+
+;---------------------------------------
+
+        ?_pub   set_d_page
+set_d_page              proc    near
+
+        push    ax
+        push    dx
+        mov     dl,d_page
+        cmp     dl,x_page
+        je      cdsc_sdp_exit
+        mov     x_page,dl
+        call    set_bank_select
+cdsc_sdp_exit:
+        pop     dx
+        pop     ax
+        ret
+
+set_d_page              endp
+
+
+
+;=======================================
+;
+
+        ?_pub   set_d_esdi
+set_d_esdi              proc    near
+
+        push    ax
+        push    dx
+        les     di,gl_dest.lp_bits
+        mov     ax,DestyOrg
+        mov     dx,gl_dest.width_b
+        mul     dx
+        add     di,ax
+        adc     dl,dh
+        add     di,DestxOrg
+;       adc     dl,dh           ;required IFF bank crossing possible
+        mov     d_page,dl
+        pop     dx
+        pop     ax
+        ret
+
+set_d_esdi              endp
+
+;=======================================
+;
+
+        ?_pub   set_s_pointer_map
+set_s_pointer_map       proc    near
+
+        lds     si,gl_src.lp_bits
+        mov     ax,SrcyOrg
+        mov     dx,gl_src.width_b
+        mul     dx
+        add     si,ax
+        mov     ax,SrcxOrg
+        shiftr  ax,3
+        add     si,ax
+        mov     off_s_pointer,si
+        mov     seg_s_pointer,ds
+        mov     s_page,dl
+        ret
+
+set_s_pointer_map	endp
+
+
+	?_pub	set_s_mem_pointer_map
+set_s_mem_pointer_map	proc	near
+
+	mov	cx,gl_src.seg_index	    ; is it a huge bitmap?
+	jcxz	set_s_pointer_map
+
+	; this is a huge memory map
+	lds	si,gl_src.lp_bits
+	mov	ax,SrcyOrg
+	mov	bx,ds
+	mov	dx,gl_src.scans_seg
+
+set_s_mem_pointer_map_10:
+	add	bx,cx
+	sub	ax,dx
+	jnc	set_s_mem_pointer_map_10
+
+	sub	bx,cx
+	add	ax,dx
+
+	mov	seg_s_pointer,bx
+	mov	ds,bx
+
+	mul	WORD PTR gl_src.width_b
+	add	si,ax
+	mov	ax,SrcxOrg
+	shiftr	ax,3
+	add	si,ax
+	mov	off_s_pointer,si
+	mov	s_page,dl
+	ret
+
+set_s_mem_pointer_map	endp

@@ -1,0 +1,288 @@
+THIS DOCUMENT IS BASIC.TXT
+
+
+!	!!	!!!	!!!	!!	!	I
+"	""	"""	"""	""	"	I
+#	##	###	###	##	#	I
+$	$$	$$$	$$$	$$	$	I
+%	%%	%%%	%%%	%%	%	I
+&	&&	&&&	&&&	&&	&	I
+'	''	'''	'''	''	'	I
+(	((	(((	(((	((	(	I
+)	))	)))	)))	))	)	I
+*	**	***	***	**	*	I
++	++	+++	+++	++	+	I
+-	--	---	---	--	-	I
+.	..	...	...	..	.	I
+/	//	///	///	//	/	I
+0	00	000	000	00	0	I
+1	11	111	111	11	1	I
+2	22	222	222	22	2	I
+3	33	333	333	33	3	I
+4	44	444	444	44	4	I
+5	55	555	555	55	5	I
+6	66	666	666	66	6	I
+7	77	777	777	77	7	I
+8	88	888	888	88	8	I
+9	99	999	999	99	9	I
+:	::	:::	:::	::	:	I
+;	;;	;;;	;;;	;;	;	I
+<	<<	<<<	<<<	<<	<	I
+>	>>	>>>	>>>	>>	>	I
+=	==	===	===	==	=	I
+?	??	???	???	??	?	I
+@	@@	@@@	@@@	@@	@	I
+A	AA	AAA	AAA	AA	A	I
+B	BB	BBB	BBB	BB	B	I
+C	CC	CCC	CCC	CC	C	I
+D	DD	DDD	DDD	DD	D	I
+E	EE	EEE	EEE	EE	E	I
+F	FF	FFF	FFF	FF	F	I
+G	GG	GGG	GGG	GG	G	I
+H	HH	HHH	HHH	HH	H	I
+I	II	III	III	II	I	I
+J	JJ	JJJ	JJJ	JJ	J	I
+K	KK	KKK	KKK	KK	K	I
+L	LL	LLL	LLL	LL	L	I
+M	MM	MMM	MMM	MM	M	I
+N	NN	NNN	NNN	NN	N	I
+O	OO	OOO	OOO	OO	O	I
+P	PP	PPP	PPP	PP	P	I
+Q	QQ	QQQ	QQQ	QQ	Q	I
+R	RR	RRR	RRR	RR	R	I
+S	SS	SSS	SSS	SS	S	I
+T	TT	TTT	TTT	TT	T	I
+U	UU	UUU	UUU	UU	U	I
+V	VV	VVV	VVV	VV	V	I
+W	WW	WWW	WWW	WW	W	I
+X	XX	XXX	XXX	XX	X	I
+Y	YY	YYY	YYY	YY	Y	I
+Z	ZZ	ZZZ	ZZZ	ZZ	Z	I
+[	[[	[[[	[[[	[[	[	I
+\	\\	\\\	\\\	\\	\	I
+]	]]	]]]	]]]	]]	]	I
+^	^^	^^^	^^^	^^	^	I
+_	__	___	___	__	_	I
+`	``	```	```	``	`	I
+b	bb	bbb	bbb	bb	b	I
+c	cc	ccc	ccc	cc	c	I
+d	dd	ddd	ddd	dd	d	I
+e	ee	eee	eee	ee	e	I
+f	ff	fff	fff	ff	f	I
+g	gg	ggg	ggg	gg	g	I
+h	hh	hhh	hhh	hh	h	I
+i	ii	iii	iii	ii	i	I
+j	jj	jjj	jjj	jj	j	I
+k	kk	kkk	kkk	kk	k	I
+l	ll	lll	lll	ll	l	I
+m	mm	mmm	mmm	mm	m	I
+n	nn	nnn	nnn	nn	n	I
+o	oo	ooo	ooo	oo	o	I
+p	pp	ppp	ppp	pp	p	I
+q	qq	qqq	qqq	qq	q	I
+r	rr	rrr	rrr	rr	r	I
+s	ss	sss	sss	ss	s	I
+t	tt	ttt	ttt	tt	t	I
+u	uu	uuu	uuu	uu	u	I
+v	vv	vvv	vvv	vv	v	I
+w	ww	www	www	ww	w	I
+x	xx	xxx	xxx	xx	x	I
+y	yy	yyy	yyy	yy	y	I
+z	zz	zzz	zzz	zz	z	I
+{	{{	{{{	{{{	{{	{	I
+|	||	|||	|||	||	|	I
+}	}}	}}}	}}}	}}	}	I
+~	~~	~~~	~~~	~~	~	I
+127
+						127
+€	€€	€€€	€€€	€€	€	128
+						129
+‚	‚‚	‚‚‚	‚‚‚	‚‚	‚	130
+ƒ	ƒƒ	ƒƒƒ	ƒƒƒ	ƒƒ	ƒ	131
+„	„„	„„„	„„„	„„	„	132
+…	……	………	………	……	…	133
+†	††	†††	†††	††	†	134
+‡	‡‡	‡‡‡	‡‡‡	‡‡	‡	135
+ˆ	ˆˆ	ˆˆˆ	ˆˆˆ	ˆˆ	ˆ	136
+‰	‰‰	‰‰‰	‰‰‰	‰‰	‰	137
+Š	ŠŠ	ŠŠŠ	ŠŠŠ	ŠŠ	Š	138
+‹	‹‹	‹‹‹	‹‹‹	‹‹	‹	139
+Œ	ŒŒ	ŒŒŒ	ŒŒŒ	ŒŒ	Œ	140
+						141
+						142
+						143
+						144
+‘	‘‘	‘‘‘	‘‘‘	‘‘	‘	145
+’	’’	’’’	’’’	’’	’	146
+“	““	“““	“““	““	“	147
+”	””	”””	”””	””	”	148
+–	––	–––	–––	––	–	149
+–	––	–––	–––	––	–	150
+—	——	———	———	——	—	151
+˜	˜˜	˜˜˜	˜˜˜	˜˜	˜	152
+™	™™	™™™	™™™	™™	™	153
+š	šš	ššš	ššš	šš	š	154
+›	››	›››	›››	››	›	155
+œ	œœ	œœœ	œœœ	œœ	œ	156
+						157
+						158
+Ÿ	ŸŸ	ŸŸŸ	ŸŸŸ	ŸŸ	Ÿ	159
+ 	  	   	   	  	 	160
+¡	¡¡	¡¡¡	¡¡¡	¡¡	¡	161
+¢	¢¢	¢¢¢	¢¢¢	¢¢	¢	162
+£	££	£££	£££	££	£	163
+¤	¤¤	¤¤¤	¤¤¤	¤¤	¤	164
+¥	¥¥	¥¥¥	¥¥¥	¥¥	¥	165
+¦	¦¦	¦¦¦	¦¦¦	¦¦	¦	166
+§	§§	§§§	§§§	§§	§	167
+¨	¨¨	¨¨¨	¨¨¨	¨¨	¨	168
+¢	¢¢	¢¢¢	¢¢¢	¢¢	¢	169
+ª	ªª	ªªª	ªªª	ªª	ª	170
+«	««	«««	«««	««	«	171
+¬	¬¬	¬¬¬	¬¬¬	¬¬	¬	172
+­	­­	­­­	­­­	­­	­	173
+®	®®	®®®	®®®	®®	®	174
+¯	¯¯	¯¯¯	¯¯¯	¯¯	¯	175
+°	°°	°°°	°°°	°°	°	176
+±	±±	±±±	±±±	±±	±	177
+²	²²	²²²	²²²	²²	²	178
+³	³³	³³³	³³³	³³	³	179
+´	´´	´´´	´´´	´´	´	180
+µ	µµ	µµµ	µµµ	µµ	µ	181
+¶	¶¶	¶¶¶	¶¶¶	¶¶	¶	182
+·	··	···	···	··	·	183
+¸	¸¸	¸¸¸	¸¸¸	¸¸	¸	184
+¹	¹¹	¹¹¹	¹¹¹	¹¹	¹	185
+º	ºº	ººº	ººº	ºº	º	186
+»	»»	»»»	»»»	»»	»	187
+¼	¼¼	¼¼¼	¼¼¼	¼¼	¼	188
+½	½½	½½½	½½½	½½	½	189
+¾	¾¾	¾¾¾	¾¾¾	¾¾	¾	190
+¿	¿¿	¿¿¿	¿¿¿	¿¿	¿	191
+À	ÀÀ	ÀÀÀ	ÀÀÀ	ÀÀ	À	192
+Á	ÁÁ	ÁÁÁ	ÁÁÁ	ÁÁ	Á	193
+Â	ÂÂ	ÂÂÂ	ÂÂÂ	ÂÂ	Â	194
+Ã	ÃÃ	ÃÃÃ	ÃÃÃ	ÃÃ	Ã	195
+Ä	ÄÄ	ÄÄÄ	ÄÄÄ	ÄÄ	Ä	196
+Å	ÅÅ	ÅÅÅ	ÅÅÅ	ÅÅ	Å	197
+Æ	ÆÆ	ÆÆÆ	ÆÆÆ	ÆÆ	Æ	198
+Ç	ÇÇ	ÇÇÇ	ÇÇÇ	ÇÇ	Ç	199
+È	ÈÈ	ÈÈÈ	ÈÈÈ	ÈÈ	È	200
+É	ÉÉ	ÉÉÉ	ÉÉÉ	ÉÉ	É	201
+Ê	ÊÊ	ÊÊÊ	ÊÊÊ	ÊÊ	Ê	202
+Ë	ËË	ËËË	ËËË	ËË	Ë	203
+Ì	ÌÌ	ÌÌÌ	ÌÌÌ	ÌÌ	Ì	204
+Í	ÍÍ	ÍÍÍ	ÍÍÍ	ÍÍ	Í	205
+Î	ÎÎ	ÎÎÎ	ÎÎÎ	ÎÎ	Î	206
+Ï	ÏÏ	ÏÏÏ	ÏÏÏ	ÏÏ	Ï	207
+Ğ	ĞĞ	ĞĞĞ	ĞĞĞ	ĞĞ	Ğ	208
+Ñ	ÑÑ	ÑÑÑ	ÑÑÑ	ÑÑ	Ñ	209
+Ò	ÒÒ	ÒÒÒ	ÒÒÒ	ÒÒ	Ò	210
+Ó	ÓÓ	ÓÓÓ	ÓÓÓ	ÓÓ	Ó	211
+Ô	ÔÔ	ÔÔÔ	ÔÔÔ	ÔÔ	Ô	212
+Õ	ÕÕ	ÕÕÕ	ÕÕÕ	ÕÕ	Õ	213
+Ö	ÖÖ	ÖÖÖ	ÖÖÖ	ÖÖ	Ö	214
+×	××	×××	×××	××	×	215
+Ø	ØØ	ØØØ	ØØØ	ØØ	Ø	216
+Ù	ÙÙ	ÙÙÙ	ÙÙÙ	ÙÙ	Ù	217
+Ú	ÚÚ	ÚÚÚ	ÚÚÚ	ÚÚ	Ú	218
+Û	ÛÛ	ÛÛÛ	ÛÛÛ	ÛÛ	Û	219
+Ü	ÜÜ	ÜÜÜ	ÜÜÜ	ÜÜ	Ü	220
+İ	İİ	İİİ	İİİ	İİ	İ	221
+Ş	ŞŞ	ŞŞŞ	ŞŞŞ	ŞŞ	Ş	222
+ß	ßß	ßßß	ßßß	ßß	ß	223
+à	àà	ààà	ààà	àà	à	224
+á	áá	ááá	ááá	áá	á	225
+â	ââ	âââ	âââ	ââ	â	226
+ã	ãã	ããã	ããã	ãã	ã	227
+ä	ää	äää	äää	ää	ä	228
+å	åå	ååå	ååå	åå	å	229
+æ	ææ	æææ	æææ	ææ	æ	230
+ç	çç	ççç	ççç	çç	ç	231
+è	èè	èèè	èèè	èè	è	232
+é	éé	ééé	ééé	éé	é	233
+ê	êê	êêê	êêê	êê	ê	234
+ë	ëë	ëëë	ëëë	ëë	ë	235
+ì	ìì	ììì	ììì	ìì	ì	236
+í	íí	ííí	ííí	íí	í	237
+î	îî	îîî	îîî	îî	î	238
+ï	ïï	ïïï	ïïï	ïï	ï	239
+ğ	ğğ	ğğğ	ğğğ	ğğ	ğ	240
+ñ	ññ	ñññ	ñññ	ññ	ñ	241
+ò	òò	òòò	òòò	òò	ò	242
+ó	óó	óóó	óóó	óó	ó	243
+ô	ôô	ôôô	ôôô	ôô	ô	244
+õ	õõ	õõõ	õõõ	õõ	õ	245
+ö	öö	ööö	ööö	öö	ö	246
+÷	÷÷	÷÷÷	÷÷÷	÷÷	÷	247
+ø	øø	øøø	øøø	øø	ø	248
+ù	ùù	ùùù	ùùù	ùù	ù	249
+ú	úú	úúú	úúú	úú	ú	250
+û	ûû	ûûû	ûûû	ûû	û	251
+ü	üü	üüü	üüü	üü	ü	252
+ı	ıı	ııı	ııı	ıı	ı	253
+ş	şş	şşş	şşş	şş	ş	254
+ÿ	ÿÿ	ÿÿÿ	ÿÿÿ	ÿÿ	ÿ	255
+
+------------------------------------------------------------
+
+
+abcdefghijklmnopqrstuvwxyz1234567890`,./;'[]-=\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()~<>?:"{}_+|
+numeric keypad:   1234567890.+-*/
+
+
+------------------------------------------------------------
+
+
+!"#$%&'()*+-./0123456789:;<>=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`bcdefghijklmnopqrstuvwxyz{|}~12
+€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”––—˜™š›œŸ ¡¢£¤¥¦§¨¢ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ	
+numeric keypad:   1234567890.+-*/
+
+
+
+Below is three copies of Word's README.DOC file.
+The main purpose of the body of text, below, is to examine
+how well notepad works with large documents during printing.
+
+
+
+------------------------------------------------------------
+WORD 5.0 README.DOC
+
+This file contains information that was not available at
+the time the books and other materials that accompany Word
+5.0 were printed. It contains information on using Word's
+features and information on using various types of hardware
+with Word.
+
+-------------------------CONTENTS---------------------------
+
+. Other Sources of Information
+. Location Changes for Shipped Files
+. Character Formats and Colors in Text Mode
+. Show Layout Display Mode
+. Graphics and Layout Features
+. Paragraph Shading
+. Hanging Indents and Borders
+. Macros
+. Running Learning Word
+. Specifying Where New Page Formats Begin
+. Printing Envelopes on Laser Printers
+. Miscellaneous Features
+. TSRs and 3270 Emulators
+. Expanded Memory and Memory Management
+. Running Word or Learning Word Under Microsoft Windows
+. Running Word in a Window Under Presentation Manager
+. Setting Up a Workstation on a Network
+. Word and Microsoft Bookshelf
+. IBM 8514 Monitor
+. Zenith Graphics Adapters
+. Genoa Super VGA Adapter
+. Additional Video Support
+. New Mouse Driver
+. Mouse Support and OS/2
+. Installing Word on a DOS and OS/2 Dual-boot System
+
+------------------------------------------------------------
+

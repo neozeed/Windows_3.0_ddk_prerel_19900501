@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+| WINDOWS PRINTER TEST APPLICATION (FRAME LIBRARY)                            |
+|   This module contains the resources used throughout the application.       |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+#include <windows.h>
+#include "PrntFram.h"
+
+/*---------------------------------------------------------------------------*\
+| RESOURCES                                                                   |
+\*---------------------------------------------------------------------------*/
+CharSet  TEXT CharSet.txt
+
+CurvTest TEXT CurvTest.txt
+RastTest TEXT RastTest.txt
+LineTest TEXT LineTest.txt
+PolyTest TEXT PolyTest.txt
+TextTest TEXT TextTest.txt
+Objects  TEXT Objects.txt
+GrayScal TEXT GrayScal.txt
+FuncSupp TEXT FuncSupp.txt
+
+Bitmap1   BITMAP test.bmp
+
+/*---------------------------------------------------------------------------*\
+| Strings used throughout application to conserve memory.                     |
+\*---------------------------------------------------------------------------*/
+STRINGTABLE
+BEGIN
+     IDS_HEAD_TITLEPAGE  "Microsoft Windows Printer Driver Test Output"
+     IDS_HEAD_PRINTAREA  "This is the printable area of this device"
+     IDS_HEAD_PRINTAREA1 "2x2 inches"
+
+     IDS_TEST_RAST_NO    "This device does not support RASTER capabilities"
+     IDS_TEST_TEXT_STR1  "This is a sample text string."
+
+     IDS_TST_DSCR_CURV   "CurvTest"
+     IDS_TST_DSCR_RAST   "RastTest"
+     IDS_TST_DSCR_LINE   "LineTest"
+     IDS_TST_DSCR_POLY   "PolyTest"
+     IDS_TST_DSCR_TEXT   "TextTest"
+     IDS_TST_HEAD_OBJT   "Objects"
+     IDS_TST_HEAD_GRAY   "GrayScal"
+     IDS_TST_HEAD_FUNC   "FuncSupp"
+
+     IDS_STATUS_HEADER   "Header Completed"
+     IDS_STATUS_RASTER   "Raster Test Completed"
+     IDS_STATUS_CURVE    "Curve Test Completed"
+     IDS_STATUS_LINE     "Line Test Completed"
+     IDS_STATUS_POLYGON  "Polygon Test Completed"
+     IDS_STATUS_TEXT     "Text Test Completed"
+END
+

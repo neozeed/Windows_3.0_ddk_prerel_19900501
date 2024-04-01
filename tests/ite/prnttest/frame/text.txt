@@ -1,0 +1,2 @@
+This file contains an example of a particular device-printer font.  It is intended to be used in conjunction with the automated printer application as an application resource.  Depending on the font currently selected into the printer, the text could look considerably different.  This sample text should be justified LEFT, RIGHT, CENTERED or JUSTIFIED.  If it doesn't display either of those characteristics, then something could be in error in GDI or the PRINTER DRIVER.
+

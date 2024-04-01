@@ -1,0 +1,90 @@
+*% comment
+*% comment
+*FormatVersion: "1.1"
+*LanguageVersion: English
+
+*Product: "(ScriptPrinter)"
+*NickName: "Digital LN03R ScriptPrinter"
+*PSVersion: "(47.2)"
+
+*% General Information and Defaults ===============
+
+*DefaultResolution: 300dpi
+
+*DefaultTransfer: Normalized
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+*Transfer Normalized: "{
+mark
+1.0 1.0 .91 .84 .79 .69 .62 .46 .39 .29 .15 .0
+counttomark dup 3 add -1 roll exch
+2 sub mul dup floor cvi
+dup 3 1 roll sub
+exch dup
+3 add index exch 2 add index dup
+4 1 roll
+sub mul add
+counttomark 1 add 1 roll
+cleartomark
+}"
+*End:
+*Transfer Normalized.Inverse: "{ 1 exch sub }"
+
+*DefaultPaperStock: Letter
+*EndOfFile: True
+*PaperDimension A3: "842 1190"
+*PaperDimension A4: "595 842"
+*PaperDimension A4Small: "595 842"
+*PaperDimension A5: "420 595"
+*PaperDimension B4: "729 1032"
+*PaperDimension B5: "516 729"
+*PaperDimension Ledger: "1224 792"
+*PaperDimension Legal: "612 1008"
+*PaperDimension Letter: "612 792"
+*PaperDimension LetterSmall: "612 792"
+*PaperDimension Note: "612 792"
+*PaperDimension Statement: "396 612"
+*PaperDimension Tabloid: "792 1224"
+
+*DefaultPageSize: Letter
+
+*DefaultPageRegion: Letter
+
+*DefaultImageableArea: Letter
+*ImageableArea Letter: "25 26 587 766"
+*ImageableArea A4: "24 47 571 795"
+
+*DefaultInputSlot: LargeCapacity
+
+*Font Courier: Standard "(001.004)"
+*Font Courier-Bold: Standard "(001.004)"
+*Font Courier-BoldOblique: Standard "(001.004)"
+*Font Courier-Oblique: Standard "(001.004)"
+*Font Times-Bold: Standard "(001.001)"
+*Font Times-BoldItalic: Standard "(001.001)"
+*Font Times-Italic: Standard "(001.001)"
+*Font Times-Roman: Standard "(001.001)"
+*Font Helvetica: Standard "(001.001)"
+*Font Helvetica-Bold: Standard "(001.001)"
+*Font Helvetica-BoldOblique: Standard "(001.001)"
+*Font Helvetica-Oblique: Standard "(001.001)"
+*Font Symbol: Special "(001.001)"
+*Font AvantGarde-Book: Standard "(001.001)"
+*Font AvantGarde-BookOblique: Standard "(001.001)"
+*Font AvantGarde-Demi: Standard "(001.001)"
+*Font AvantGarde-DemiOblique: Standard "(001.001)"
+*Font NewCenturySchlbk-Bold: Standard "(001.002)"
+*Font NewCenturySchlbk-BoldItalic: Standard "(001.001)"
+*Font NewCenturySchlbk-Italic: Standard "(001.001)"
+*Font NewCenturySchlbk-Roman: Standard "(001.002)"
+*Font LubalinGraph-Book: Standard "(001.002)"
+*Font LubalinGraph-BookOblique: Standard "(001.002)"
+*Font LubalinGraph-Demi: Standard "(001.002)"
+*Font LubalinGraph-DemiOblique: Standard "(001.002)"
+*Font Souvenir-Demi: Standard "(001.002)"
+*Font Souvenir-DemiItalic: Standard "(001.002)"
+*Font Souvenir-Light: Standard "(001.002)"
+*Font Souvenir-LightItalic: Standard "(001.002)"
+
+*% end of APD file for ScriptPrinter
+

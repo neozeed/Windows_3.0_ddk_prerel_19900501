@@ -1,0 +1,8 @@
+### VGA System Only
+.\vgafix.fon:  vgafix.FNT vgafix.DEF vgafix.RC vgafix vgafix.LNK
+        link4 @vgafix.lnk
+        rc -k vgafix.rc vgafix.exe
+##        cmpctfon vgafix.exe vgafix.fon
+        copy vgafix.exe vgafix.fon
+        del vgafix.exe
+        del vgafix.res

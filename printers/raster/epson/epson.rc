@@ -1,0 +1,17 @@
+#include "printer.h"
+#include "resource.h"
+
+1      MYFONT	 Pica17.fnt
+2      MYFONT    Pica10.fnt
+3      MYFONT    Pica8.fnt
+4      MYFONT    Pica5.fnt
+5      MYFONT    Elite12.fnt
+6      MYFONT    Elite6.fnt
+7      MYFONT    PS12.fnt
+8      MYFONT    PS6.fnt
+9      MYFONT    PS12it.fnt
+10     MYFONT	 PS6it.fnt
+
+#define DEVMODE_WIDEPAPER 1
+
+#include "printer.rc"

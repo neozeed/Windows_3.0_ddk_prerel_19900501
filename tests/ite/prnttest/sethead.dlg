@@ -1,0 +1,14 @@
+SETHEADER DIALOG LOADONCALL MOVEABLE DISCARDABLE 41, 13, 178, 98
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+     CONTROL "Set Print Header Defaults", -1, "static", SS_CENTER | WS_CHILD                             ,  0,  0, 177,  8
+     CONTROL "Print Header"             , IDD_HEAD_YES , "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD,  5, 15,  59, 12
+     CONTROL "Expanded"                 , IDD_HEAD_EXP , "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD , 15, 28,  53, 12
+     CONTROL "Condensed"                , IDD_HEAD_CON , "button", BS_RADIOBUTTON | WS_TABSTOP | WS_CHILD , 70, 28,  53, 12
+     CONTROL "Device Capabilities"      , IDD_HEAD_CAPS, "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD,  5, 50,  85, 12
+     CONTROL "Font Information"         , IDD_HEAD_FONT, "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD,  5, 63,  85, 12
+     CONTROL "Brush Information"        , IDD_HEAD_BRSH, "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD, 91, 50,  80, 12
+     CONTROL "Pen Information"          , IDD_HEAD_PEN , "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD, 91, 63,  80, 12
+     CONTROL "OK"                       , IDOK        , "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD  , 70, 79,  35, 14
+END
+

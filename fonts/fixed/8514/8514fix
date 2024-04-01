@@ -1,0 +1,8 @@
+### 8514 System Only
+.\8514fix.fon:  8514fix.FNT 8514fix.DEF 8514fix.RC 8514fix 8514fix.LNK
+        link4 @8514fix.lnk
+        rc -k 8514fix.rc 8514fix.exe
+##        cmpctfon 8514fix.exe 8514fix.fon
+        copy 8514fix.exe 8514fix.fon
+        del 8514fix.exe
+        del 8514fix.res

@@ -1,0 +1,101 @@
+#   Window's Sample Display Drivers.
+#
+#   Requirements:
+#
+#	MASM 4.01 or greater with the environment variable INCLUDE set to
+#	the directories containing CMACROS.INC, GDIDEFS.INC, and WINDEFS.INC.
+#
+#	MASM 4.00 or greater with the ASM inference definition changed to
+#	include the directories containing CMACROS.INC, GDIDEFS.INC, and
+#	WINDEFS.INC.
+
+
+
+#   Options:
+#
+#	The command line may define options to MASM by defining the OPT
+#	macro.	By defining the OPT parameter in the make file, any
+#	possible interaction with an environment definition is avoided.
+
+#   OPT =				    #NOP the options feature
+    OPT =
+
+
+#   Includes:
+#
+#	Define the include on up the display driver tree for this
+#	particular directory.
+
+    INCS = -I. -I..\..\bitblt -I.. -I..\..
+
+
+
+#   Define the default assemble command.  This command could actually
+#   be overridden from the command line, but shouldn't be.
+
+    ASM = masm $(INCS) -v -ML $(OPT)				    # MASM 4.01 & >
+#   ASM = masm $(INCS) -v -ML -I\finc				    # MASM 4.00
+
+
+
+#   Define the default inference rules
+
+    .asm.obj:
+	$(ASM) $**,$@;
+
+#   Define the dependencies
+
+pixel.obj:	pixel.asm
+
+cblt.obj:	cblt.asm			\
+		..\..\bitblt\genlocal.blt	\
+		..\..\bitblt\genconst.blt	\
+		..\..\bitblt\gendata.blt	\
+		..\..\bitblt\ropdefs.blt	\
+		..\..\bitblt\roptable.blt	\
+			  ..\clrlocal.blt	\
+			  ..\clrconst.blt	\
+			  ..\clrdata.blt	\
+			     devlocal.blt	\
+			     devconst.blt	\
+			     devdata.blt
+		$(ASM) $*;
+
+output.obj:	output.asm
+
+scanlr.obj:	scanlr.asm
+
+egainit.obj:	egainit.asm
+
+scanline.obj:	scanline.asm
+
+polyline.obj:	polyline.asm polyline.inc 
+		$(ASM) $*;
+
+rlstrblt.obj:	rlstrblt.asm   rlstrblt.inc ..\..\rlfntseg.inc
+		$(ASM) $*;
+
+rlbldstr.obj:	rlbldstr.asm rlstrblt.inc ..\..\rlfntseg.inc
+		$(ASM) $*;
+
+buildstr.obj:	buildstr.asm strblt.inc ..\..\fontseg.inc
+		$(ASM) $*;
+
+smartfix.obj:	smartfix.asm strblt.inc ..\..\fontseg.inc
+		$(ASM) $*;
+
+smartpro.obj:	smartpro.asm strblt.inc ..\..\fontseg.inc
+		$(ASM) $*;
+
+realfix.obj:	realfix.asm rlstrblt.inc ..\..\rlfntseg.inc
+		$(ASM) $*;
+
+realpro.obj:	realpro.asm rlstrblt.inc ..\..\rlfntseg.inc
+		$(ASM) $*;
+
+ssb.obj:	ssb.asm
+
+3xswitch.obj:	3xswitch.asm
+
+
+

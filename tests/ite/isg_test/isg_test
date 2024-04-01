@@ -1,0 +1,87 @@
+#-----------------------------------------------------------------------------#
+# ISG TESTING DynaLink                                                        #
+#   This Make-File builds the common library module for testing.              #
+#                                                                             #
+# LIBRARIES                                                                   #
+#   This application is built with SMALL MODEL LIBRARY                        #
+#                                                                             #
+# BUILDING SYNTAX                                                             #
+#      MAKE [Version=($)]                                                     #
+#                                                                             #
+#      The default is for Compile options set for SYMDEB Linking.             #
+#-----------------------------------------------------------------------------#
+
+VER2   =
+VER3   = -D WIN3
+
+RETAIL = -c -Asnw -Gsw -Ox -W2 -Zp
+DEBUG  = -c -Asnw -Gsw -Od -W2 -Zped
+
+LinkExt=SMD
+Options=$(DEBUG)
+Version=$(VER3)
+
+#-----------------------------------------------------------------------------#
+# COMPILER OBJECTS                                                            #
+#-----------------------------------------------------------------------------#
+isg_test.obj : isg_test.asm
+     masm /MX isg_test ;
+
+proc.obj : proc.asm
+     masm /MX proc ;
+
+DateTime.obj : DateTime.asm
+     masm /MX DateTime ;
+
+Library.obj : Library.c
+     cl $(Options) $(Version) -NT _TEXT Library.c
+
+Bitmap.obj : Bitmap.c
+     cl $(Options) $(Version) -NT _BITMAP Bitmap.c
+
+Screen.obj : Screen.c
+     cl $(Options) $(Version) -NT _SCREEN Screen.c
+
+Object.obj : Object.c
+     cl $(Options) $(Version) -NT _DEVOBJECT Object.c
+
+File.obj : File.c
+     cl $(Options) $(Version) -NT _FILEIO File.c
+
+Test.obj : Test.c
+     cl $(Options) $(Version) -NT _TEST Test.c
+
+Printer.obj : Printer.c
+     cl $(Options) $(Version) -NT _PRINT Printer.c
+
+DevInfo.obj : DevInfo.c
+     cl $(Options) $(Version) -NT _DEVINFO DevInfo.c
+
+LogFile.obj : LogFile.c
+     cl $(Options) $(Version) -NT _FILEIO LogFile.c
+
+Misc.obj : Misc.c
+     cl $(Options) $(Version) -NT _MISC Misc.c
+
+Verify.obj : Verify.c
+     cl $(Options) $(Version) -NT _MISC Verify.c
+
+# Misc1.obj : Misc1.asm
+#      masm /MX Misc1 ;
+
+#-----------------------------------------------------------------------------#
+# LINK/RESOURCE OBJECTS                                                       #
+#-----------------------------------------------------------------------------#
+isg_test.res : isg_test.rc
+     rc -r $(Version) isg_test.rc
+
+isg_test.dll : isg_test.def isg_test.res
+     link @isg_test.$(LinkExt)
+     rc $(Version) isg_test.res isg_test.dll
+     implib isg_test.lib isg_test.def
+     mapsym isg_test.map
+     copy isg_test.dll ..\bin
+     copy isg_test.sym ..\bin
+     copy isg_test.lib ..\lib
+     copy isg_test.h   ..\inc
+

@@ -1,0 +1,95 @@
+
+Microsoft (R) Program Maintenance Utility  Version 4.07
+Copyright (C) Microsoft Corp 1984-1988.  All rights reserved.
+
+
+  masm /MX PrntFram ;
+Microsoft (R) Macro Assembler Version 5.10 
+Copyright (C) Microsoft Corp 1981, 1988.  All rights reserved.
+
+cMacros Version 5.20 - Copyright (c) Microsoft Corp. 1984-1988 
+Windows support 
+
+  49306 + 193691 Bytes symbol space free
+
+      0 Warning Errors
+      0 Severe  Errors
+
+  masm /MX DateTime ;
+Microsoft (R) Macro Assembler Version 5.10 
+Copyright (C) Microsoft Corp 1981, 1988.  All rights reserved.
+
+cMacros Version 5.20 - Copyright (c) Microsoft Corp. 1984-1988 
+Windows support 
+
+  48856 + 172766 Bytes symbol space free
+
+      0 Warning Errors
+      0 Severe  Errors
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _TEXT    Misc.c
+Misc.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _HEADER  Title.c
+Title.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _HEADER  DevCaps.c
+DevCaps.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _HEADER  Pens.c
+Pens.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _HEADER  Brushes.c
+Brushes.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _HEADER  Fonts.c
+Fonts.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _TEXTX   Text.c
+Text.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _RASTER  Raster.c
+Raster.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _CURVE   Curve.c
+Curve.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _LINE    Line.c
+Line.c
+
+  cl -c -Asnw -Gsw -Od -W2 -Zped -NT _POLYGON Polygon.c
+Polygon.c
+
+  rc -r PrntFram.rc
+Microsoft (R) Windows Resource Compiler  Version 3.00
+Copyright (C) Microsoft Corp. 1985-1988.  All rights reserved.
+
+
+  link4 @PrntFram.SMD
+
+Microsoft (R) Segmented-Executable Linker  Version 5.01.17
+Copyright (C) Microsoft Corp 1984-1988.  All rights reserved.
+
+Object Modules [.OBJ]: PRNTFRAM DATETIME MISC           +
+Object Modules [.OBJ]: TITLE DEVCAPS PENS BRUSHES FONTS +
+Object Modules [.OBJ]: CURVE LINE RASTER POLYGON TEXT
+Run File [PRNTFRAM.EXE]: ,, /ALIGN:16 /MAP/L, SWINLIBC SLIBW ITE_BITM ITE_TEXT, PRNTFRAM.DEF
+LINK : warning L4045: name of output file is 'PRNTFRAM.DLL'
+  copy PrntFram.dll PrntFram.exe
+        1 File(s) copied
+  erase PrntFram.dll
+  rc PrntFram.res
+Microsoft (R) Windows Resource Compiler  Version 3.00
+Copyright (C) Microsoft Corp. 1985-1988.  All rights reserved.
+
+  mapsym PrntFram
+Microsoft (R) Symbol File Generator  Version 4.11
+Copyright (C) Microsoft Corp 1984-1988.  All rights reserved.
+
+	Program entry point at 0001:0010
+  erase PrntFram.map
+  implib PrntFram.lib PrntFram.def
+
+Microsoft (R) Import Library Manager  Version 1.00.02
+Copyright (C) Microsoft Corp 1984-1987.  All rights reserved.
+

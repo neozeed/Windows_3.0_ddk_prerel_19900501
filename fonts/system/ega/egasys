@@ -1,0 +1,7 @@
+### EGA System 10 Pt.
+.\egasys.fon:  egasys.fnt egasys.lnk egasys.rc egasys egasys.def
+        link4 @egasys.lnk
+        rc -k egasys.rc egasys.exe
+        cmpctfon egasys.exe egasys.fon
+        del egasys.exe
+        del egasys.res

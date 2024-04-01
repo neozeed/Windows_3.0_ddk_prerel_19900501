@@ -1,0 +1,7 @@
+### VGA System 10 Pt.
+.\vgasys.fon:  vgasys.fnt vgasys.lnk vgasys.rc vgasys vgasys.def
+        link4 @vgasys.lnk
+        rc -k vgasys.rc vgasys.exe
+        cmpctfon vgasys.exe vgasys.fon
+        del vgasys.res
+        del vgasys.exe

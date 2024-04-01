@@ -1,0 +1,8 @@
+### EGA US Oem Only
+.\EGAOEM.fon:  EGAOEM.FNT EGAOEM.DEF EGAOEM.LNK EGAOEM.RC EGAOEM
+        link4 @EGAOEM.lnk
+        rc -k EGAOEM.rc EGAOEM.exe
+##        cmpctfon egaoem.exe egaoem.fon
+        copy egaoem.exe egaoem.fon
+        del EGAOEM.exe
+        del EGAOEM.res

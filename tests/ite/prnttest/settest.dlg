@@ -1,0 +1,15 @@
+SETTESTS DIALOG LOADONCALL MOVEABLE DISCARDABLE 45, 22, 162, 88
+STYLE WS_DLGFRAME | WS_POPUP
+BEGIN
+     CONTROL "Test Settings for Print Test"         , -1               , "static", SS_CENTER | WS_CHILD, 0, 0, 161, 8
+     CONTROL "Select the type of tests to run for"  , -1               , "static", SS_LEFT | WS_CHILD                      , 19, 11, 122,  8
+     CONTROL "the suite of printers:"               , -1               , "static", SS_LEFT | WS_CHILD                      , 19, 20,  77,  8
+     CONTROL "Fonts/Text"                           , IDD_TEST_TEXT    , "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD     ,  5, 30,  74, 12
+     CONTROL "Raster (bitmaps)"                     , IDD_TEST_BITMAPS , "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD     ,  5, 43,  74, 12
+     CONTROL "Polygonal"                            , IDD_TEST_POLYGONS, "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD     ,  5, 56,  74, 12
+     CONTROL "Curves"                               , IDD_TEST_CURVES  , "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD     , 85, 30,  74, 12
+     CONTROL "Lines"                                , IDD_TEST_LINES   , "button", BS_AUTOCHECKBOX | WS_TABSTOP | WS_CHILD     , 85, 43,  74, 12
+     CONTROL "OK"                                   , IDOK             , "button", BS_DEFPUSHBUTTON | WS_TABSTOP | WS_CHILD, 40, 70,  35, 14
+     CONTROL "Cancel"                               , IDCANCEL         , "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD   , 87, 70,  35, 14
+END
+

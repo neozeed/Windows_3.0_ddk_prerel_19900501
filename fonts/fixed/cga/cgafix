@@ -1,0 +1,8 @@
+### CGA System Only
+.\cgafix.fon:  cgafix.FNT cgafix.DEF cgafix.RC cgafix.LNK cgafix
+        link4 @cgafix.lnk
+        rc -k cgafix.rc cgafix.exe
+##        cmpctfon cgafix.exe cgafix.fon
+        copy cgafix.exe cgafix.fon
+        del cgafix.exe
+        del cgafix.res

@@ -1,0 +1,13 @@
+# Fixed font make file
+
+all:
+        cd cga
+        command /c makeall
+        cd ..\ega
+        command /c makeall
+        cd ..\vga
+        command /c makeall
+        cd ..\8514
+        command /c makeall
+        cd ..
+

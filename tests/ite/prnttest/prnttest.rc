@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+| WINDOWS PRINTER TEST APPLICATION - RESOURCE FILE                            |
+|   This module contains the resources used throughout the application.       |
+|                                                                             |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+#include <windows.h>
+#include "PrntTest.h"
+
+/*---------------------------------------------------------------------------*\
+| RESOURCES                                                                   |
+\*---------------------------------------------------------------------------*/
+PRNTTEST  ICON Test.ico
+
+/*---------------------------------------------------------------------------*\
+| DIALOG BOX TEMPLATES                                                        |
+\*---------------------------------------------------------------------------*/
+rcinclude About.dlg
+rcinclude Abort.dlg
+rcinclude SetHead.dlg
+rcinclude SetTest.dlg
+rcinclude SetObjt.dlg
+rcinclude IntrFace.dlg
+
+/*---------------------------------------------------------------------------*\
+| MAIN APPLICATION MENU                                                       |
+\*---------------------------------------------------------------------------*/
+PRNTTEST MENU
+BEGIN
+     POPUP "&Settings"
+     BEGIN
+          MENUITEM "&Header..."        , IDM_SETTINGS_HEADER
+          MENUITEM "&Tests..."         , IDM_SETTINGS_TESTS
+     END
+     MENUITEM "&EXECUTE!"              , IDM_TEST_RUN
+     POPUP "\a&Help"
+     BEGIN
+          MENUITEM "A&bout..."         , IDM_HELP_ABOUT
+          MENUITEM "&Description..."   , IDM_HELP_DESCR
+     END
+END
+
+/*---------------------------------------------------------------------------*\
+| Strings used throughout application to conserve memory.                     |
+\*---------------------------------------------------------------------------*/
+STRINGTABLE
+BEGIN
+     IDS_ERROR_GETDC     "Could not get printer - possible error in profile."
+     IDS_ERROR_STARTDOC  "Can not start print job."
+     IDS_ERROR_GETCAPS   "Could not retrieve device information"
+     IDS_TEST_JOBTITLE   "Windows Printer Driver Tests"
+
+     IDS_INTRFACE_PROF   "Enter the Profile File-Name"
+     IDS_INTRFACE_NAME   "Enter the Driver Description"
+     IDS_INTRFACE_DRIV   "Enter the Device File-Name"
+     IDS_INTRFACE_PORT   "Enter the Port"
+     IDS_INTRFACE_ADD    "Add a new Profile to the test"
+     IDS_INTRFACE_MOD    "Modify an existing Profile device-string"
+     IDS_INTRFACE_REM    "Remove Profile from tests"
+     IDS_INTRFACE_SET    "Bring up the printer setup dialog to setup profile"
+END
+

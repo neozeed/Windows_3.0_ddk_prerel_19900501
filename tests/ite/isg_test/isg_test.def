@@ -1,0 +1,90 @@
+LIBRARY ISG_TEST
+DESCRIPTION 'Systems Testing - Common library - ChrisWil'
+EXETYPE WINDOWS
+
+STUB 'WINSTUB.EXE'
+
+CODE  MOVEABLE
+DATA  SINGLE
+
+HEAPSIZE  4096
+
+SEGMENTS
+     _TEXT      PRELOAD    MOVEABLE
+     _BITMAP    LOADONCALL MOVEABLE DISCARDABLE
+     _SCREEN    LOADONCALL MOVEABLE DISCARDABLE
+     _DEVOBJECT LOADONCALL MOVEABLE DISCARDABLE
+     _FILEIO    LOADONCALL MOVEABLE DISCARDABLE
+     _TEST      LOADONCALL MOVEABLE DISCARDABLE
+     _PRINT     LOADONCALL MOVEABLE DISCARDABLE
+     _DEVINFO   LOADONCALL MOVEABLE DISCARDABLE
+     _MISC      LOADONCALL MOVEABLE DISCARDABLE
+
+EXPORTS
+        GetDeviceObjects                ; Method <DevObject>
+        FreeDeviceObjects               ; Method <DevObject>
+        CreateDeviceObject              ; Method <DevObject>
+        CopyDeviceObject                ; Method <DevObject>
+        SetCurrentObject                ; Method <DevObject>
+        GetCurrentObject                ; Method <DevObject>
+        GetObjectCount                  ; Method <DevObject>
+        AddObject                       ; Method <DevObject>
+        RemoveObject                    ; Method <DevObject>
+        EnumAllFontFaces                ;
+        EnumAllDeviceFonts              ;
+        EnumAllDevicePens               ;
+        EnumAllDeviceBrushes            ;
+
+        lsrand                          ; LIBRARY COMMON ROUTINES
+        lrand                           ;
+        litoa                           ;
+        latoi                           ;
+        ReverseString                   ;
+        QuikSort                        ;
+        BitCountWord                    ;
+        BitCountDWord                   ;
+
+        InitTest                        ; TEST METHODS
+        ExecuteTest                     ;
+        EnumTests                       ;
+        KillTest                        ;
+        OutputTestLog                   ;
+
+        CreateBrushBitmap               ; BITMAP COMMON ROUTINES
+        OutputDDBToDevice               ;
+        OutputDIBToDevice               ;
+        ConvertDDBToDIB                 ;
+        GetColorTableSize               ;
+        GetMemoryBitmap                 ;
+        CreatePixelBitmap               ;
+        CreateRGBBitmap                 ;
+        CompareBitmaps                  ;
+
+        ClearScreen                     ; SCREEN COMMON ROUTINES
+        LoadScreen                      ;
+        SaveScreen                      ;
+        CaptureScreen                   ;
+        CompareScreens                  ;
+
+        WriteFile                       ; FILE I/O COMMON ROUTINES
+        ReadFile                        ;
+        CreateLogFile                   ;
+        WriteLogFile                    ;
+
+        TstExtTextOutRect               ; SPECIAL TESTING ROUTINES
+        TstDrawObject                   ;
+        TstGrayScale                    ;
+        TstBitBltRop                    ;
+        TstColorMapping                 ;
+        VerifyPixelColor                ;
+
+        GetSystemDateTime               ; DATETIME METHODS
+
+        GetPrinterDC                    ; PRINTER METHODS
+
+        GetDeviceInfo                   ; DEVINFO METHODS
+
+        StringCopy
+        AbsoluteValue
+        WEP
+

@@ -1,0 +1,19 @@
+INTERFACE DIALOG LOADONCALL MOVEABLE DISCARDABLE 0, 0, 320, 110
+STYLE WS_CHILD | WS_BORDER | WS_VISIBLE | DS_ABSALIGN
+BEGIN
+     CONTROL ""                        , IDD_INTRFACE_LIST, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD | WS_TABSTOP,   5,  15, 150, 45
+     CONTROL ""                        , IDD_INTRFACE_TEST, "listbox", LBS_NOTIFY | LBS_SORT | LBS_STANDARD | WS_BORDER | WS_VSCROLL | WS_CHILD             , 165,  15, 150, 45
+     CONTROL ""                        , IDD_INTRFACE_PROF, "edit", ES_LEFT | ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP | WS_CHILD                            ,   5,  65,  70, 12
+     CONTROL ""                        , IDD_INTRFACE_NAME, "edit", ES_LEFT | ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP | WS_CHILD                            ,  78,  65, 111, 12
+     CONTROL ""                        , IDD_INTRFACE_DRIV, "edit", ES_LEFT | ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP | WS_CHILD                            , 192,  65,  50, 12
+     CONTROL ""                        , IDD_INTRFACE_PORT, "edit", ES_LEFT | ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP | WS_CHILD                            , 245,  65,  70, 12
+     CONTROL "MODIFY"                  , IDD_INTRFACE_MOD, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD                                                  ,  55,  82,  45, 14
+     CONTROL "ADD"                     , IDD_INTRFACE_ADD, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD                                                  , 110,  82,  45, 14
+     CONTROL "REMOVE"                  , IDD_INTRFACE_REM, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD                                                  , 165,  82,  45, 14
+     CONTROL "SETUP"                   , IDD_INTRFACE_SET, "button", BS_PUSHBUTTON | WS_TABSTOP | WS_CHILD                                                  , 220,  82,  45, 14
+     CONTROL ""                        , IDD_INTRFACE_TXT, "static", SS_LEFT | WS_CHILD                                                                     ,   2, 102, 320,  8
+     CONTROL ""                        , -1              , "static", SS_LEFT | SS_BLACKFRAME                                                                ,   0, 101, 320,  9
+     CONTROL "List of Printer Profiles", -1, "static", SS_LEFT | WS_CHILD                                                                                   ,   5,   5,  82,  8
+     CONTROL "List of Profiles to Test", -1, "static", SS_LEFT | WS_CHILD                                                                                   , 165,   5,  84,  8
+END
+

@@ -1,0 +1,62 @@
+# sample make file for building vddvga virtual device for Windows/386
+
+# comment this definition out with a "#", if building a non-debugging version
+Debug=-DDEBUG
+Version=-DVGA
+
+.asm.obj:
+        masm5 -p -w2 -Mx $(Version) $(Debug) -I..\include $*;
+
+.asm.lst:
+        masm5 -l -p -w2 -Mx $(Version) $(Debug) -I..\include $*;
+
+
+
+vddctl.obj : vddctl.asm ..\include\debug.inc ..\include\pageswap.inc \
+	 ega.inc ..\include\vmdaega.inc ..\include\vdd.inc ..\include\vmm.inc
+
+vdddata.obj : vdddata.asm ega.inc ..\include\vmdaega.inc \
+	 ..\include\vmm.inc
+
+vddinit.obj : vddinit.asm ..\include\debug.inc ..\include\vdd2.inc \
+	 ..\include\vdd.inc ega.inc ..\include\vmdaega.inc ..\include\vmm.inc
+
+vddint.obj : vddint.asm ..\include\debug.inc ega.inc \
+	 ..\include\vmdaega.inc ..\include\vdd.inc ..\include\vmm.inc
+
+vddmem.obj : vddmem.asm ..\include\debug.inc ega.inc \
+	 ..\include\vmdaega.inc ..\include\pageswap.inc ..\include\vdd.inc \
+	 ..\include\vmm.inc
+
+vddmsg.obj : vddmsg.asm ..\include\vmm.inc
+
+vddproc.obj : vddproc.asm ..\include\debug.inc \
+	 ..\include\vddgrb.inc ..\include\shell.inc ..\include\shellfsc.inc \
+	 ega.inc ..\include\vmdaega.inc ..\include\vdd.inc ..\include\vmm.inc
+
+vddsave.obj : vddsave.asm ..\include\debug.inc vga.inc \
+	 ..\include\vddgrb.inc ..\include\vdd.inc ..\include\shell.inc \
+	 ..\include\shellfsc.inc ega.inc ..\include\vmdaega.inc \
+	 ..\include\vmm.inc
+
+vddstate.obj : vddstate.asm ..\include\debug.inc ega.inc \
+	 ..\include\vmdaega.inc ..\include\vdd.inc ..\include\vmm.inc
+
+vddsvc.obj : vddsvc.asm ..\include\debug.inc ..\include\shell.inc \
+	 ..\include\shellfsc.inc ega.inc ..\include\vmdaega.inc \
+	 ..\include\vdd.inc ..\include\vmm.inc
+
+vddtio.obj : vddtio.asm vga.inc ..\include\debug.inc \
+	 ..\include\vdd.inc ega.inc ..\include\vmdaega.inc ..\include\vmm.inc
+
+vddvga.obj : vddvga.asm vga.inc ..\include\debug.inc ega.inc \
+	 ..\include\vmdaega.inc ..\include\vmm.inc
+
+
+OBJS =  vddctl.obj vddinit.obj vddmem.obj vddproc.obj vddstate.obj vddtio.obj \
+        vdddata.obj vddint.obj vddmsg.obj vddsave.obj vddsvc.obj vddvga.obj 
+
+vddvga.386: vddvga.def $(OBJS)
+        link386 @vddvga.lnk
+        addhdr vddvga.386
+        mapsym32 vddvga

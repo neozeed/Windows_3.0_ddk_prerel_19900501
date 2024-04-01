@@ -1,0 +1,181 @@
+; **********************************************************************
+; * lmemcpy.a - 
+; *
+; * Copyright (C) 1988,1989 Aldus Corporation.
+; * Copyright (C) 1989-1990 Microsoft Corporation.
+; * All rights reserved.
+; * Company confidential.
+; *
+; *********************************************************************/
+;	History
+;	03 feb 90	clarkc   added lsl test to save caller from himself
+; *********************************************************************/
+
+  title	lmemcpy - byte mover
+  page	60,132
+
+; abstract
+;
+; this module contains a c-language callable routine for moving a block of
+; bytes from one memory location to another.
+
+DEBUG = 1
+
+  .xlist
+?win=1		;compile with windows epilog/prolog
+?plm=1		;we're playing the pascal calling sequence game
+
+  include	cmacros.inc
+  .list
+  
+ifdef	DEBUG
+	externFP OutputDebugString
+endif
+
+sBegin	CODE
+assumes	CS, CODE
+
+ifdef	DEBUG
+destselnotvisible:
+	db	"lmemcpy: Destination selector not visible",13,10,0
+destoffsetbogus:
+	db	"lmemcpy: Destination offset invalid",13,10,0
+destoverflow:
+	db	"lmemcpy: Destination overflow, adjusting transfer size",13,10,0
+srcselnotvisible:
+	db	"lmemcpy: Source selector not visible",13,10,0
+srcoffsetbogus:
+	db	"lmemcpy: Source offset invalid",13,10,0
+srcoverflow:
+	db	"lmemcpy: Source overflow, adjusting transfer size",13,10,0
+endif
+
+ExternA <__WinFlags>
+.286p				; need this for lsl
+
+cProc	lmemcpy,<FAR,PUBLIC>,<ds,si,es,di>
+  parmD	dst
+  parmD	src
+  parmW	cnt
+
+cBegin
+  xor   dx,dx           ;clear dx, indicating nothing copied
+  mov	cx,cnt		;get count
+ifdef DEBUG
+  jcxz	Lilypad		;out of here if zero, if DEBUG $1 is too far away
+else
+  jcxz	$1		;out of here if zero
+endif
+
+  mov   ax,__WinFlags	; get the kernel flags.
+  test  ax,1		; are we in protected mode?
+  jz    StartCopy   	; if not...
+  dec	cx		; Since we are now going to evaluate the LIMIT we
+			;   need to convert the count to a correct limit
+			;   comparison value.
+  lsl   ax, seg_dst     ; offset to last valid byte
+ifdef DEBUG
+  jz	Foo1
+; Warn the caller that he's passed a dest selector which isn't visible
+  mov	ax,offset destselnotvisible
+  push	cs
+  push	ax
+  call	OutputDebugString
+  int	3
+Foo1:
+endif
+
+  jnz	$1		; Selector is not viewable by this routine
+  sub	ax, off_dst	; possible size of transfer - 1
+ifdef DEBUG
+  jnc	Foo2
+; Warn the caller that he's passed a bogus dest offset
+  mov	ax,offset destoffsetbogus
+  push	cs
+  push	ax
+  call	OutputDebugString
+  int	3
+Foo2:
+endif
+  jc	$1		; Starting offset is ridiculous already
+  cmp   ax, cx          ; compare to desired transfer
+  jae	TrySrc		; if more space than needed, continue
+  mov   cx, ax          ; not enough space, decrease transfer size
+
+ifdef DEBUG
+; Warn the caller that he's overflowed dest and we're adjusting the transfer
+  mov	ax,offset destoverflow
+  push	cs
+  push	ax
+  call	OutputDebugString
+  int	3
+endif
+
+TrySrc:
+  lsl   ax, seg_src     ; offset to last valid byte
+ifdef DEBUG
+  jz	Foo3
+; Warn the caller that he's passed a src selector which isn't visible
+  mov	ax,offset srcselnotvisible
+  push	cs
+  push	ax
+  call	OutputDebugString
+  int	3
+Lilypad:                ; here to allow early jcxz to jump to $1
+  jmp   $1
+Foo3:
+endif
+  jnz	$1		; Selector is not viewable by this routine
+  sub	ax, off_src	; possible size of transfer - 1
+ifdef DEBUG
+  jnc	Foo4
+; Warn the caller that he's passed a bogus src offset
+  mov	ax,offset srcoffsetbogus
+  push	cs
+  push	ax
+  call	OutputDebugString
+  int	3
+Foo4:
+endif
+  jc	$1		; Starting offset is ridiculous already
+  cmp   ax, cx          ; compare to desired transfer
+  jae	StartCopyInc	; if more space than needed, continue
+  mov   cx, ax          ; not enough space, decrease transfer size
+
+ifdef DEBUG
+; Warn the caller that he's overflowed src and we're adjusting the transfer
+  mov	ax,offset srcoverflow
+  push	cs
+  push	ax
+  call	OutputDebugString
+  int	3
+endif
+
+StartCopyInc:
+  inc	cx			; Convert count back to non-limit value
+StartCopy:
+
+  lds	si,src			;get source address
+  les	di,dst			;get destination address
+  mov	dx,es			;return destination as
+  mov	ax,di			; value of the function
+  cmp	dx,seg_src		;are dest. and source in same segment?
+  jne	$11			;no, assume non-overlapping
+  cmp	di,si			;yes, is destination lower than source?
+  jb	$11			;yes, move forward
+  add	di,cx			;no, bump pointers to last byte
+  dec	di
+  add	si,cx
+  dec	si
+  std				;say "move'em backward"
+  jmp short $12
+
+$11:
+  cld				;say "move'em forward"
+$12:
+  rep		movsb		; and move'em like crazy
+$1:	cld				;leave d clear for c compiler
+cEnd
+
+sEnd
+end

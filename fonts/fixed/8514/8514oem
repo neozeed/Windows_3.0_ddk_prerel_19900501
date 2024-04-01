@@ -1,0 +1,8 @@
+### 8514 US Oem Only
+.\8514OEM.fon:  8514OEM.FNT 8514OEM.DEF 8514OEM.RC 8514OEM.LNK 8514OEM
+        link4 @8514OEM.lnk
+        rc -k 8514OEM.rc 8514OEM.exe
+##        cmpctfon 8514oem.exe 8514oem.fon
+        copy 8514oem.exe 8514oem.fon
+        del 8514oem.exe
+        del 8514OEM.res

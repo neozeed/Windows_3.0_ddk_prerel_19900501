@@ -1,0 +1,34 @@
+NAME PRNTTEST
+DESCRIPTION 'Microsoft Windows Printer Test Application - ChrisWil'
+EXETYPE WINDOWS
+
+STUB 'WINSTUB.EXE'
+
+CODE  MOVEABLE DISCARDABLE
+DATA  MOVEABLE MULTIPLE
+
+HEAPSIZE  4096
+STACKSIZE 10240
+
+SEGMENTS
+     _INIT     PRELOAD MOVEABLE DISCARDABLE
+     _TEXT     MOVEABLE DISCARDABLE
+     _INFO     MOVEABLE DISCARDABLE
+     _HEADER   MOVEABLE DISCARDABLE
+     _RASTER   MOVEABLE DISCARDABLE
+     _CURVE    MOVEABLE DISCARDABLE
+     _LINE     MOVEABLE DISCARDABLE
+     _POLYGON  MOVEABLE DISCARDABLE
+     _TEXTX    MOVEABLE DISCARDABLE
+
+EXPORTS  PrntTestProc           @1
+         PrntTestDlg            @2
+         AboutDlg               @3
+         PrintAbortProc         @4
+         AbortDlg               @5
+         SetupHeaderDlg         @6
+         SetupTestsDlg          @7
+         SetupObjectsDlg        @8
+IMPORTS
+         USER.ExitWindows
+

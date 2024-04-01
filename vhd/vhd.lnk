@@ -1,0 +1,5 @@
+vhd.obj+vhdtext.obj
+vhd.386 /NOI /NOD /NOP
+vhd.map /MAP
+
+vhd.def

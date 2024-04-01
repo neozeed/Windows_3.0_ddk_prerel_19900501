@@ -1,0 +1,31 @@
+NAME DISPTEST
+DESCRIPTION 'Microsoft Windows Display Test Application - ChrisWil'
+EXETYPE WINDOWS
+
+
+STUB 'WINSTUB.EXE'
+
+CODE  MOVEABLE DISCARDABLE
+DATA  MOVEABLE MULTIPLE
+
+HEAPSIZE  4096
+STACKSIZE 10240
+
+SEGMENTS
+     _INIT     PRELOAD MOVEABLE DISCARDABLE
+     _TEXT     MOVEABLE DISCARDABLE
+     _SETUP    MOVEABLE DISCARDABLE
+
+EXPORTS  DispTestProc           @1
+         DispCurvProc           @2
+         DispPolyProc           @3
+         DispBitmProc           @4
+         DispTextProc           @5
+         DispLineProc           @6
+         SetupObjectsDlg        @7
+         AboutDlg               @8
+         InterfaceDlg           @9
+
+IMPORTS
+         USER.ExitWindows
+

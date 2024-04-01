@@ -1,0 +1,59 @@
+Defined Testing Structures
+
+
+ENUMERATE
+Device Enumeration Structure
+
+The ENUMERATE structure contains the device context, count, and array of
+device objects which can be enumerated by the Windows functions.  This is
+useful for tests which focus on combinations of Pens, Brushes and Fonts.
+
+typedef struct tagENUMERATE
+     {
+          HDC          hDC;
+          GLOBALHANDLE hGMem;
+          short        nCount;
+     } ENUMERATE;
+
+hDC     The device context in which the objects were obtained.
+hGMem   A handle to a global array which contains the structures for those
+        objects gathered from the enumeration routines.
+nCount  The count of objects returned from the enumeration routine.
+
+
+
+DEVCAPABILITIES
+Device capabilities structure
+
+The DEVCAPABILITIES structure contains the information returned from calling
+the GetDevCaps() routine.
+
+
+typedef struct
+     {
+          short nDriverVersion;
+          short nTechnology;
+          short nHorzSizeMM;
+          short nVertSizeMM;
+          short nHorzRes;
+          short nVertRes;
+          short nLogPixelsX;
+          short nLogPixelsY;
+          short nBitsPixel;
+          short nPlanes;
+          short nBrushes;
+          short nPens;
+          short nFonts;
+          short nColors;
+          short nAspectX;
+          short nAspectY;
+          short nAspectXY;
+          short nPDeviceSize;
+          WORD  wClipCaps;
+          WORD  wRasterCaps;
+          WORD  wCurveCaps;
+          WORD  wLineCaps;
+          WORD  wPolygonCaps;
+          WORD  wTextCaps;
+     } DEVCAPABILITIES;
+

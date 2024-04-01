@@ -1,0 +1,7 @@
+### CGA System 10 Pt.
+.\cgasys.fon:  cgasys.fnt cgasys.lnk cgasys.rc cgasys cgasys.def
+        link4 @cgasys.lnk
+        rc -k cgasys.rc cgasys.exe
+        cmpctfon cgasys.exe cgasys.fon
+        del cgasys.exe
+        del cgasys.res

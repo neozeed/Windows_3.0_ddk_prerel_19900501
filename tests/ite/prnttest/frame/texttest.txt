@@ -1,0 +1,44 @@
+TEXT TEST
+This section tests the Text Capabilities of the printer driver.  It utilizes
+the features of the ExtTextOut function associated with GDI and the printer
+driver.  In testing the text capabilities of the driver, the font objects
+which the driver supports is also tested.
+
+TESTS
+1) Text Clipping to a rectangle.
+This tests the output of a string onto a clipping rectangle.
+
+
+
+This section tests the output of text to the printer driver.  It utilizes the
+features of the ExtTextOut function associated with Windows Software
+Development Kit (SDK).  The components of the ExtTextOut function allow the
+outputing of text in a defined rectangle.  This rectangle can be either
+CLIPPED or OPAQUE.  If a rectangle is identified as CLIPPED, then text output
+to the driver should be clipped to the rectangle (this is dependent on the
+capabilities of the printer driver).  Not all printer drivers support vertical
+text clipping.  The ExtTextOut function also allows for the spacing of
+characters to be manipulated.
+
+The structure for testing the drivers Text Out capabilities will concentrate on
+outputing text to different locations of the rectangle.  If the rectangle is
+defined as a CLIPPING rectangle, then the text should be clipped based on the
+capabilities of the driver.  Text should show through OPAQUED rectangles.
+
+TEST
+The rectangle is centered horizontally on the printable page, and the height
+of the rectangle is dependant on the FONT.  It is equal to the height of the
+font.  The text string's alignment is at the TOP-LEFT of the character cells,
+and is outputed at nine strategic locations:
+
+VERIFY
+    1. text fits in rectangle.
+    2. top-half of the text is outside rectangle.
+    3. bottom-half of text is outside rectangle.
+    4. left-half of text is outside rectangle.
+    5. left-half and top-half of text is outside rectangle.
+    6. left-half and bottom-half of text is outside of rectangle.
+    7. right-half of text is outside rectangle.
+    8. right-half and top-half of text is outside rectangle.
+    9. right-half and bottom-half of text is outside of rectangle.
+

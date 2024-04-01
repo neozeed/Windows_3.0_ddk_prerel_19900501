@@ -1,0 +1,419 @@
+Display Driver Test ApplicationVersion 3.0/r1.38
+September 12, 1989
+
+OVERVIEW
+This document outlines the functionality and coverage for the Display Driver Test Application.  The application is  designed and intended to be an automated tool for generating output which best describes the capabilities of the Display device.  Since GDI, the Display and Printer drivers interact closely with each other, there could be some ambiguity concerning the responsibility of the generated output.  It is this interaction which could pose some question as to "who" is actually doing the work.  This application will try to focus more towards the Printer Driver in the generation of the output.
+
+GOALS
+The goals of the application are to provide a means for automating tests for display devices.  This will help reduce some of the redundancy of executing the time-consuming scripts.  It is intended to provide broader coverage of tests as well as verify the reliability of IHV's drivers.
+
+SPECIFICATIONS
+The specifications for this application are as follows:
+
+1) Output tests for each of the driver capabilities.
+2) DialogBoxes for test selection to allow control over what is to be displayed.
+3) Tests should be automatic.  They will run "stand-alone" test selection is entered.
+4)	User selectable objects.  This will reduce the amount of test-cases per suite.
+5) Use of DLL's for storing common tests.
+
+LIMITATIONS
+Currently, this application is under development.  Version 3.00/1.38 is a preliminary, but functional application.
+
+
+PROGRESS
+
+1. Fundemental Tests.
+Currently, a basic set of tests are implemented.  These tests will be expanded upon in later versions.
+
+2. Use of DynaLink libraries for test.
+By using the DynaLink libraries, the tests can be share with other test applications (such as PrntTest.exe).
+
+
+FUTURE IMPLEMENTATIONS
+1) RASTER
+StretchBlt modifications
+FloodFill Test
+
+2) LINE
+More Line Tests.
+
+3) CURVE
+Arc, Chord, Pie Tests.
+
+4) POLYGON
+More polygon tests.
+
+5) TEXT
+More Text tests.
+
+6) ESCAPES TEST
+Provide Escape support.
+
+
+DESIGN
+The overall methodology of the test application is to determine "what the driver is capable of performing", and to focus the testing on the driver capabilities.
+
+The application is divided into several "logical" units. 
+1) Get Device Information
+a) Device Capabilities
+b) Device Fonts
+c) Device Pens
+d) Device Brushes
+e) Device Colors
+2) Get selected objects for display
+3) Run Tests
+
+All test criteria is setup prior to running the tests.  First, all device information is retrieved from the device concerning it's capabilities.  This includes Fonts, Brushes, Pens, Colors and capabilities.  Once this information is retrieved, it is stored in global (moveable) memory for use throughout the application.  The tests depend on this information for generating output.
+
+The test areas are outlined as follows:
+1) Raster Tests (bitmaps)
+2) Line Tests
+3) Polygon Tests
+4) Curve Tests
+5) Text Tests
+
+All output is dependant on the information gathered from the device.  For example, the Text test displays using all fonts the device supports.  This provides a level of device independent tests which does not depend on any particular device.  Likewise, graphic objects will be printed using various combinations of pens, brushes and backgrounds.
+
+INFORMATION FUNCTIONS
+There are driver functions which are not apparently visible to the person running the test application.  However, they are being used in gathering information, and therefore, tested internally.
+
+EnumDFonts()
+This is tested in the Get Information section of the test.  It enumerates all font faces, then uses those faces to enumerated all device fonts.  EnumFonts() function supplied by GDI in enumerating the fonts.
+
+
+
+EnumObj()
+This is used to enumerate all brushes and pens for the device.  Only those pens and brushes are used which the driver supports.  This is supplied by GDI in the EnumObject() function.
+
+RealizeObjects()
+This is tested in the selection of objects to display.  This can be obtained using the SelectObject() function supplied by GDI.
+
+ColorInfo()
+Tested indirectly in the application in converting colors to physical colors.  GetNearestColor() is the corresponding GDI function.
+
+GetCharWidth()
+(not yet implemented)
+
+OUTPUT FUNCTIONS
+Output()
+BitBlt()
+StrBlt()
+StretchBlt()
+ExtTextOut()
+
+ENVIRONMENT
+GetDevCaps()
+
+
+TEST PROCEDURES
+1. Select the tests to execute.
+This is selectable from the interface.  
+
+2. Get the driver capabilities
+a. Rectangle Capabilities
+b. Raster Capabilities
+c. Curve Capabilities
+d. Line Capabilities
+e. Polygon Capabilities
+f. Text Capabilities
+
+3. Enumerate the Driver Objects
+a. Fonts
+b. Pens
+c. Brushes
+d. Colors
+
+4. Get the user-selectable device objects.
+
+5. Run Tests.
+
+USERS GUIDE
+
+INTRODUCTION
+The Display Driver Test Application is an automated tool for testing the functionality and reliability of a Windows Display Driver.  It is intended to provide the test coverage necessary in verifying the functionality of a driver.  This document describes the features of the application which allow you to test multiple printer configurations, and select specific tests for each suite.
+
+USER INTERFACE
+The user interface is setup to display display tests to execute.  It contains a range of checkboxes identifying the test areas.  Currently, there is only 1 tests per test area.  This will be expanded upon later.  There are three edit boxes prompting for filenames which the application can output too.  A timer scrollbar is supplied to allow controll over the execution speed.
+
+LogFile EditBox 
+This EditBox identifies an output file in which status is output too.  This is usually name the same as the application with the extension ".log" (ie. "DispTest.log).
+
+Master File EditBox
+The Master File is intended for use in automated suites.  It is a file which the application outputs screen dumps.  This is not implemented in this version of the application.
+
+Copy File EditBox
+This box is intended for use in automated suites.  It is a file which the application outputs screen dumps for comparison to the Master File.
+
+Timer Speed Scrollbar
+The scrollbar provides a means for varying the execution speed of the tests.  It ranges from .1sec to 2sec.
+
+
+MENU COMMANDS
+The menu commands allow the user to start the execution of the tests, as well as halt and reset them.
+
+Settings
+N/A
+
+EXECUTE
+This menu command starts the test-suite.  It will start the tests starting with the first Test checked in the list of checkboxes, and proceed through all the checked boxes.  Prior to executing the tests, a DialogBox is displayed allowing the user to select individual Pens, Brushes and Fonts.  The tests will use only those selected objects in the generation of the tests.
+
+STOP
+This menu command stops the timer so that the user can view a particular screen.  Hitting EXECUTE will resume after the tests have been stopped.
+
+RESET
+This menu command resets the display to the original interface.
+
+Help
+This menu option displays information regarding the application.
+
+About
+This displays the dialogbox which contains information regarding the version and build of the application.
+
+Help Index
+Not Yet Implemented.
+
+Test Specifications
+Not Yet Implemented.
+
+
+INITIALIZATION FILE
+The initialization file is a private profile for the Display Driver Test Application.  It's function is to store information regarding the Test and List profiles which the application uses to run each test-suite.
+
+When loading the DispTest executable, the application reads the profile strings and checks the appropriate box.  
+
+Startup
+The startup section contains the flag settings for the Tests to be output for the suite.  The following keys are in the startup section.
+
+TestsTest
+This stores the settings which were entered in the Tests dialogbox.
+
+AutoRun
+This key is a special (BOOLEAN) flag which will automatically execute the test suite when the DispTest executable is run.  Once the test suite is finished, then the application automatically closes itself, then it shuts down Windows.  This flag is useful for the Windows Test Groups: Automated Configuration Test.  The following are the values which this flag can hold:
+
+1 = (TRUE) Run in automatic mode.  Load the profiles and test settings then execute.  When done, exit Windows back to the DOS prompt.
+
+0 = (FALSE) Run in manual mode.  This disables AutoRun.  The application just boots up with the settings.
+
+TEST SPECIFICATIONS (Overview)
+
+The following section describes the outlined areas which are covered in the tests.  The areas are isolated by the drivers capabilities.  Within each capability section the tests are defined.  For example, the BitBlt test is a test, or a collection of tests, which test the RASTER capabilities of the driver.
+
+RASTER
+BitBlt Test - ROP Combinations
+StretchBlt Test - Expand
+
+TEXT/FONTS
+ExtTextOut - clipping rectangles
+
+LINE
+Polylines - Background combinations
+
+CURVE
+Ellipses - Background combinations
+
+POLYGON
+Polygons - Winding/Alternate fill
+
+TEST SPECIFICATIONS (ITE_OBJT)
+
+RASTER (BitBlt)
+
+1. Bitmap ROP Combinations.
+
+Description
+This tests the Raster OPerations (ROP) on source, destination bitmaps with a patterned brush.  Each combination of source/destination bitmap color will be
+BitBlt using the 15 Windows defined Raster Operations.
+
+The design of the test is to output each example of the source, destination and pattern as bitmaps.  Then to combine those bitmaps into a resultant bitmap.
+
+Output Specifications
+a)	Source Bitmap	(.25" X .50")
+b)	Destination Bitmap	(.25" X .50")
+c)	Pattern Bitmap	(.25" X .50")
+d)	Result Bitmap	(.75" X .25")
+e)	Each testcase is spaced 1.25" apart.
+f)	Each page will contain multiple testcases.
+
+ROP CODE MNEMONIC
+|-----|-----|-----|
+|  s  |  d  |  p  |
+|  r  |  e  |  a  |
+|  c  |  s  |  t  |
+|     |  t  |     |
+|     |     |     |
+|-----|-----|-----|
+|                 |
+|     Result.     |
+|                 |
+|-----------------|
+
+
+Constraints
+a)	Fifteen ROP codes are used (defined ROPS).
+b)	Limited to the colors the device supports.
+c)	Brush will remain constant (Forward Diagonal Brush).
+
+TestCases
+Each testcase is a combination of different source, destination and pattern bitmaps.  The number of testcases vary with each driver, depending upon the capabilities of the driver.
+
+Estimated Execute Time
+3 Minutes
+
+RASTER (StretchBlt) - Not Complete
+
+1. Stretch ROP Combinations
+
+Description
+This tests the StretchBlt function using various ROP Codes.
+
+
+
+2. Stretch (Expand Bitmap).
+
+Description
+This tests the stretching of bitmaps to the device using different StrethBlt modes.
+
+
+
+3. Stretch (Compress Bitmap).
+
+Description
+This tests the compressing of bitmaps to the device using different StretchBlt modes.
+
+
+
+RASTER (FloodFill) - Not implemented
+
+1. Fill Objects.
+
+Description
+This tests the floodfilling of the Graphics objects for the device.
+
+
+CURVES (Ellipse)
+
+1. Ellipse Pen/Brush/Background Combinations.
+
+Description
+This tests the output of ellipses while varying the pen, brush and background attributes.
+
+The design of the test is to output the ellipses using all pens for a given brush.  Likewise, the brushes will be incremented so that all combinations are tested.  The background mode can be either OPAQUE or TRANSPARENT.  The ellipse is printed over a gray rectangle to verify the correct background mode behavior.
+
+Output Specifications
+a)	Background Gray-rectangle	(.50" X 1.0")
+b)	Ellipse	(1.0" X 1.0")
+c)	Each testcase is spaced 1.25" apart.
+d)	Each page will contain multiple testcases.
+
+BACKGROUND MODE - Brush (x)
+
+     |-----|
+   |||||   |
+ ||||||||| |
+||||||||||||
+ ||||||||| | 
+   |||||   |
+     |-----|
+
+
+Constraints
+a)	Background mode is either OPAQUE or TRANSPARENT.
+b)	Limited to the brushes/Pens the device supports.
+
+TestCases
+Each testcase is a particular combination of pen, brush and background.
+
+Estimated Execute Time
+3 Minutes
+
+TEXT (ExtTextOut)
+
+1. Output on various clipping rectangles.
+
+Description
+This tests the output of a test string on various points of the clipping rectangle.
+
+The design of this test is to output a selected string using all fonts the device supports.  A rectangle is drawn, showing the clipping region for the text.  The rectangle can be defined as either CLIPPED or OPAQUE.  This has a different effect on the text.  If CLIPPED, then the string will be clipped to the rectangle if it overwrites the boundaries.
+
+Output Specifications
+a)	Rectangle horz-centered	(Width = 1/2 of page)
+		(Height = font height)
+b)	String 
+c)	Output at 9 point on rectangle
+d)	Each page will contain multiple testcases.
+
+
+0			1			2
+ |---------------------------|
+3|			4		    |5
+ |---------------------------|
+6			7			8
+
+
+Constraints
+a)	Rectangle mode is either CLIPPED or OPAQUE (centered).
+b)	Limited to the number device fonts.
+c)	String remains constant.
+d)	Only nine points of rectangle are tested.
+
+TestCases
+Each testcase represents the output of the test string at any one of the 9 points illustrated above.  This will show the effect of clipping the text at different points.
+
+Estimated Execute Time
+3 Minutes
+
+
+LINE (Polylines)
+
+1. Output with various pen width combinations.
+
+Description
+This tests the output of a series of polylines using the various pens, brushes, and background modes of the device.
+
+The design of this test is to output a trapezoid shaped object with various pen widths.  It will increment from 1 to 10 for pen widths.
+
+Output Specifications
+a)	Trapezoid	(1" X 1")
+b) Gray Rectangle	(.5" X 1")
+c)	Each page will contain multiple testcases.
+
+
+
+
+Constraints
+a)	Brush remains constant (default).
+b)	Limited to the number device pens.
+d)	Pen widths range 1 - 10.
+
+TestCases
+Each testcase represents the output of one trapezoid object.
+
+Estimated Execute Time
+3 Minutes
+
+
+TEXT (Polygon)
+
+1. Output using various pen/brush/background modes.
+
+Description
+This tests the output of a star-shape polygon using the various combinations of pens, brushes, and background modes.  It performs this with both WINDING and ALTERNATE filling modes for a polygon.
+
+Output Specifications
+a)	Gray Rectangle	(.5" X 1")
+b) Star Object	(1" X 1")
+
+
+
+
+Constraints
+a)	Star overlaps rectangle.
+b)	Limited to the number of pens/brushes.
+c)	Star remains constant shape.
+
+TestCases
+Each testcase represents the output of a star on with the given pen.
+
+Estimated Execute Time
+3 Minutes
+

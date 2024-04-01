@@ -1,0 +1,9 @@
+;	Copyright February, 1990  HEADLAND TECHNOLOGY, INC.
+        page
+	?_pub	cblt18
+cblt18	proc	near
+; -- do nothing much
+	mov	al,I_RET_FAR
+	stosb
+	ret
+cblt18	endp

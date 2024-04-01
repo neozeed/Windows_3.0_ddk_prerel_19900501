@@ -1,0 +1,45 @@
+SRCDIR=SRC\\
+
+INCDIR=RC\\
+
+:
+	cd src
+	make finstall
+	cd ..
+
+:
+	cd rc
+	make finstall
+	cd ..
+
+finstall.dll: $(SRCDIR)heap.obj \
+$(SRCDIR)lclstr.obj \
+$(SRCDIR)lmemcpy.obj \
+$(SRCDIR)lmemset.obj \
+$(SRCDIR)sfadd.obj \
+$(SRCDIR)sfadd2.obj \
+$(SRCDIR)sfcopy.obj \
+$(SRCDIR)sfdir.obj \
+$(SRCDIR)sfdownld.obj \
+$(SRCDIR)sfedit.obj \
+$(SRCDIR)sferase.obj \
+$(SRCDIR)sffile.obj \
+$(SRCDIR)sfowner.obj \
+$(SRCDIR)sfinstal.obj \
+$(SRCDIR)wep.obj \
+$(SRCDIR)sflb.obj \
+$(SRCDIR)sfpfm.obj \
+$(SRCDIR)sfutils.obj \
+$(SRCDIR)sfutils2.obj \
+$(SRCDIR)_gtfree.obj \
+$(SRCDIR)_opend.obj \
+$(SRCDIR)_readd.obj \
+$(SRCDIR)_delete.obj \
+$(SRCDIR)_mkdir.obj \
+$(SRCDIR)dlgutils.obj \
+$(SRCDIR)fntutils.obj \
+$(INCDIR)finstall.res \
+finstall.lnk
+	link4 @finstall.lnk
+	mapsym finstall
+	rc -e -3 finstall.res finstall.dll

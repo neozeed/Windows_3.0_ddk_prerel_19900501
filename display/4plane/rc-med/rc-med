@@ -1,0 +1,29 @@
+#   Make file for EGA (4-plane) .RC file
+
+
+config.obj:	config.asm
+    masm -T config;
+
+config.bin:    config.obj
+    link config ,config;
+    exe2bin config
+    erase config.exe
+
+colortab.obj:  colortab.asm
+    masm -T colortab;
+
+colortab.bin:  colortab.obj
+    link colortab ,colortab;
+    exe2bin colortab
+    erase colortab.exe
+
+fonts.obj:	fonts.asm
+    masm -T fonts;
+
+fonts.bin:	fonts.obj
+    link fonts;
+    exe2bin fonts
+    erase fonts.exe
+
+rc-med.res:      rc-med.rc     config.bin   fonts.bin  colortab.bin
+    rc -r -v rc-med.rc

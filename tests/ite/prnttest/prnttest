@@ -1,0 +1,76 @@
+#==============================================================================
+# WINDOWS PRINTER-TEST MAKE FILE
+#   This Make-file will build the PRNTTEST application.
+#
+#
+# LIBRARIES
+#   This application is built with SMALL MODEL LIBRARY
+#
+#
+# BUILDING SYNTAX
+#      MAKE [LinkExt={CVW | SMD}] [Options=$({SYMDEB | CODEVIEW | RETAIL})]
+#
+#      The default is for Compile options set for SYMDEB Link
+#==============================================================================
+
+SYMDEB  = -c -Asnd -Gsw -Od -W2 -Zped
+CODEVIEW= -c -Asnd -Gsw -Od -W2 -Zpei
+RETAIL  = -c -Asnd -Gsw -Ox -W2 -Zp
+
+LinkExt=SMD
+Options=$(SYMDEB)
+
+
+#==============================================================================
+# COMPILER OBJECTS ============================================================
+#==============================================================================
+Init.obj : Init.c
+     cl $(Options) -NT _INIT Init.c
+
+PrntTest.obj : PrntTest.c
+     cl $(Options) -NT _TEXT PrntTest.c
+
+Intrface.obj : Intrface.c
+     cl $(Options) -NT _TEXT Intrface.c
+
+Command.obj : Command.c
+     cl $(Options) -NT _TEXT Command.c
+
+Paint.obj : Paint.c
+     cl $(Options) -NT _TEXT Paint.c
+
+About.obj : About.c
+     cl $(Options) -NT _TEXT About.c
+
+Abort.obj : Abort.c
+     cl $(Options) -NT _TEXT Abort.c
+
+Setup.obj : Setup.c
+     cl $(Options) -NT _TEXT Setup.c
+
+Misc.obj : Misc.c
+     cl $(Options) -NT _TEXT Misc.c
+
+GetInfo.obj : GetInfo.c
+     cl $(Options) -NT _INFO GetInfo.c
+
+Header.obj : Header.c
+     cl $(Options) -NT _HEADER Header.c
+
+#==============================================================================
+# LINK/RESOURCE OBJECTS =======================================================
+#==============================================================================
+
+PrntTest.res : PrntTest.rc PrntTest.h
+     rc -r PrntTest.rc
+
+PrntTest.exe : PrntTest.obj PrntTest.res PrntTest.def
+     link @PrntTest.$(LinkExt)
+     rc PrntTest.res
+     mapsym PrntTest
+     erase PrntTest.map
+     copy *.exe ..\bin
+     copy *.sym ..\bin
+     erase *.exe
+     erase *.map
+

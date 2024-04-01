@@ -1,0 +1,63 @@
+LINKER=LINK4
+
+OBJDIR=SRC\\
+
+RC_LOC=RC\\
+
+:
+	cd src
+	make pclsrc
+	cd ..
+
+:
+	cd rc
+	make pclrc
+	cd ..
+
+# link 
+
+hppcl.exe: $(OBJDIR)heap.obj \
+$(OBJDIR)lmemcpy.obj \
+$(OBJDIR)lstrncpy.obj \
+$(OBJDIR)lmemset.obj \
+$(OBJDIR)offsrect.obj \
+$(OBJDIR)dumputil.obj \
+$(OBJDIR)dump.obj \
+$(OBJDIR)wep.obj \
+$(OBJDIR)charwdth.obj \
+$(OBJDIR)control.obj \
+$(OBJDIR)debug.lib \
+$(OBJDIR)devcap.obj \
+$(OBJDIR)devmode.obj \
+$(OBJDIR)dlgutils.obj \
+$(OBJDIR)enumobj.obj \
+$(OBJDIR)environ.obj \
+$(OBJDIR)escquery.obj \
+$(OBJDIR)facetbl.obj \
+$(OBJDIR)fntutils.obj \
+$(OBJDIR)fontbld.obj \
+$(OBJDIR)fontman.obj \
+$(OBJDIR)fontutil.obj \
+$(OBJDIR)lclstr.obj \
+$(OBJDIR)memoman.obj \
+$(OBJDIR)options.obj \
+$(OBJDIR)paper.obj \
+$(OBJDIR)physical.obj \
+$(OBJDIR)qsort.obj \
+$(OBJDIR)realize.obj \
+$(OBJDIR)reset.obj \
+$(OBJDIR)stubs.obj \
+$(OBJDIR)transtbl.obj \
+$(OBJDIR)utils.obj \
+$(OBJDIR)pclstub.exe \
+hppcl.lnk
+	$(LINKER) @hppcl.lnk
+	mapsym hppcl
+	command /c del hppcl.map
+
+# add resources.
+# HPPCL.DRV: this version uses DUMP.C and DumpUtil.A
+hppcl.drv: hppcl.exe \
+$(RC_LOC)hppcl.res
+	copy hppcl.exe hppcl.drv
+	rc -v3 -e $(RC_LOC)hppcl.res hppcl.drv

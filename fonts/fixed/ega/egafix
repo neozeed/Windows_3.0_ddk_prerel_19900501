@@ -1,0 +1,8 @@
+### EGA System Only
+.\egafix.fon:  egafix.FNT egafix.DEF egafix.RC egafix egafix.LNK
+        link4 @egafix.lnk
+        rc -k egafix.rc egafix.exe
+##        cmpctfon egafix.exe egafix.fon
+        copy egafix.exe egafix.fon
+        del egafix.exe
+        del egafix.res

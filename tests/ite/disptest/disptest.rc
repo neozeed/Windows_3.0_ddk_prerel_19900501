@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+| WINDOWS DISPLAY TEST APPLICATION - RESOURCE FILE                            |
+|   This module contains the resources used throughout the application.       |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+#include <windows.h>
+#include "DispTest.h"
+
+/*---------------------------------------------------------------------------*\
+| RESOURCES                                                                   |
+\*---------------------------------------------------------------------------*/
+DISPTEST ICON DispTest.ico
+
+/*---------------------------------------------------------------------------*\
+| DIALOG BOX TEMPLATES                                                        |
+\*---------------------------------------------------------------------------*/
+rcinclude About.dlg
+rcinclude SetObjt.dlg
+rcinclude IntrFace.dlg
+
+/*---------------------------------------------------------------------------*\
+| MAIN APPLICATION MENU                                                       |
+\*---------------------------------------------------------------------------*/
+DISPTEST MENU
+BEGIN
+     POPUP "&Settings"
+     BEGIN
+          MENUITEM "&Objects..."       , IDM_SETTINGS_OBJECTS
+     END
+     MENUITEM "&EXECUTE!"              , IDM_TEST_RUN
+     MENUITEM "&STOP!"                 , IDM_TEST_STOP
+     MENUITEM "&RESET!"                , IDM_TEST_RESET
+     POPUP "\a&Help"
+     BEGIN
+          MENUITEM "A&bout..."         , IDM_HELP_ABOUT
+          MENUITEM "&Description..."   , IDM_HELP_DESCR
+     END
+END
+
+/*---------------------------------------------------------------------------*\
+| Strings used throughout application to conserve memory.                     |
+\*---------------------------------------------------------------------------*/
+STRINGTABLE
+BEGIN
+     IDS_TEXT_TESTSTRING "This is a test string!"
+END
+

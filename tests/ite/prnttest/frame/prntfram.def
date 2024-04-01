@@ -1,0 +1,35 @@
+LIBRARY PRNTFRAM
+DESCRIPTION 'DLL for Printer Test Application (PrntTest) - ChrisWil'
+EXETYPE WINDOWS
+
+STUB 'WINSTUB.EXE'
+
+CODE  MOVEABLE
+DATA  SINGLE
+
+HEAPSIZE  8192
+
+SEGMENTS
+     _TEXT     MOVEABLE
+     _HEADER   MOVEABLE DISCARDABLE
+     _RASTER   MOVEABLE DISCARDABLE
+     _CURVE    MOVEABLE DISCARDABLE
+     _LINE     MOVEABLE DISCARDABLE
+     _POLYGON  MOVEABLE DISCARDABLE
+     _TEXTX    MOVEABLE DISCARDABLE
+
+EXPORTS  PrintText               @1
+         PrintBitmaps            @2
+         PrintCurves             @3
+         PrintLines              @4
+         PrintPolygons           @5
+         PrintDeviceCapabilities @6
+         PrintDeviceBrushes      @7
+         PrintDevicePens         @8
+         PrintDeviceFonts        @9
+         PrintTitlePage          @10
+         PrintPrintableArea      @11
+         PrintGrayScale          @12
+         PrintFunctionSupport    @13
+         WEP
+

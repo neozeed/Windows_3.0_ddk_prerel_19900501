@@ -1,0 +1,5 @@
+DispTest Init Command Paint About Setup RastFnct misc Destroy  +
+DispBitm BitmTsts TextTsts PolyTsts CurvTsts LineTsts DispCurv +
+DispLine DispText DispPoly
+,, /align:16 /map/l,slibcew libw/NOD ..\lib\isg_test, DispTest.def
+

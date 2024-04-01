@@ -1,0 +1,297 @@
+CC=cl
+
+LINK=link
+
+LIBRARIAN=lib
+
+# with stack probes, medium model (need to set 'memM = 1' before
+# including normal cmacros in .A files as well, and link to m*.lib)
+#STDOPTS=-W2 -u -c -Alnw -PLM -Gw -Oas -Zpe
+
+# without stack probes, small model (normal build)
+STDOPTS=-W2 -u -c -Asnw -PLM -Gsw -Oas -Zpe
+
+INCDIR=..\ink\\
+
+RCDIR=..\rc\\
+
+heap.obj: heap.a
+	MASM -I$(INCDIR) heap.a;
+
+wep.obj: wep.a
+	MASM -I$(INCDIR) wep.a;
+
+lmemcpy.obj: lmemcpy.a
+	MASM -I$(INCDIR) lmemcpy.a;
+
+lmemset.obj: lmemset.a
+	MASM -I$(INCDIR) lmemset.a;
+
+_gtfree.obj: _gtfree.a
+	MASM -I$(INCDIR) _gtfree.a;
+
+_opend.obj: _opend.a
+	MASM -I$(INCDIR) _opend.a;
+
+_readd.obj: _readd.a
+	MASM -I$(INCDIR) _readd.a;
+
+_delete.obj: _delete.a
+	MASM -I$(INCDIR) _delete.a;
+
+_mkdir.obj: _mkdir.a
+	MASM -I$(INCDIR) _mkdir.a;
+
+_write.obj: _write.a
+	MASM -I$(INCDIR) _write.a;
+
+debug.obj: debug.c \
+..\ink\printer.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) debug.c
+	$(LIBRARIAN) debug-+debug.obj;
+
+dlgutils.obj: dlgutils.c \
+..\ink\nocrap.h \
+..\ink\debug.h \
+..\ink\dlgutils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _DEVMODE dlgutils.c
+
+fntutils.obj: fntutils.c \
+..\ink\nocrap.h \
+..\ink\expand.h \
+..\ink\fntutils.h \
+..\ink\neededh.h \
+..\ink\debug.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _FNTUTILS fntutils.c
+
+lclstr.obj: lclstr.c
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) lclstr.c
+
+sfadd.obj: sfadd.c \
+..\ink\expand.h \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\strings.h \
+..\ink\pfm.h \
+..\ink\sfadd.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfpfm.h \
+..\ink\sffile.h \
+..\ink\sfutils.h \
+..\ink\sfinstal.h \
+..\ink\dlgutils.h \
+..\ink\dosutils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFADD sfadd.c
+
+sfadd2.obj: sfadd2.c \
+..\ink\nocrap.h \
+..\ink\expand.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\strings.h \
+..\ink\pfm.h \
+..\ink\sfadd.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfpfm.h \
+..\ink\sfedit.h \
+..\ink\sfinstal.h \
+..\ink\sfutils.h \
+..\ink\dlgutils.h \
+..\ink\dosutils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFADD2 sfadd2.c
+
+sfcopy.obj: sfcopy.c \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\strings.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\sfcopy.h \
+..\ink\strings.h \
+..\ink\dlgutils.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\sfinstal.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFCOPY sfcopy.c
+
+sfdir.obj: sfdir.c \
+..\ink\nocrap.h \
+..\ink\sfdir.h \
+..\ink\utils.h \
+..\ink\neededh.h \
+..\ink\debug.h \
+..\ink\dosutils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFDIR sfdir.c
+
+sfdownld.obj: sfdownld.c \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\utils.h \
+..\ink\strings.h \
+..\ink\debug.h \
+..\ink\sfdownld.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\dlgutils.h \
+..\ink\lclstr.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFDOWNLD sfdownld.c
+
+sfedit.obj: sfedit.c \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\strings.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\sfedit.h \
+..\ink\dlgutils.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\pfm.h \
+..\ink\lclstr.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFEDIT sfedit.c
+
+sferase.obj: sferase.c \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\strings.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\sferase.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\strings.h \
+..\ink\sfinstal.h \
+..\ink\dlgutils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFERASE sferase.c
+
+sffile.obj: sffile.c \
+..\ink\expand.h \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\utils.h \
+..\ink\sffile.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\strings.h \
+..\ink\sfadd.h \
+..\ink\sfinstal.h \
+..\ink\dlgutils.h \
+..\ink\lclstr.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFFILE sffile.c
+
+sfinstal.obj: sfinstal.c \
+..\ink\nocrap.h \
+..\ink\utils.h \
+..\ink\sfinstal.h \
+..\ink\dlgutils.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\sfdir.h \
+..\ink\sfutils.h \
+..\ink\strings.h \
+..\ink\sffile.h \
+..\ink\sfadd.h \
+..\ink\sferase.h \
+..\ink\sfcopy.h \
+..\ink\sfedit.h \
+..\ink\sfdownld.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFINSTAL sfinstal.c
+
+sflb.obj: sflb.c \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFLB sflb.c
+
+sfpfm.obj: sfpfm.c \
+..\ink\expand.h \
+..\ink\nocrap.h \
+..\ink\neededh.h \
+..\ink\pfm.h \
+..\ink\sfpfm.h \
+..\ink\transtbl.h \
+..\ink\strings.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFPFM sfpfm.c
+
+sfutils.obj: sfutils.c \
+..\ink\nocrap.h \
+..\ink\utils.h \
+..\ink\fntutils.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\sfinstal.h \
+..\ink\dlgutils.h \
+..\ink\strings.h \
+..\ink\sfdir.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\pfm.h \
+..\ink\lclstr.h \
+..\ink\deskjet.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFUTILS sfutils.c
+
+sfutils2.obj: sfutils2.c \
+..\ink\nocrap.h \
+..\ink\sflb.h \
+..\ink\sfutils.h \
+..\ink\neededh.h \
+..\ink\resource.h \
+..\ink\dlgutils.h \
+..\ink\utils.h \
+..\ink\debug.h \
+..\ink\sfinstal.h \
+..\ink\strings.h \
+..\ink\pfm.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _SFUTILS2 sfutils2.c
+
+transtbl.obj: transtbl.c \
+..\ink\nocrap.h \
+..\ink\pfm.h \
+..\ink\transtbl.h \
+..\ink\hppcl.h \
+..\ink\resource.h \
+..\ink\debug.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) -NT _TRANSTBL transtbl.c
+
+utils.obj: utils.c \
+..\ink\printer.h \
+..\ink\debug.h \
+..\ink\resource.h \
+..\ink\utils.h
+	$(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) utils.c
+
+sfowner.obj: sfowner.c \
+    ..\ink\strings.h \
+    ..\ink\bitmaps.h
+    $(CC) -I$(INCDIR) $(STDOPTS) $(COPTS) sfowner.c
+
+
+sf_yn.obj: sf_yn.c \
+..\ink\dosutils.h
+	$(CC) -I$(INCDIR) -W2 -c sf_yn.c
+
+
+
+sf_yn.exe: sf_yn.obj \
+_write.obj
+	$(LINK) sf_yn+_write.obj,sf_yn,,slibce;
+	copy sf_yn.exe $(RCDIR)sf_yn.bin

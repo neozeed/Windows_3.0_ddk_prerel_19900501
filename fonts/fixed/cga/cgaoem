@@ -1,0 +1,8 @@
+### CGA US Oem Only
+.\CGAOEM.fon:  CGAOEM.FNT CGAOEM.DEF CGAOEM.RC CGAOEM.LNK CGAOEM
+        link4 @CGAOEM.lnk
+        rc -k CGAOEM.rc CGAOEM.exe
+##        cmpctfon cgaoem.exe cgaoem.fon
+        copy cgaoem.exe cgaoem.fon
+        del cgaoem.exe
+        del CGAOEM.res

@@ -1,0 +1,82 @@
+BITMASKTBL1.......bitblt            BITMASKTBL2.......bitblt
+BRUSHCOLORS.......color             BWTHRESHOLD.......color
+COLORTABLE........color             CRHATCHBR_0.......color
+CRHATCHBR_1.......color             CRHATCHBR_2.......color
+CRHATCHBR_3.......color             CRHATCHBR_4.......color
+CRHATCHBR_5.......color             CRHATCHBR_6.......color
+CRHATCHBR_7.......color             D1HATCHBR_0.......color
+D1HATCHBR_1.......color             D1HATCHBR_2.......color
+D1HATCHBR_3.......color             D1HATCHBR_4.......color
+D1HATCHBR_5.......color             D1HATCHBR_6.......color
+D1HATCHBR_7.......color             D2HATCHBR_0.......color
+D2HATCHBR_1.......color             D2HATCHBR_2.......color
+D2HATCHBR_3.......color             D2HATCHBR_4.......color
+D2HATCHBR_5.......color             D2HATCHBR_6.......color
+D2HATCHBR_7.......color             DCHATCHBR_0.......color
+DCHATCHBR_1.......color             DCHATCHBR_2.......color
+DCHATCHBR_3.......color             DCHATCHBR_4.......color
+DCHATCHBR_5.......color             DCHATCHBR_6.......color
+DCHATCHBR_7.......color             DITHER............hidither
+DMBITBLT..........bitblt            DMCHECKSTACK......chkstk
+DMCOLORINFO.......colorinf          DMENUMOBJ.........enum
+DMOUTPUT..........output            DMPIXEL...........pixel
+DMREALIZEOBJECT...robject           DMSCANLR..........scanlr
+DMSTRBLT..........strblt            DRAWMODELEN.......drawmode
+DRAWMODETBL.......drawmode          HHATCHBR_0........color
+HHATCHBR_1........color             HHATCHBR_2........color
+HHATCHBR_3........color             HHATCHBR_4........color
+HHATCHBR_5........color             HHATCHBR_6........color
+HHATCHBR_7........color             ROTBITTBL.........color
+SUMRGBCOLORSALT...robject           VHATCHBR_0........color
+VHATCHBR_1........color             VHATCHBR_2........color
+VHATCHBR_3........color             VHATCHBR_4........color
+VHATCHBR_5........color             VHATCHBR_6........color
+VHATCHBR_7........color             
+
+drawmode          Offset: 00000010H  Code and data size: 72H
+  DRAWMODELEN       DRAWMODETBL     
+
+hidither          Offset: 00000180H  Code and data size: 64H
+  DITHER          
+
+chkstk            Offset: 00000260H  Code and data size: 2eH
+  DMCHECKSTACK    
+
+robject           Offset: 00000300H  Code and data size: 2c8H
+  DMREALIZEOBJECT   SUMRGBCOLORSALT 
+
+enum              Offset: 00000aa0H  Code and data size: ccH
+  DMENUMOBJ       
+
+colorinf          Offset: 00000c30H  Code and data size: 42H
+  DMCOLORINFO     
+
+pixel             Offset: 00000d00H  Code and data size: f9H
+  DMPIXEL         
+
+bitblt            Offset: 00000ec0H  Code and data size: 8e1H
+  BITMASKTBL1       BITMASKTBL2       DMBITBLT        
+
+strblt            Offset: 00001920H  Code and data size: 64aH
+  DMSTRBLT        
+
+output            Offset: 000020b0H  Code and data size: 264H
+  DMOUTPUT        
+
+scanlr            Offset: 00002410H  Code and data size: 164H
+  DMSCANLR        
+
+color             Offset: 00002610H  Code and data size: 32H
+  BRUSHCOLORS       BWTHRESHOLD       COLORTABLE        CRHATCHBR_0
+  CRHATCHBR_1       CRHATCHBR_2       CRHATCHBR_3       CRHATCHBR_4
+  CRHATCHBR_5       CRHATCHBR_6       CRHATCHBR_7       D1HATCHBR_0
+  D1HATCHBR_1       D1HATCHBR_2       D1HATCHBR_3       D1HATCHBR_4
+  D1HATCHBR_5       D1HATCHBR_6       D1HATCHBR_7       D2HATCHBR_0
+  D2HATCHBR_1       D2HATCHBR_2       D2HATCHBR_3       D2HATCHBR_4
+  D2HATCHBR_5       D2HATCHBR_6       D2HATCHBR_7       DCHATCHBR_0
+  DCHATCHBR_1       DCHATCHBR_2       DCHATCHBR_3       DCHATCHBR_4
+  DCHATCHBR_5       DCHATCHBR_6       DCHATCHBR_7       HHATCHBR_0
+  HHATCHBR_1        HHATCHBR_2        HHATCHBR_3        HHATCHBR_4
+  HHATCHBR_5        HHATCHBR_6        HHATCHBR_7        ROTBITTBL
+  VHATCHBR_0        VHATCHBR_1        VHATCHBR_2        VHATCHBR_3
+  VHATCHBR_4        VHATCHBR_5        VHATCHBR_6        VHATCHBR_7

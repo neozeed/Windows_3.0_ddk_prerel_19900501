@@ -1,0 +1,112 @@
+
+#
+# Define alias macros for code generators
+#
+
+AS		= masm
+CC		= cc
+EXE2BIN 	= exe2bin
+LINK		= link
+MAPSYM		= mapsym
+
+
+#
+# Define flag macros
+#
+
+AFLAGS		= -i.\ -i..\ -i..\..\ -v
+AFLAGS2 	=
+CFLAGS		=
+LFLAGS		=
+MFLAGS		=
+
+
+#
+# Define environment dependent and miscellaneous macros
+#
+
+LIBS		=
+OBJECTS 	=
+
+
+#
+# Define default inference rules
+#
+
+.asm.obj:
+		$(AS) $(AFLAGS) $(AFLAGS2) $*;
+
+
+#
+# Define dependencies
+#
+ 
+makeparent:
+			cd ..
+			make AFLAGS2=$(AFLAGS2) grabbers
+			cd vga
+
+
+vgaoem.obj:		vgaoem.asm 	\
+			vgaabs0.inc	\
+			vgaoem.inc
+
+vgablock.obj:		vgablock.asm	\
+			vgaic.inc
+
+vgetinfo.obj:		vgetinfo.asm	\
+			vgaic.inc
+
+vgagrbit.obj:		vgagrbit.asm	\
+			vgaic.inc
+
+bepaint.obj:		bepaint.asm	\
+			dc.inc		\
+			vga.inc 	
+
+blockdev.obj:		blockdev.asm	\
+		        vgaic.inc
+
+devinit.obj:		devinit.asm	\
+			vga.inc
+
+edsave.obj:		edsave.asm	\
+		        vgaabs0.inc
+
+vgamisc.obj:		vgamisc.asm	\
+		        vgaabs0.inc	\
+			dc.inc		\
+			vga.inc 	\
+			fileio.inc
+
+gsmode.obj:		gsmode.asm	\
+		        vgaabs0.inc	\
+		        vgaic.inc  	\
+			dc.inc		\
+			vga.inc 	\
+			fileio.inc
+
+setswap.obj:		setswap.asm	\
+			dc.inc
+
+srfontf.obj:		srfontf.asm	\
+			dc.inc		\
+			vga.inc 	\
+			fileio.inc
+
+srscrf.obj:		srscrf.asm	\
+		        vgaic.inc 		\
+			dc.inc		\
+			vga.inc 	\
+			fileio.inc
+
+srscr.obj:		srscr.asm	\
+		        vgaoem.inc 	\
+		        vgaabs0.inc	\
+		     	vgaic.inc		\
+			dc.inc		\
+			vga.inc 	\
+			fileio.inc
+
+
+

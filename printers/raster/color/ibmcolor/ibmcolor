@@ -1,0 +1,61 @@
+.c.fnt:
+	cl -c -Zep $*.c
+	link ctofnt $*;
+	ctofnt
+	del $*.obj
+	del ctofnt.exe
+
+ctofnt.obj: ..\..\ctofnt.c
+	cd ..
+	cl -c -Zep -DLINT_ARGS -Foibmcolor\ ..\ctofnt.c 
+	cd ibmcolor
+
+ocr_b10.fnt: ocr_b10.c
+
+ocr_b5.fnt: ocr_b5.c
+
+ibmcolor.res:  ibmcolor.rc ocr_b5.fnt ocr_b10.fnt
+    rc -r -I..\..\epson ibmcolor.rc
+
+ibmcolor.obj:   ibmcolor.asm  ibmcolor.inc
+    masm -DR140x84 -I\windows\oem -I\finc ibmcolor.asm;
+
+reset.obj:   ..\..\reset.c
+    cl -u -nologo -c -Asnw -PLM -Gsw -Oas -Zpe -I. -I..\..\epson -NT _TEXT ..\..\reset.c
+
+physical.obj:	  physical.c ..\..\epson\physical.c
+    cl -u -nologo -c -Asnw -PLM -Gsw -Oas -Zpe -I. -NT _TEXT physical.c
+
+stubs.obj:     ..\..\stubs.c
+    cl -u -nologo -c -Asnw -PLM -Gsw -Oas -Zpe -I. -NT _TEXT ..\..\stubs.c
+
+devmode.obj:	..\..\epson\devmode.c
+    cl -u -nologo -c -Asnw -PLM -Gsw -Oas -Zpe -I. -I..\..\epson -NT _CHAR ..\..\epson\devmode.c
+
+control.obj:	..\..\epson\control.c
+    cl -u -nologo -c -Asnw -PLM -Gsw -Oas -Zpe -I. -NT _TEXT ..\..\epson\control.c
+
+realize.obj:  ..\..\realize.c
+    cl -u -nologo -c -Alnw -PLM -Gsw -Oas -Zpe -I. -I..\..\epson -NT _CHAR ..\..\realize.c
+
+chphys.obj:	chphys.c ..\..\epson\chphys.c
+    cl -u -nologo -c -Alnw -PLM -Gsw -Oas -Zpe -I. -NT _CHAR chphys.c
+
+extext.obj:   ..\..\epson\extext.c
+    cl -u -nologo -c -Alnw -PLM -Gsw -Oas -Zpe -I. -NT _CHAR ..\..\epson\extext.c
+
+data.obj: ..\..\epson\data.c trans.dat	control.dat
+    cl -u -nologo -c -Asnw -PLM -Gsw -Oas -Zpe -I. -NT _CHAR ..\..\epson\data.c
+
+init.obj: ..\..\epson\init.asm
+    masm -w2 ..\..\epson\init.asm;
+
+ibmcolor.exe:   ibmcolor.lnk ibmcolor.def ibmcolor.obj devmode.obj \
+                physical.obj stubs.obj control.obj reset.obj realize.obj \
+		chphys.obj data.obj extext.obj init.obj ..\dmcolor.lib
+    link4 @ibmcolor.lnk
+    mapsym ibmcolor
+
+ibmcolor.drv:   ibmcolor.exe ibmcolor.res
+    command /c copy ibmcolor.exe ibmcolor.drv
+    rc -e ibmcolor.res ibmcolor.drv

@@ -1,0 +1,18 @@
+:
+    cd citoh
+    make citoh
+    cd ..\ibmgrx
+    make ibmgrx
+    cd ..\ti850
+    make ti850
+    cd ..\epson
+    make epson
+    cd ..\color
+    make dmcolor
+    cd ibmcolor
+    make ibmcolor
+    cd ..\..\toshiba
+    make toshiba
+    cd ..\thinkjet
+    make thinkjet
+    cd ..

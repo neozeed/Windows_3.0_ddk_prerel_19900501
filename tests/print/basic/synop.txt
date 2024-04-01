@@ -1,0 +1,24 @@
+BASIC PRINTER TEST SYNOPSIS
+
+
+The basic printer test is used to test printer drivers by printing certain files from each windows application.  The testing is done by printing portrait and landscape from cardfile, notepad, paintbrush, terminal, write, and calendar.  Also included in this test are files to be printed from Windows Word and Excel.  Listed below are the files to be printed from each windows application:
+
+CARDFILE	BASIC1.CRD
+NOTEPAD	BASIC.TXT
+PAINTBRUSH	BASIC.PCX
+TERMINAL	BASIC.TXT
+WRITE	BASIC.WRI
+	MAINTEST.WRI
+CALENDAR	BASIC.CAL
+WINWORD	BASIC1.DOC
+	BASIC2.DOC
+	BASIC3.DOC
+EXCEL	BASIC1.XLC
+	BASIC2.XLS
+
+For the test to be complete, printing should be done in real mode, 286 protect mode, and 386 protect mode.  If the printer driver has varying page sizes, different sheet feeders, etc, the test can be run for those as well.  
+
+To use this test, simply copy all the files into their appropriate directory, load each file into it's respective application, and print it.  Copy the files to the directory that contains the application in question.  For instance, if Windows Word is in a separate subdirectory, copy the Windows Word files to that subdirectory.  For cardfile, notepad, paintbrush, terminal, and write files, simply copy those to your windows 3 directory.  
+
+Examine the output manually to determine if justification is not ragged, etc.  This test is only designed to test certain basic printer functionality.  With the write files, you may want to format them for different fonts and sized and print them again.  This is a good way to check printing with different fonts.
+
